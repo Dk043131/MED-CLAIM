@@ -72,6 +72,20 @@ E66.9,Obesity unspecified,Endocrine
 E55.9,Vitamin D deficiency unspecified,Endocrine
 E50.9,Vitamin A deficiency unspecified,Endocrine
 E61.1,Iron deficiency,Endocrine
+E16.0,Drug-induced hypoglycemia without coma,Endocrine
+E16.2,Hypoglycemia unspecified,Endocrine
+E16.1,Other hypoglycemia,Endocrine
+E11.641,Type 2 diabetes mellitus with hypoglycemia with coma,Endocrine
+E11.649,Type 2 diabetes mellitus with hypoglycemia without coma,Endocrine
+E10.641,Type 1 diabetes mellitus with hypoglycemia with coma,Endocrine
+E10.649,Type 1 diabetes mellitus with hypoglycemia without coma,Endocrine
+E87.1,Hypo-osmolality and hyponatraemia,Endocrine
+E86.0,Dehydration,Endocrine
+E86.1,Hypovolaemia,Endocrine
+E87.6,Hypokalaemia,Endocrine
+E87.3,Alkalosis,Endocrine
+T45.0,Poisoning by antiallergic and antiemetic drugs,Endocrine
+Z79.4,Long-term current use of insulin,Endocrine
 K21.0,GERD with oesophagitis,Gastrointestinal
 K21.9,GERD without oesophagitis,Gastrointestinal
 K25.9,Gastric ulcer unspecified,Gastrointestinal
@@ -136,6 +150,12 @@ F02.80,Dementia in other diseases classified elsewhere without behavioral distur
 F03.90,Unspecified dementia without behavioral disturbance,Neurological
 R51,Headache,Neurological symptoms
 R42,Dizziness and giddiness,Neurological symptoms
+R41.3,Other amnesia,Neurological symptoms
+R41.89,Other symptoms and signs involving cognitive functions and awareness,Neurological symptoms
+R45.1,Restlessness and agitation,Neurological symptoms
+R45.0,Nervousness and restlessness,Neurological symptoms
+R41.0,Disorientation unspecified,Neurological symptoms
+R41.1,Anterograde amnesia,Neurological symptoms
 R55,Syncope and collapse,Neurological symptoms
 R20.0,Anaesthesia of skin,Neurological symptoms
 L20.9,Atopic dermatitis unspecified,Dermatological

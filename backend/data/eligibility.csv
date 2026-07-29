@@ -1,5 +1,8 @@
 patient_id,patient_name,age,income_bracket,existing_coverage,coverage_expiry_date,eligible,reason
 PAT-1001,Rahul Sharma,34,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1050,Priya Sharma,28,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
+PAT-1051,Vivek S.,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
+PAT-1052,Vivek Sharma,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
 PAT-1002,Priya Singh,28,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
 PAT-1003,Amit Verma,45,5-8 LPA,ESIC Standard,2026-11-30,True,Active coverage
 PAT-1004,Sunita Devi,60,Below 2.5 LPA,PMJAY Gold,2026-08-15,True,Active coverage

@@ -1131,3 +1131,230 @@ body::before {
 .pill-role { font-weight: 700; color: var(--amber); }
 .pill-email { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
 
+
+/* ── SSE Real-time Progress Bar ─────────────────────────────────────────── */
+.sse-progress-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sse-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sse-stage-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--indigo-bright);
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+  min-height: 18px;
+  transition: all 0.3s ease;
+}
+.sse-elapsed {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.sse-progress-track {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+}
+.sse-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--indigo) 0%, var(--green) 100%);
+  border-radius: 100px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+.sse-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 24px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+  animation: sse-shimmer 1.2s infinite;
+}
+@keyframes sse-shimmer {
+  0% { opacity: 0; transform: translateX(-100%); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(200%); }
+}
+.sse-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ── Vitals Card in Result ───────────────────────────────────────────────── */
+.vitals-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.vital-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.vital-key {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 11px;
+}
+.vital-val {
+  color: var(--indigo-bright);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Security Indicator Badge ────────────────────────────────────────────── */
+.security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 0.3px;
+}
+.security-badge svg { flex-shrink: 0; }
+
+/* ── Pending Features: Lifecycle Timeline Stepper ────────────────────────── */
+.lifecycle-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  padding-left: 24px;
+  margin-top: 12px;
+}
+.lifecycle-timeline::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 9px;
+  width: 2px;
+  background: var(--border);
+}
+.lifecycle-step {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  font-size: 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.lifecycle-step-dot {
+  position: absolute;
+  left: -24px;
+  top: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  background: var(--text-muted);
+}
+.lifecycle-step.success .lifecycle-step-dot { background: var(--green); }
+.lifecycle-step.warning .lifecycle-step-dot { background: var(--amber); }
+.lifecycle-step.error .lifecycle-step-dot   { background: var(--rose); }
+
+.lifecycle-step-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lifecycle-step-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lifecycle-step-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.lifecycle-step-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  height: fit-content;
+}
+
+/* ── Fraud Probability Badge & Guardrails ─────────────────────────────────── */
+.fraud-risk-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.fraud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.fraud-badge.low    { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.fraud-badge.medium { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+.fraud-badge.high   { background: rgba(244,63,94,0.15);  color: var(--rose);  border: 1px solid rgba(244,63,94,0.3); }
+
+/* ── Government Portal Submission Box ────────────────────────────────────── */
+.portal-submission-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 8px;
+  margin-top: 16px;
+}
+.portal-ref-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #60a5fa;
+}

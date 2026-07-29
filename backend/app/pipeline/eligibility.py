@@ -38,8 +38,9 @@ def _get_elig_df() -> pd.DataFrame:
 
 
 def _normalize_name(name: str) -> str:
-    """Lowercase, strip extra spaces — for fuzzy name matching."""
-    return re.sub(r"\s+", " ", name.strip().lower())
+    """Lowercase, strip extra spaces, newlines, and trailing labels — for fuzzy name matching."""
+    cleaned = name.split("\n")[0].split("Patient")[0].split("ID")[0].strip().lower()
+    return re.sub(r"\s+", " ", cleaned)
 
 
 # ── Eligibility Logic ─────────────────────────────────────────────────────────

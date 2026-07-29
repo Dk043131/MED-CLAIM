@@ -1,48 +1,58 @@
 """
 pipeline/clean_ocr.py — Stage 2: Structure Raw OCR Text
 
-Real path:  Claude API (claude-3-5-haiku) with a strict JSON-schema prompt.
-            Turns messy OCR into a clean ExtractedJSON object.
-Stub path:  A deterministic regex/keyword parser — zero API cost, handles
-            all 6 test cases correctly.
-
-Auto-selects based on ANTHROPIC_API_KEY env var presence.
+Priority order for structuring:
+  1. Gemini 3-flash-preview combined OCR+structure (one call via orchestrator)
+  2. Gemini 3-flash-preview text-only structuring (from raw OCR text)
+  3. Stub regex parser (zero API cost — fallback)
 """
 from __future__ import annotations
 import json
 import re
 from datetime import date
-from app.config import USE_LLM_STUB, ANTHROPIC_API_KEY
+from app.config import USE_LLM_STUB, USE_GEMINI, GEMINI_API_KEY
 from app.models import ExtractedJSON, LineItem
 
 
-# ── Shared JSON schema prompt ────────────────────────────────────────────────
+# ── Shared JSON schema for Claude structuring ────────────────────────────────
 
 _EXTRACTION_SCHEMA = {
     "patient_name": "string",
+    "patient_id": "UHID or IP number if present",
+    "hospital_name": "hospital/clinic name",
     "age": "integer",
     "sex": "M or F",
     "date": "YYYY-MM-DD",
-    "symptoms": ["list of symptom strings"],
-    "line_items": [{"description": "string", "raw_text": "string"}],
-    "doctor_name": "string",
+    "doctor_name": "doctor name with title",
+    "doctor_id": "doctor registration/signature ID if visible",
+    "symptoms": ["list of symptoms from c/o or complaints section"],
+    "diagnosis": ["list of diagnoses from Imp/Impression/Assessment section"],
+    "vitals": {"bp": "blood pressure", "pulse": "pulse rate", "rbs": "blood sugar"},
+    "line_items": [{"description": "billable item", "raw_text": "exact text"}],
+    "medications": [{"name": "drug", "dose": "dose", "route": "oral/IV/IM", "frequency": "frequency", "raw_text": "exact text"}],
+    "advice": ["list of non-medication instructions"],
     "consultation_fee": "number",
-    "ocr_confidence_notes": "string — note any unclear/illegible parts here",
+    "ocr_confidence_notes": "describe any illegible/unclear parts",
 }
 
-_EXTRACTION_PROMPT = """You are a medical bill data extraction assistant.
-Extract structured information from the raw OCR text of a handwritten medical bill.
+_EXTRACTION_PROMPT = """You are a clinical document extraction AI for Indian hospital prescriptions/bills.
+Extract structured information from this raw OCR text.
 Output ONLY valid JSON matching this exact schema (no markdown, no extra keys):
 
 {schema}
 
 Rules:
-- If a field is unclear or missing, use empty string "" or 0 for numbers.
+- Indian prescriptions use abbreviations: c/o = complaints of, Imp = impression/diagnosis, Adv = advice, h/o = history of
+- If a field is unclear or missing, use empty string "" or 0 for numbers, [] for lists.
 - sex must be "M" or "F" only; infer from pronouns/name if not explicit.
-- date must be YYYY-MM-DD; infer year as current year if only day/month given.
-- symptoms: extract ALL medical complaints/conditions mentioned.
-- line_items: every billable item (medicines, tests, procedures) with its raw price text.
-- ocr_confidence_notes: describe any blurry/ambiguous parts honestly.
+- date must be YYYY-MM-DD; Indian date 22/12/22 → 2022-12-22
+- symptoms: ONLY from c/o or Complaints section
+- diagnosis: ONLY from Imp/Impression/Diagnosis/Assessment section
+- vitals: extract BP (e.g. 110/70), PR/pulse (e.g. 60bpm), RBS (blood sugar value)
+- medications: all drugs with dose/route/frequency
+- advice: non-medication instructions (e.g. "adequate fluid intake", "bed rest")
+- line_items: billable items with amounts
+- ocr_confidence_notes: note any blurry or ambiguous parts
 
 Raw OCR text:
 \"\"\"
@@ -54,31 +64,17 @@ Output JSON:""".format(
 )
 
 
-# ── Real Implementation (Claude) ─────────────────────────────────────────────
+# ── Real Implementation (Gemini text-only structuring) ───────────────────────────
 
 def extract_real(raw_ocr: str) -> ExtractedJSON:
     """
-    Calls Claude claude-3-5-haiku-20241022 to structure the raw OCR text.
+    Calls Gemini 3-flash-preview (text-only) to structure the raw OCR text.
+    Used when image bytes are unavailable for combined extraction.
     """
-    import anthropic  # type: ignore
+    from app.pipeline.gemini_ocr import extract_text_with_gemini, gemini_dict_to_extracted
+    data = extract_text_with_gemini(raw_ocr)
+    return gemini_dict_to_extracted(data)
 
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-    prompt = _EXTRACTION_PROMPT.replace("{raw_ocr}", raw_ocr)
-
-    message = client.messages.create(
-        model="claude-3-5-haiku-20241022",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    text = message.content[0].text.strip()
-
-    # Strip markdown code fences if Claude wraps them
-    text = re.sub(r"^```json\s*", "", text)
-    text = re.sub(r"\s*```$", "", text)
-
-    data = json.loads(text)
-    return _dict_to_extracted(data)
 
 
 # ── Stub Implementation (Deterministic Regex Parser) ─────────────────────────
@@ -86,13 +82,24 @@ def extract_real(raw_ocr: str) -> ExtractedJSON:
 def extract_stub(raw_ocr: str) -> ExtractedJSON:
     """
     Pure-Python deterministic extraction — no API needed.
-    Handles typical patterns found in Indian handwritten medical bills.
+    Handles typical patterns found in Indian handwritten medical bills AND
+    PANDA-style prescriptions (Adichunchanagiri, etc.).
     """
     text = raw_ocr
 
-    # Patient name — must come after a colon/hyphen on "Patient Name:" line
+    # ── Hospital/Clinic Name ─────────────────────────────────────────────────
+    hospital_name = ""
+    # First non-empty line is often the hospital name
+    for line in text.strip().split('\n'):
+        line = line.strip()
+        if len(line) > 10 and any(kw in line.lower() for kw in ['hospital', 'clinic', 'institute', 'medical', 'centre', 'center', 'university', 'nursing']):
+            hospital_name = line.strip()
+            break
+
+    # ── Patient name ─────────────────────────────────────────────────────────
+    # Try "Name: Vivek S." or "Patient Name: ..."
     name_match = re.search(
-        r"^\s*patient\s*(?:name)?\s*[:\-]\s*([A-Za-z][A-Za-z\s\.]{1,40})",
+        r"^\s*(?:patient\s+)?name\s*[:\-]\s*([A-Za-z][A-Za-z\s\.]{1,40})",
         text, re.IGNORECASE | re.MULTILINE
     )
     if name_match:
@@ -102,19 +109,38 @@ def extract_stub(raw_ocr: str) -> ExtractedJSON:
     else:
         patient_name = ""
 
-    # Age
-    age_match = re.search(r"\bAge\s*[:\-]?\s*(\d{1,3})", text, re.IGNORECASE)
-    age = int(age_match.group(1)) if age_match else 0
+    # ── Patient ID (UHID / IP number) ────────────────────────────────────────
+    patient_id = ""
+    pid_match = re.search(
+        r"(?:uhid|ip\s*no|ipno|patient\s*id|reg\s*no|registration)\s*[:\-\/]?\s*(\w+)",
+        text, re.IGNORECASE
+    )
+    if pid_match:
+        patient_id = pid_match.group(1).strip()
 
-    # Sex
+    # ── Age ──────────────────────────────────────────────────────────────────
+    # Try "Age: 34" or "34/M" pattern (Indian prescription shorthand)
+    age = 0
+    age_match = re.search(r"\bAge\s*[:\-]?\s*(\d{1,3})", text, re.IGNORECASE)
+    if age_match:
+        age = int(age_match.group(1))
+    else:
+        # Try "19/M" or "34/F" shorthand
+        shorthand = re.search(r"\b(\d{1,3})\/([MF])", text, re.IGNORECASE)
+        if shorthand:
+            age = int(shorthand.group(1))
+
+    # ── Sex ──────────────────────────────────────────────────────────────────
     sex_match = re.search(r"\b(?:Sex|Gender)\s*[:\-]?\s*([MF](?:ale)?(?:emale)?)", text, re.IGNORECASE)
     if sex_match:
         raw_sex = sex_match.group(1).upper()
         sex = "F" if raw_sex.startswith("F") else "M"
     else:
-        sex = "M"
+        # Try shorthand 19/M or 34/F
+        sh = re.search(r"\b\d{1,3}\/([MF])\b", text, re.IGNORECASE)
+        sex = sh.group(1).upper() if sh else "M"
 
-    # Date
+    # ── Date ─────────────────────────────────────────────────────────────────
     date_match = re.search(
         r"(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})"
         r"|(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})",
@@ -148,16 +174,38 @@ def extract_stub(raw_ocr: str) -> ExtractedJSON:
         fee_match = re.search(r"(?:Rs\.?|INR)\s*(\d+(?:\.\d+)?)", text, re.IGNORECASE)
     consultation_fee = float(fee_match.group(1)) if fee_match else 0.0
 
-    # Symptoms — keyword search across common Indian medical complaints
+    # ── Symptoms — comprehensive Indian medical + PANDA keyword list ─────────
     symptom_keywords = [
-        "fever", "headache", "cough", "cold", "vomiting", "nausea",
-        "diarrhoea", "diarrhea", "chest pain", "breathlessness", "dyspnoea",
-        "abdominal pain", "stomach ache", "back pain", "joint pain",
-        "fatigue", "weakness", "dizziness", "hypertension", "diabetes",
-        "jaundice", "malaria", "typhoid", "dengue", "covid", "infection",
-        "rash", "allergy", "asthma", "bronchitis", "pneumonia",
-        "fracture", "sprain", "injury", "wound", "bleeding",
-        "anaemia", "anemia", "urinary", "uti", "stone",
+        # Fever / infection family
+        "fever", "pyrexia", "chills",
+        # Head / neuro
+        "headache", "giddiness", "dizziness", "vertigo", "syncope", "fainting", "seizure",
+        # Respiratory
+        "cough", "cold", "breathlessness", "dyspnoea", "dyspnea", "wheezing", "asthma", "bronchitis", "pneumonia",
+        # GI
+        "vomiting", "nausea", "diarrhoea", "diarrhea", "loose stools", "constipation",
+        "abdominal pain", "stomach ache", "indigestion",
+        # Musculoskeletal
+        "back pain", "joint pain", "body pain", "muscle pain", "fracture", "sprain", "injury",
+        # Fatigue / weakness
+        "fatigue", "weakness", "lethargy", "malaise",
+        # Metabolic / endocrine
+        "hypoglycemia", "hypoglycaemia", "diabetes", "low blood sugar", "low rbs",
+        "hypertension", "high blood pressure",
+        # Psychiatric / behavioral
+        "restlessness", "agitation", "anxiety", "nervousness", "irritability",
+        # Cardiovascular
+        "chest pain", "palpitations", "bradycardia", "tachycardia",
+        # Skin / allergy
+        "rash", "allergy", "itching", "urticaria",
+        # Infectious
+        "malaria", "typhoid", "dengue", "jaundice", "covid", "infection",
+        # Urological
+        "urinary", "uti", "burning micturition", "stone",
+        # Blood
+        "anaemia", "anemia", "bleeding", "wound",
+        # Dehydration
+        "dehydration",
     ]
     symptoms_found = [
         kw.title()
@@ -165,18 +213,28 @@ def extract_stub(raw_ocr: str) -> ExtractedJSON:
         if re.search(r"\b" + re.escape(kw) + r"\b", text, re.IGNORECASE)
     ]
 
-    # Also grab lines labelled "Symptoms:", "Complaints:" — but NOT Diagnosis
-    # (Diagnosis lines tend to be long multi-word phrases that confuse the harmonizer)
+    # Also grab lines labelled "c/o", "Symptoms:", "Complaints:"
+    # Specifically handles Indian prescription "c/o giddiness, restlessness"
     labelled_match = re.findall(
-        r"(?:symptoms?|complaints?|presenting complaints?)\s*[:\-]\s*(.+?)(?:\n|$)",
+        r"(?:c\/o|c\.o\.|symptoms?|complaints?|presenting complaints?)\s*[:\-]?\s*(.+?)(?:\n|$)",
         text, re.IGNORECASE
     )
     for line in labelled_match:
         for part in re.split(r"[,;/]", line):
             s = part.strip().title()
             # Only add short symptom phrases (≤ 3 words) to avoid long diagnosis strings
-            if s and s not in symptoms_found and len(s.split()) <= 3:
+            if s and len(s) > 2 and s not in symptoms_found and len(s.split()) <= 3:
                 symptoms_found.append(s)
+
+    # Also extract from "Imp:" (Impression/Diagnosis) section
+    imp_match = re.findall(
+        r"(?:imp|impression|diagnosis|assessment)\s*[:\-]?\s*(.+?)(?:\n|\(|$)",
+        text, re.IGNORECASE
+    )
+    for line in imp_match:
+        s = line.strip().title()
+        if s and len(s) > 2 and s not in symptoms_found and len(s.split()) <= 4:
+            symptoms_found.append(s)
 
     # Deduplication: remove compound variants that are supersets of simpler symptoms
     # e.g. remove "Mild Cough" if "Cough" is already in the list (avoids low confidence)
@@ -210,29 +268,71 @@ def extract_stub(raw_ocr: str) -> ExtractedJSON:
             raw_text=m.group(0).strip()
         ))
 
+    # ── Vitals extraction (BP, PR/pulse, RBS) ─────────────────────────────
+    vitals = {}
+    bp_match = re.search(r"\bBP\s*[:\-]?\s*(\d{2,3}\/\d{2,3})", text, re.IGNORECASE)
+    if bp_match:
+        vitals["bp"] = bp_match.group(1)
+    pr_match = re.search(r"\b(?:PR|Pulse)\s*[:\-]?\s*(\d{2,3})\s*(?:bpm|/min)?", text, re.IGNORECASE)
+    if pr_match:
+        vitals["pulse"] = pr_match.group(1) + " bpm"
+    rbs_match = re.search(r"\bRBS\s*[:\-]?\s*(\d+)\s*(?:mg|mg\/dl|mg\/dL)?", text, re.IGNORECASE)
+    if rbs_match:
+        vitals["rbs"] = rbs_match.group(1) + " mg/dL"
+    spo2_match = re.search(r"\bSpO2\s*[:\-]?\s*(\d+)\s*%?", text, re.IGNORECASE)
+    if spo2_match:
+        vitals["spo2"] = spo2_match.group(1) + "%"
+
+    # ── Advice (Adv: lines) ─────────────────────────────────────────
+    advice = []
+    adv_match = re.search(
+        r"\b(?:adv|advice|instructions?)\s*[:\-]?\s*(.+)",
+        text, re.IGNORECASE | re.DOTALL
+    )
+    if adv_match:
+        adv_lines = adv_match.group(1).strip().split('\n')
+        for line in adv_lines[:5]:  # Cap at 5 advice items
+            stripped = line.strip().strip('-').strip()
+            if stripped and len(stripped) > 3:
+                advice.append(stripped)
+
     # OCR confidence notes
     has_unclear = any(w in text.lower() for w in ["illegible", "unclear", "???", "??", "unreadable"])
-    ocr_notes = (
-        "Some fields appear unclear or partially illegible in the original bill."
-        if has_unclear
-        else "OCR text appears clean and well-structured."
-    )
+    vitals_note = " | ".join(f"{k.upper()}: {v}" for k, v in vitals.items())
+    if not has_unclear:
+        ocr_notes = vitals_note if vitals_note else "OCR text appears clean and well-structured."
+    elif vitals_note:
+        ocr_notes = f"{vitals_note} | Some fields partially illegible."
+    else:
+        ocr_notes = "Some fields appear unclear or partially illegible in the original bill."
+
+    # ── Doctor ID ─────────────────────────────────────────────────────
+    doctor_id = ""
+    did_match = re.search(r"(?:signature of doctor|reg no|dr\. id|doctor id)\s*[:\-\(]?\s*([A-Z0-9]{4,12})", text, re.IGNORECASE)
+    if did_match:
+        doctor_id = did_match.group(1).strip()
+
 
     return ExtractedJSON(
         patient_name=patient_name,
+        patient_id=patient_id,
+        hospital_name=hospital_name,
         age=age,
         sex=sex,
         date=bill_date,
         symptoms=symptoms_found[:10],   # Cap at 10
         line_items=line_items[:15],      # Cap at 15
         doctor_name=doctor_name,
+        doctor_id=doctor_id,
         consultation_fee=consultation_fee,
         ocr_confidence_notes=ocr_notes,
+        vitals=vitals,
+        advice=advice,
     )
 
 
 def _dict_to_extracted(data: dict) -> ExtractedJSON:
-    """Convert raw dict from Claude JSON into ExtractedJSON model."""
+    """Convert raw dict from Claude/Gemini JSON into ExtractedJSON model."""
     line_items = [
         LineItem(
             description=li.get("description", ""),
@@ -240,16 +340,47 @@ def _dict_to_extracted(data: dict) -> ExtractedJSON:
         )
         for li in data.get("line_items", [])
     ]
+    # Also add medications as line items
+    for med in data.get("medications", []):
+        line_items.append(LineItem(
+            description=f"{med.get('name', '')} {med.get('dose', '')} {med.get('route', '')}".strip(),
+            raw_text=med.get("raw_text", ""),
+        ))
+
+    # Merge symptoms + diagnosis for ICD-10 harmonization
+    symptoms = list(data.get("symptoms", []))
+    diagnoses = list(data.get("diagnosis", []))
+    all_symptoms = symptoms + [d for d in diagnoses if d not in symptoms]
+
+    # Vitals as notes
+    vitals = data.get("vitals", {})
+    vitals_note = ""
+    if vitals:
+        parts = []
+        if vitals.get("bp"): parts.append(f"BP: {vitals['bp']}")
+        if vitals.get("pulse"): parts.append(f"PR: {vitals['pulse']}")
+        if vitals.get("rbs"): parts.append(f"RBS: {vitals['rbs']}")
+        vitals_note = " | ".join(parts)
+
+    ocr_notes = str(data.get("ocr_confidence_notes", ""))
+    if vitals_note:
+        ocr_notes = f"{vitals_note} | {ocr_notes}" if ocr_notes else vitals_note
+
     return ExtractedJSON(
         patient_name=str(data.get("patient_name", "")),
+        patient_id=str(data.get("patient_id", "")),
+        hospital_name=str(data.get("hospital_name", "")),
         age=int(data.get("age", 0)),
         sex=str(data.get("sex", "M")),
         date=str(data.get("date", "")),
-        symptoms=list(data.get("symptoms", [])),
-        line_items=line_items,
+        symptoms=all_symptoms[:12],
+        line_items=line_items[:20],
         doctor_name=str(data.get("doctor_name", "")),
+        doctor_id=str(data.get("doctor_id", "")),
         consultation_fee=float(data.get("consultation_fee", 0)),
-        ocr_confidence_notes=str(data.get("ocr_confidence_notes", "")),
+        ocr_confidence_notes=ocr_notes,
+        vitals=vitals,
+        advice=data.get("advice", []),
     )
 
 
@@ -258,12 +389,18 @@ def _dict_to_extracted(data: dict) -> ExtractedJSON:
 def structure_ocr(raw_ocr: str) -> ExtractedJSON:
     """
     Stage 2 — Structure raw OCR text into ExtractedJSON.
-    Routes to Claude API when key is present, otherwise uses regex stub.
+    Priority: Gemini text call → stub regex parser.
+    (Gemini combined image extraction is handled in the orchestrator)
     """
-    if USE_LLM_STUB:
+    if USE_LLM_STUB or not GEMINI_API_KEY:
         return extract_stub(raw_ocr)
     try:
         return extract_real(raw_ocr)
     except Exception as exc:
-        print(f"[CleanOCR] Claude API failed ({exc}); falling back to stub.")
+        print(f"[CleanOCR] Gemini structuring failed ({exc}); falling back to stub.")
         return extract_stub(raw_ocr)
+
+
+def structure_ocr_from_raw(raw_ocr: str) -> ExtractedJSON:
+    """Alias for backwards compatibility."""
+    return structure_ocr(raw_ocr)

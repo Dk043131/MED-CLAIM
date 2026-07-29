@@ -21,11 +21,60 @@ import os
 import re
 import pandas as pd
 from typing import List, Tuple
-from app.config import USE_LLM_STUB, ANTHROPIC_API_KEY, ICD10_CSV, CONFIDENCE_THRESHOLD
+from app.config import USE_LLM_STUB, GEMINI_API_KEY, ICD10_CSV, CONFIDENCE_THRESHOLD
 from app.models import CodedDiagnosis, CodingResult
 
 # Number of candidate ICD-10 codes surfaced per symptom for LLM selection
-TOP_N_CANDIDATES = 5
+TOP_N_CANDIDATES = 8
+
+# ICD-10 coding model — Gemini 3.1 Flash-Lite (fast, cheap, text-only)
+CODING_MODEL = "gemini-3.1-flash-lite"
+
+# ── PANDA Clinical Synonym Dictionary ────────────────────────────────────────
+# Maps common Indian clinical abbreviations/synonyms → preferred ICD-10 search terms
+# PANDA = Prescriber Anti-Nausea Drug Algorithm + extended Indian clinical terms
+_PANDA_SYNONYMS: dict[str, tuple[str, str, float]] = {
+    # Hypoglycemia family
+    "hypoglycemia":         ("E16.2", "Hypoglycemia unspecified", 0.95),
+    "hypoglycaemia":        ("E16.2", "Hypoglycemia unspecified", 0.95),
+    "low blood sugar":      ("E16.2", "Hypoglycemia unspecified", 0.93),
+    "low rbs":              ("E16.2", "Hypoglycemia unspecified", 0.93),
+    "drug-induced hypoglycemia": ("E16.0", "Drug-induced hypoglycemia without coma", 0.95),
+    "insulin hypoglycemia": ("E16.0", "Drug-induced hypoglycemia without coma", 0.94),
+    # Nausea/Vomiting (PANDA core)
+    "nausea":               ("R11.0", "Nausea", 0.97),
+    "vomiting":             ("R11.10", "Vomiting unspecified", 0.97),
+    "nausea and vomiting":  ("R11.2", "Nausea with vomiting unspecified", 0.97),
+    "nausea with vomiting": ("R11.2", "Nausea with vomiting unspecified", 0.97),
+    "emesis":               ("R11.10", "Vomiting unspecified", 0.93),
+    # Giddiness/Dizziness
+    "giddiness":            ("R42", "Dizziness and giddiness", 0.97),
+    "dizziness":            ("R42", "Dizziness and giddiness", 0.97),
+    "vertigo":              ("R42", "Dizziness and giddiness", 0.92),
+    "lightheadedness":      ("R42", "Dizziness and giddiness", 0.90),
+    # Restlessness/Agitation
+    "restlessness":         ("R45.1", "Restlessness and agitation", 0.97),
+    "agitation":            ("R45.1", "Restlessness and agitation", 0.95),
+    "nervousness":          ("R45.0", "Nervousness and restlessness", 0.90),
+    # Syncope/Collapse
+    "syncope":              ("R55", "Syncope and collapse", 0.95),
+    "fainting":             ("R55", "Syncope and collapse", 0.92),
+    "collapse":             ("R55", "Syncope and collapse", 0.90),
+    # General symptoms
+    "weakness":             ("R53.1", "Weakness", 0.95),
+    "fatigue":              ("R53.83", "Other fatigue", 0.93),
+    "fever":                ("R50.9", "Fever unspecified", 0.97),
+    "headache":             ("R51", "Headache", 0.97),
+    "chest pain":           ("R07.9", "Chest pain unspecified", 0.95),
+    "breathlessness":       ("R06.0", "Dyspnoea", 0.95),
+    "dyspnoea":             ("R06.0", "Dyspnoea", 0.97),
+    "dyspnea":              ("R06.0", "Dyspnoea", 0.97),
+    "cough":                ("R05", "Cough", 0.97),
+    "bradycardia":          ("R00.1", "Bradycardia unspecified", 0.95),
+    "tachycardia":          ("R00.0", "Tachycardia unspecified", 0.95),
+    # Dehydration/Fluid
+    "dehydration":          ("E86.0", "Dehydration", 0.95),
+}
 
 # ── Load ICD-10 DataFrame (module-level singleton) ───────────────────────────
 _icd10_df: pd.DataFrame | None = None
@@ -76,44 +125,49 @@ def _get_candidates(symptom: str, df: pd.DataFrame) -> List[dict]:
     ]
 
 
-# ── Real LLM code selection (Claude) ─────────────────────────────────────────
+# ── Real LLM code selection (Gemini 3.1 Flash-Lite) ─────────────────────────
 
 def _select_code_real(symptom: str, candidates: List[dict]) -> Tuple[str, str, float]:
     """
-    Asks Claude to select the best ICD-10 code from the candidate list ONLY.
-    Returns (code, description, confidence).
+    Asks Gemini 3.1 Flash-Lite to select the best ICD-10 code from the
+    candidate list ONLY. Returns (code, description, confidence).
+    Uses text-only generation — fast and cheap.
     """
-    import anthropic  # type: ignore
+    from google import genai  # type: ignore
+    from google.genai import types  # type: ignore
 
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     candidate_text = "\n".join(
         f"  {i+1}. {c['code']} — {c['description']}"
         for i, c in enumerate(candidates)
     )
 
-    prompt = f"""You are a clinical coding specialist. 
-A medical bill lists the symptom/condition: "{symptom}"
+    prompt = f"""You are a clinical coding specialist trained in ICD-10-CM/WHO coding for Indian hospitals.
+A medical prescription/bill lists the symptom/condition: \"{symptom}\"
 
 Select the MOST appropriate ICD-10 code from the following candidates ONLY.
-Do NOT invent or use any code not listed below.
+Do NOT invent codes. Consider the clinical context of an Indian hospital.
 
 Candidates:
 {candidate_text}
 
-Respond with ONLY a JSON object (no markdown):
+Respond with ONLY a JSON object (no markdown, no extra text):
 {{"selected_code": "...", "selected_description": "...", "confidence": 0.0}}
 
-confidence must be between 0.0 and 1.0 reflecting how certain you are this is the right code for this symptom."""
+confidence: 0.0-1.0 reflecting certainty."""
 
-    message = client.messages.create(
-        model="claude-3-5-haiku-20241022",
-        max_tokens=256,
-        messages=[{"role": "user", "content": prompt}],
+    response = client.models.generate_content(
+        model=CODING_MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=128,
+        ),
     )
 
-    text = message.content[0].text.strip()
-    text = re.sub(r"^```json\s*", "", text)
+    text = (response.text or "").strip()
+    text = re.sub(r"^```(?:json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
     data = json.loads(text)
 
@@ -174,19 +228,45 @@ def needs_review(coding_result: CodingResult) -> bool:
 def harmonize_codes(symptoms: list[str]) -> CodingResult:
     """
     Stage 3 — Map every symptom to a constrained ICD-10 code.
-    Uses real Claude API if available, else uses stub scorer.
 
-    Returns CodingResult with a CodedDiagnosis per symptom.
+    Priority:
+      1. PANDA synonym dictionary (instant, no API cost)
+      2. Gemini 3.1 Flash-Lite (if GEMINI_API_KEY set)
+      3. Stub token-overlap scorer (fallback)
     """
     if not symptoms:
         return CodingResult(coded_diagnoses=[])
 
+    use_llm = not USE_LLM_STUB and bool(GEMINI_API_KEY)
     df = _get_icd10_df()
     diagnoses: list[CodedDiagnosis] = []
 
     for symptom in symptoms:
         if not symptom.strip():
             continue
+
+        # ── PANDA synonym fast-path ───────────────────────────────────────────
+        sym_lower = symptom.strip().lower()
+        panda_hit = _PANDA_SYNONYMS.get(sym_lower)
+        if not panda_hit:
+            # Try partial match on synonym keys
+            for key, val in _PANDA_SYNONYMS.items():
+                if key in sym_lower or sym_lower in key:
+                    panda_hit = val
+                    break
+
+        if panda_hit:
+            code, desc, conf = panda_hit
+            diagnoses.append(CodedDiagnosis(
+                symptom=symptom,
+                icd10_code=code,
+                icd10_description=desc,
+                confidence=conf,
+            ))
+            print(f"[Harmonizer] PANDA hit: '{symptom}' → {code} ({conf:.0%})")
+            continue
+
+        # ── CSV candidate lookup ──────────────────────────────────────────────
         candidates = _get_candidates(symptom, df)
 
         if not candidates:
@@ -200,12 +280,12 @@ def harmonize_codes(symptoms: list[str]) -> CodingResult:
             continue
 
         try:
-            if USE_LLM_STUB:
-                code, desc, conf = _select_code_stub(symptom, candidates)
-            else:
+            if use_llm:
                 code, desc, conf = _select_code_real(symptom, candidates)
+            else:
+                code, desc, conf = _select_code_stub(symptom, candidates)
         except Exception as exc:
-            print(f"[Harmonizer] LLM failed for '{symptom}' ({exc}); using stub.")
+            print(f"[Harmonizer] Gemini failed for '{symptom}' ({exc}); using stub.")
             code, desc, conf = _select_code_stub(symptom, candidates)
 
         diagnoses.append(CodedDiagnosis(

@@ -1,16 +1,19 @@
 """
-pipeline/ocr.py — Stage 1: OCR (Google Cloud Vision or local stub)
+pipeline/ocr.py — Stage 1: OCR (Gemini Vision → Google Cloud Vision → Stub)
 
-Real path:  Uses document_text_detection from Google Cloud Vision API.
-Stub path:  Reads a saved .txt file from data/sample_bills/ — zero API cost,
-            demo-safe, fully functional for testing the rest of the pipeline.
+Priority order:
+  1. Gemini 1.5 Flash Vision (FREE tier — just GEMINI_API_KEY in .env)
+  2. Google Cloud Vision API (requires service account JSON)
+  3. Stub (pre-saved .txt files — zero API cost, demo-safe)
 
-Auto-selects based on GOOGLE_APPLICATION_CREDENTIALS env var presence.
+Gemini is preferred because:
+  - Free tier with no service account setup
+  - Handles handwritten Indian medical prescriptions better
+  - Single API call does OCR + structuring simultaneously
 """
 from __future__ import annotations
 import os
-import re
-from app.config import USE_OCR_STUB, SAMPLE_BILLS_DIR
+from app.config import USE_OCR_STUB, USE_GEMINI, SAMPLE_BILLS_DIR, GEMINI_API_KEY
 
 
 # ── Stub Implementation ──────────────────────────────────────────────────────
@@ -19,8 +22,6 @@ def ocr_bill_stub(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
     """
     Returns (raw_ocr_text, confidence_score) from a pre-saved stub .txt file.
     Chooses stub text based on filename hints; falls back to a generic clean bill.
-
-    Confidence range: 0–100 (mimics Vision API's page-level confidence * 100).
     """
     name_lower = filename.lower()
 
@@ -48,7 +49,6 @@ def ocr_bill_stub(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
         with open(stub_path, "r", encoding="utf-8") as f:
             return f.read(), confidence
 
-    # Ultimate fallback — inline minimal bill text
     return _minimal_bill_text(), 92.0
 
 
@@ -68,10 +68,8 @@ def _minimal_bill_text() -> str:
 
 def ocr_bill_real(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
     """
-    Calls Google Cloud Vision document_text_detection.
+    Calls Google Cloud Vision document_text_detection (legacy path).
     Returns (raw_text, mean_confidence_percentage).
-    Raises ImportError if the SDK is not installed.
-    Raises google.api_core.exceptions.GoogleAPIError on API failure.
     """
     from google.cloud import vision  # type: ignore
 
@@ -84,7 +82,6 @@ def ocr_bill_real(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
 
     full_text = response.full_text_annotation.text
 
-    # Compute mean page confidence (Vision returns per-page confidence 0–1)
     confidences = [
         page.confidence
         for page in response.full_text_annotation.pages
@@ -95,6 +92,59 @@ def ocr_bill_real(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
     return full_text, round(mean_conf, 2)
 
 
+# ── Gemini Vision OCR (raw text only) ────────────────────────────────────────
+
+def ocr_bill_gemini_raw(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
+    """
+    Uses Gemini 3-flash-preview Vision to extract raw text only (Stage 1 OCR).
+    Uses new google-genai SDK. For combined OCR+structure use gemini_ocr.extract_with_gemini().
+    """
+    from google import genai  # type: ignore
+    from google.genai import types  # type: ignore
+
+    client = genai.Client(api_key=GEMINI_API_KEY)
+
+    filename_lower = (filename or "").lower()
+    if filename_lower.endswith(".pdf"):
+        mime_type = "application/pdf"
+    elif filename_lower.endswith(".png"):
+        mime_type = "image/png"
+    elif filename_lower.endswith(".webp"):
+        mime_type = "image/webp"
+    else:
+        mime_type = "image/jpeg"
+
+    image_part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
+
+    prompt = (
+        "You are an OCR engine specialized in handwritten Indian medical prescriptions. "
+        "Extract ALL text from this image exactly as written, including:\n"
+        "- Patient name, UHID/IP number, age, sex, date\n"
+        "- Hospital name, doctor name and signature ID\n"
+        "- Complaints (c/o), Impression/Diagnosis, Vitals (BP, PR, RBS, SpO2)\n"
+        "- Medications, dosages, routes, advice\n\n"
+        "Return ONLY the raw extracted text, nothing else. Preserve line breaks."
+    )
+
+    response = client.models.generate_content(
+        model="gemini-3-flash-preview",
+        contents=[image_part, prompt],
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=1024,
+        ),
+    )
+
+    raw_text = (response.text or "").strip()
+
+    # Estimate confidence based on text richness
+    words = len(raw_text.split())
+    confidence = min(96.0, 60.0 + min(words, 60) * 0.6)
+
+    return raw_text, round(confidence, 1)
+
+
+
 # ── Public Entrypoint ─────────────────────────────────────────────────────────
 
 def ocr_bill(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
@@ -102,14 +152,23 @@ def ocr_bill(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
     Stage 1 — OCR entry point.
     Returns (raw_ocr_text: str, confidence: float  [0–100])
 
-    Automatically routes to the real Vision API when credentials are configured,
-    otherwise falls back to the stub implementation gracefully.
+    Priority: Gemini (free) → Cloud Vision (requires credentials) → Stub
     """
     if USE_OCR_STUB:
+        print("[OCR] No API keys configured — using stub.")
         return ocr_bill_stub(file_bytes, filename)
+
+    # Try Gemini first (free, no service account)
+    if USE_GEMINI:
+        try:
+            return ocr_bill_gemini_raw(file_bytes, filename)
+        except Exception as exc:
+            print(f"[OCR] Gemini failed ({exc}); trying Cloud Vision...")
+
+    # Try Google Cloud Vision (legacy)
     try:
         return ocr_bill_real(file_bytes, filename)
     except Exception as exc:
-        # If real call fails for any reason (quota, network), fall back to stub
-        print(f"[OCR] Vision API failed ({exc}); falling back to stub.")
-        return ocr_bill_stub(file_bytes, filename)
+        print(f"[OCR] Cloud Vision failed ({exc}); falling back to stub.")
+
+    return ocr_bill_stub(file_bytes, filename)
