@@ -252,6 +252,14 @@ class MedClaimHandler(BaseHTTPRequestHandler):
             return self.serve_static("index.html")
 
         # API routes
+        if p == "/api/auth/check-session":
+            return self.send_json({
+                "id": "USR-001",
+                "email": "admin@medclaim.gov.in",
+                "full_name": "Dr. Rajesh Varma",
+                "role": "Senior Adjudicator"
+            })
+
         if p == "/api/claims/review-queue":
             claims = load_claims()
             flagged = [c for c in claims if c["status"] == "FLAGGED"]
@@ -261,6 +269,7 @@ class MedClaimHandler(BaseHTTPRequestHandler):
             claims = load_claims()
             return self.send_json(compute_metrics(claims))
 
+
         # Static files
         return self.serve_static(p)
 
@@ -268,7 +277,48 @@ class MedClaimHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         p = self.path.split("?")[0]
 
+        # Auth routes
+        if p == "/api/auth/login":
+            body = self.read_json_body()
+            email = body.get("email", "admin@medclaim.gov.in")
+            role = "Senior Adjudicator"
+            name = "Dr. Rajesh Varma"
+            if "caseworker" in email:
+                role = "HITL Caseworker"
+                name = "Ananya Roy"
+            elif "hospital" in email:
+                role = "Hospital Billing Clerk"
+                name = "Suresh Mehta"
+            
+            return self.send_json({
+                "access_token": f"mock_token_{uuid.uuid4().hex[:12]}",
+                "token_type": "bearer",
+                "user": {
+                    "id": f"USR-{random.randint(100,999)}",
+                    "email": email,
+                    "full_name": name,
+                    "role": role
+                }
+            })
+
+        if p == "/api/auth/register":
+            body = self.read_json_body()
+            return self.send_json({
+                "access_token": f"mock_token_{uuid.uuid4().hex[:12]}",
+                "token_type": "bearer",
+                "user": {
+                    "id": f"USR-{random.randint(100,999)}",
+                    "email": body.get("email", "user@medclaim.gov.in"),
+                    "full_name": body.get("full_name", "Registered User"),
+                    "role": body.get("role", "HITL Caseworker")
+                }
+            })
+
+        if p == "/api/auth/logout":
+            return self.send_json({"success": True, "message": "Logged out successfully"})
+
         # Approve a claim  POST /api/claims/<id>/approve
+
         m = re.match(r"^/api/claims/([^/]+)/approve$", p)
         if m:
             claim_id = m.group(1)
