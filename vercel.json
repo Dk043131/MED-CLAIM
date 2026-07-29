@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "med-claim-frontend",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "buildCommand": "echo 'Static HTML/CSS/JS site — ready for deployment.'",
+  "outputDirectory": ".",
   "cleanUrls": true
 }
