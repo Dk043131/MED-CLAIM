@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -45,3 +46,9 @@ frontend/.env.local
 
 # Uploads (don't commit actual patient data)
 uploads/
+=======
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+>>>>>>> c3a1e34 (Initial commit: MED-CLAIM cognitive automation platform)

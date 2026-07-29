@@ -1,0 +1,729 @@
+{
+  "claims": [
+    {
+      "id": "CLM-20260729-0558B5",
+      "patient_name": "Demo Patient",
+      "patient_id": "PT-DEMO-3662",
+      "submitted_at": "2026-07-29T07:12:46.830299Z",
+      "status": "FLAGGED",
+      "confidence_score": 0.55,
+      "raw_ocr": "[OCR output for mock_bill_messy.png — confidence 0.55]",
+      "extracted_json": {
+        "hospital": "Demo Hospital",
+        "patient": "Demo Patient",
+        "date": "2026-07-29",
+        "line_items": [
+          {
+            "description": "Consultation Fee",
+            "amount": 500
+          },
+          {
+            "description": "Diagnostic Test",
+            "amount": 800
+          }
+        ],
+        "total": 1300,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "J06.9",
+          "description": "Acute upper respiratory infection",
+          "confidence": 0.54
+        },
+        {
+          "code": "R50.9",
+          "description": "Fever, unspecified",
+          "confidence": 0.5
+        },
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis",
+          "confidence": 0.4
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 80
+      },
+      "flags": [
+        "OCR confidence below threshold (0.55 < 0.75)",
+        "Handwritten document — OCR accuracy reduced",
+        "ICD-10 top candidate confidence insufficient for auto-approval"
+      ],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T07:12:46.830299Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T07:12:49.830299Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.55 — LOW"
+        },
+        {
+          "timestamp": "2026-07-29T07:12:52.830299Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T07:12:55.830299Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T07:12:58.830299Z",
+          "stage": "DECISION",
+          "note": "Flagged for human review"
+        }
+      ],
+      "image_url": "/assets/mock_bill_messy.png"
+    },
+    {
+      "id": "CLM-2026-001",
+      "patient_name": "Priya Sharma",
+      "patient_id": "PT-2024-0038",
+      "submitted_at": "2026-07-28T08:12:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.96,
+      "raw_ocr": "CITY GENERAL HOSPITAL\nConsultation Fee Dr K Rajan Rs 800\nBlood CBC Test Rs 450\nChest X-Ray Rs 1200\nParacetamol 500mg x10 Rs 120\nIV Fluid NS 500ml x2 Rs 380\nTotal Rs 2950",
+      "extracted_json": {
+        "hospital": "City General Hospital",
+        "patient": "Priya Sharma",
+        "date": "2026-07-14",
+        "line_items": [
+          {
+            "description": "Consultation Fee",
+            "provider": "Dr. K. Rajan",
+            "amount": 800
+          },
+          {
+            "description": "Blood CBC Test",
+            "amount": 450
+          },
+          {
+            "description": "Chest X-Ray",
+            "amount": 1200
+          },
+          {
+            "description": "Paracetamol 500mg x10",
+            "amount": 120
+          },
+          {
+            "description": "IV Fluid NS 500ml x2",
+            "amount": 380
+          }
+        ],
+        "total": 2950,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "J06.9",
+          "description": "Acute upper respiratory infection, unspecified",
+          "confidence": 0.94
+        },
+        {
+          "code": "R50.9",
+          "description": "Fever, unspecified",
+          "confidence": 0.91
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-28T08:12:05Z",
+          "stage": "SUBMITTED",
+          "note": "Claim received"
+        },
+        {
+          "timestamp": "2026-07-28T08:12:08Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.96"
+        },
+        {
+          "timestamp": "2026-07-28T08:12:11Z",
+          "stage": "CODING",
+          "note": "ICD-10 codes assigned"
+        },
+        {
+          "timestamp": "2026-07-28T08:12:14Z",
+          "stage": "ELIGIBILITY",
+          "note": "Patient eligible under PM-JAY"
+        },
+        {
+          "timestamp": "2026-07-28T08:12:16Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-002",
+      "patient_name": "Raju K.",
+      "patient_id": "PT-2024-0051",
+      "submitted_at": "2026-07-28T09:45:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.58,
+      "raw_ocr": "Govt PHC Rampur\nConsult Dr M Rs 300\nInj Amoxicil1in Rs 220\nX Ray Rs 800\nTotal Rs 1320",
+      "extracted_json": {
+        "hospital": "Govt. Primary Health Centre, Rampur",
+        "patient": "Raju K.",
+        "date": "2026-07-09",
+        "line_items": [
+          {
+            "description": "Consultation",
+            "provider": "Dr. M",
+            "amount": 300
+          },
+          {
+            "description": "Inj. Amoxicillin (OCR uncertain)",
+            "amount": 220
+          },
+          {
+            "description": "X-Ray",
+            "amount": 800
+          }
+        ],
+        "total": 1320,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "J18.9",
+          "description": "Pneumonia, unspecified",
+          "confidence": 0.61
+        },
+        {
+          "code": "J22",
+          "description": "Unspecified acute lower respiratory infection",
+          "confidence": 0.55
+        },
+        {
+          "code": "A41.9",
+          "description": "Sepsis, unspecified",
+          "confidence": 0.38
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "State Scheme",
+        "coverage_percent": 80
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-28T09:45:03Z",
+          "stage": "SUBMITTED",
+          "note": "Claim received"
+        },
+        {
+          "timestamp": "2026-07-28T09:45:06Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.58 — LOW"
+        },
+        {
+          "timestamp": "2026-07-28T09:45:09Z",
+          "stage": "CODING",
+          "note": "Top ICD candidate confidence 0.61 — ambiguous"
+        },
+        {
+          "timestamp": "2026-07-28T09:45:12Z",
+          "stage": "ELIGIBILITY",
+          "note": "Eligibility checked"
+        },
+        {
+          "timestamp": "2026-07-28T09:45:13Z",
+          "stage": "DECISION",
+          "note": "Flagged for human review"
+        },
+        {
+          "timestamp": "2026-07-29T07:13:14.168960Z",
+          "stage": "HITL_REVIEW",
+          "note": "Manually approved by caseworker"
+        }
+      ],
+      "image_url": "/assets/mock_bill_messy.png"
+    },
+    {
+      "id": "CLM-2026-003",
+      "patient_name": "Lakshmi Devi",
+      "patient_id": "PT-2024-0072",
+      "submitted_at": "2026-07-27T11:20:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.91,
+      "raw_ocr": "Apollo Clinic\nDiabetes Consult Rs 600\nHbA1c Test Rs 350\nMetformin 500mg x30 Rs 180\nTotal Rs 1130",
+      "extracted_json": {
+        "hospital": "Apollo Clinic",
+        "patient": "Lakshmi Devi",
+        "date": "2026-07-27",
+        "line_items": [
+          {
+            "description": "Diabetes Consultation",
+            "amount": 600
+          },
+          {
+            "description": "HbA1c Test",
+            "amount": 350
+          },
+          {
+            "description": "Metformin 500mg x30",
+            "amount": 180
+          }
+        ],
+        "total": 1130,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "E11.9",
+          "description": "Type 2 diabetes mellitus without complications",
+          "confidence": 0.93
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-004",
+      "patient_name": "Arjun Mehta",
+      "patient_id": "PT-2024-0089",
+      "submitted_at": "2026-07-27T14:05:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.88,
+      "raw_ocr": "District Hospital Pune\nAppendectomy Surgery Rs 45000\nAnaesthesia Rs 8000\nPost-op Antibiotics Rs 1200\nTotal Rs 54200",
+      "extracted_json": {
+        "hospital": "District Hospital Pune",
+        "patient": "Arjun Mehta",
+        "date": "2026-07-26",
+        "line_items": [
+          {
+            "description": "Appendectomy Surgery",
+            "amount": 45000
+          },
+          {
+            "description": "Anaesthesia",
+            "amount": 8000
+          },
+          {
+            "description": "Post-op Antibiotics",
+            "amount": 1200
+          }
+        ],
+        "total": 54200,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "K37",
+          "description": "Unspecified appendicitis",
+          "confidence": 0.89
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-005",
+      "patient_name": "Sunita Bai",
+      "patient_id": "PT-2024-0104",
+      "submitted_at": "2026-07-26T16:30:00Z",
+      "status": "FLAGGED",
+      "confidence_score": 0.49,
+      "raw_ocr": "PHC Nagapattinam\nDelivery charges Rs ???\nPost delivery care Rs 500\nIron tablets Rs 80",
+      "extracted_json": {
+        "hospital": "PHC Nagapattinam",
+        "patient": "Sunita Bai",
+        "date": "2026-07-25",
+        "line_items": [
+          {
+            "description": "Delivery charges",
+            "amount": null
+          },
+          {
+            "description": "Post delivery care",
+            "amount": 500
+          },
+          {
+            "description": "Iron tablets",
+            "amount": 80
+          }
+        ],
+        "total": null,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "Z37.0",
+          "description": "Single live birth",
+          "confidence": 0.72
+        },
+        {
+          "code": "O80",
+          "description": "Single spontaneous delivery",
+          "confidence": 0.68
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Janani Suraksha Yojana",
+        "coverage_percent": 100
+      },
+      "flags": [
+        "Critical amount missing: delivery charge amount unreadable (OCR returned '???')",
+        "Total bill amount could not be computed — manual verification required",
+        "OCR confidence 0.49 — well below threshold"
+      ],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_messy.png"
+    },
+    {
+      "id": "CLM-2026-006",
+      "patient_name": "Venkat Rao",
+      "patient_id": "PT-2024-0118",
+      "submitted_at": "2026-07-25T10:00:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.94,
+      "raw_ocr": "AIIMS OPD\nCardiology Consult Rs 1500\nECG Rs 300\nEchocardiogram Rs 2500\nAtorvastatin 20mg x30 Rs 210\nTotal Rs 4510",
+      "extracted_json": {
+        "hospital": "AIIMS OPD",
+        "patient": "Venkat Rao",
+        "date": "2026-07-25",
+        "line_items": [
+          {
+            "description": "Cardiology Consultation",
+            "amount": 1500
+          },
+          {
+            "description": "ECG",
+            "amount": 300
+          },
+          {
+            "description": "Echocardiogram",
+            "amount": 2500
+          },
+          {
+            "description": "Atorvastatin 20mg x30",
+            "amount": 210
+          }
+        ],
+        "total": 4510,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "I25.10",
+          "description": "Atherosclerotic heart disease of native coronary artery without angina",
+          "confidence": 0.91
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "CGHS",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-007",
+      "patient_name": "Meena Krishnan",
+      "patient_id": "PT-2024-0133",
+      "submitted_at": "2026-07-24T12:15:00Z",
+      "status": "REJECTED",
+      "confidence_score": 0.82,
+      "raw_ocr": "Sparsh Wellness Centre\nFull body massage Rs 2000\nAromatherapy Rs 1500\nTotal Rs 3500",
+      "extracted_json": {
+        "hospital": "Sparsh Wellness Centre",
+        "patient": "Meena Krishnan",
+        "date": "2026-07-24",
+        "line_items": [
+          {
+            "description": "Full body massage",
+            "amount": 2000
+          },
+          {
+            "description": "Aromatherapy",
+            "amount": 1500
+          }
+        ],
+        "total": 3500,
+        "currency": "INR"
+      },
+      "icd_codes": [],
+      "eligibility_result": {
+        "eligible": false,
+        "scheme": "None",
+        "coverage_percent": 0,
+        "reason": "Wellness/spa services not covered under any government insurance scheme"
+      },
+      "flags": [
+        "Services not medically necessary — wellness spa charges are non-reimbursable"
+      ],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-008",
+      "patient_name": "Ibrahim Khan",
+      "patient_id": "PT-2024-0147",
+      "submitted_at": "2026-07-23T08:45:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.87,
+      "raw_ocr": "ESI Hospital Mumbai\nOrthopedic OPD Rs 200\nKnee X-Ray (Bilateral) Rs 900\nPhysiotherapy 5 sessions Rs 1500\nDiclofenac Gel x2 Rs 140\nTotal Rs 2740",
+      "extracted_json": {
+        "hospital": "ESI Hospital Mumbai",
+        "patient": "Ibrahim Khan",
+        "date": "2026-07-22",
+        "line_items": [
+          {
+            "description": "Orthopedic OPD",
+            "amount": 200
+          },
+          {
+            "description": "Knee X-Ray Bilateral",
+            "amount": 900
+          },
+          {
+            "description": "Physiotherapy (5 sessions)",
+            "amount": 1500
+          },
+          {
+            "description": "Diclofenac Gel x2",
+            "amount": 140
+          }
+        ],
+        "total": 2740,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "M17.11",
+          "description": "Primary osteoarthritis, right knee",
+          "confidence": 0.88
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "ESIC",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-009",
+      "patient_name": "Geeta Patel",
+      "patient_id": "PT-2024-0162",
+      "submitted_at": "2026-07-22T15:30:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.93,
+      "raw_ocr": "Civil Hospital Ahmedabad\nPrenatal Checkup Rs 400\nUltrasound Obstetric Rs 800\nFolic Acid + Iron Supplement Rs 150\nTotal Rs 1350",
+      "extracted_json": {
+        "hospital": "Civil Hospital Ahmedabad",
+        "patient": "Geeta Patel",
+        "date": "2026-07-22",
+        "line_items": [
+          {
+            "description": "Prenatal Checkup",
+            "amount": 400
+          },
+          {
+            "description": "Obstetric Ultrasound",
+            "amount": 800
+          },
+          {
+            "description": "Folic Acid + Iron Supplement",
+            "amount": 150
+          }
+        ],
+        "total": 1350,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "Z34.30",
+          "description": "Encounter for supervision of normal third trimester pregnancy",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Janani Suraksha Yojana",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-010",
+      "patient_name": "Suresh Naidu",
+      "patient_id": "PT-2024-0178",
+      "submitted_at": "2026-07-21T09:00:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.89,
+      "raw_ocr": "KGH Vizag\nEmergency Admission Rs 500\nDengue NS1 Antigen Test Rs 700\nPlatelet Transfusion x2 Rs 6000\nIV Fluids x5 Rs 950\nTotal Rs 8150",
+      "extracted_json": {
+        "hospital": "King George Hospital, Vizag",
+        "patient": "Suresh Naidu",
+        "date": "2026-07-20",
+        "line_items": [
+          {
+            "description": "Emergency Admission",
+            "amount": 500
+          },
+          {
+            "description": "Dengue NS1 Antigen Test",
+            "amount": 700
+          },
+          {
+            "description": "Platelet Transfusion x2",
+            "amount": 6000
+          },
+          {
+            "description": "IV Fluids x5",
+            "amount": 950
+          }
+        ],
+        "total": 8150,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A91",
+          "description": "Dengue haemorrhagic fever",
+          "confidence": 0.92
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-011",
+      "patient_name": "Fatima Begum",
+      "patient_id": "PT-2024-0193",
+      "submitted_at": "2026-07-20T11:00:00Z",
+      "status": "APPROVED",
+      "confidence_score": 0.85,
+      "raw_ocr": "District Hospital Bhopal\nCataract Surgery Left Eye Rs 12000\nIOL Implant Rs 5000\nPost-op Drops x3 Rs 450\nTotal Rs 17450",
+      "extracted_json": {
+        "hospital": "District Hospital Bhopal",
+        "patient": "Fatima Begum",
+        "date": "2026-07-19",
+        "line_items": [
+          {
+            "description": "Cataract Surgery (Left Eye)",
+            "amount": 12000
+          },
+          {
+            "description": "IOL Implant",
+            "amount": 5000
+          },
+          {
+            "description": "Post-op Eye Drops x3",
+            "amount": 450
+          }
+        ],
+        "total": 17450,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "H26.9",
+          "description": "Unspecified cataract",
+          "confidence": 0.87
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-2026-012",
+      "patient_name": "Ramesh Yadav",
+      "patient_id": "PT-2024-0205",
+      "submitted_at": "2026-07-19T13:30:00Z",
+      "status": "FLAGGED",
+      "confidence_score": 0.63,
+      "raw_ocr": "Nagar Palika Clinic Patna\nFever medicine Rs 150\nSome injection Rs 400\nBlood test (unspecified) Rs 300\nTotal Rs 850",
+      "extracted_json": {
+        "hospital": "Nagar Palika Clinic, Patna",
+        "patient": "Ramesh Yadav",
+        "date": "2026-07-18",
+        "line_items": [
+          {
+            "description": "Fever medicine (unspecified)",
+            "amount": 150
+          },
+          {
+            "description": "Injection (type unknown)",
+            "amount": 400
+          },
+          {
+            "description": "Blood test (unspecified)",
+            "amount": 300
+          }
+        ],
+        "total": 850,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "R50.9",
+          "description": "Fever, unspecified",
+          "confidence": 0.63
+        },
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis, unspecified",
+          "confidence": 0.41
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "State Scheme",
+        "coverage_percent": 75
+      },
+      "flags": [
+        "Line items too vague for auto-coding: 'Some injection', 'Blood test (unspecified)'",
+        "ICD-10 confidence below threshold (0.63)"
+      ],
+      "audit_log": [],
+      "image_url": "/assets/mock_bill_messy.png"
+    }
+  ]
+}
