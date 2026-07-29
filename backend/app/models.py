@@ -105,3 +105,32 @@ class ApproveResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+# ── Auth Pydantic Models ───────────────────────────────────────────────────
+
+class RegisterRequest(BaseModel):
+    email: str
+    full_name: str
+    password: str
+    role: Optional[str] = "Caseworker"
+    clinic_id: Optional[str] = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserOut(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    role: str
+    clinic_id: Optional[str] = None
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserOut

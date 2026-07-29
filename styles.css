@@ -1039,3 +1039,95 @@ body::before {
   .pipeline-tracker { gap: 4px; overflow-x: auto; }
   .metrics-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── User Profile Badge ─────────────────────────────────────── */
+.user-profile-badge {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-left: 12px;
+}
+.user-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  color: #fff; font-weight: 700; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+.user-info { display: flex; flex-direction: column; text-align: left; }
+.user-name { font-size: 12px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+.user-role { font-size: 10px; color: var(--cyan); font-weight: 500; }
+
+/* ── Auth Glassmorphism Modal ────────────────────────────────── */
+.auth-modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(7, 10, 19, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-modal-card {
+  width: 100%; max-width: 440px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: var(--shadow-glow), 0 20px 40px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+.auth-modal-header { margin-bottom: 24px; text-align: center; }
+.auth-brand { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.auth-brand-title { font-size: 20px; font-weight: 800; tracking: -0.02em; color: var(--text-primary); }
+.auth-brand-sub { font-size: 12px; color: var(--text-muted); }
+
+.auth-tabs {
+  display: flex; background: var(--surface-2);
+  padding: 4px; border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.auth-tab {
+  flex: 1; padding: 8px 14px; border: none; background: transparent;
+  color: var(--text-muted); font-size: 13px; font-weight: 600;
+  border-radius: 7px; cursor: pointer; transition: all var(--fast);
+}
+.auth-tab.active { background: var(--indigo); color: #fff; box-shadow: var(--shadow-sm); }
+
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.input-with-icon { position: relative; display: flex; align-items: center; }
+.input-with-icon svg { position: absolute; left: 12px; color: var(--text-muted); pointer-events: none; }
+.input-with-icon input {
+  width: 100%; padding: 10px 12px 10px 38px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text-primary); font-size: 13px;
+  transition: all var(--fast);
+}
+.input-with-icon input:focus { border-color: var(--indigo); outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.25); }
+
+.auth-select {
+  width: 100%; padding: 10px 12px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text-primary); font-size: 13px;
+}
+
+/* Quick Demo Pills */
+.demo-pills-label { font-size: 11px; font-weight: 600; color: var(--amber); margin-top: 6px; }
+.demo-pills-grid { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.demo-pill {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2); border-radius: 8px;
+  color: var(--text-primary); font-size: 12px; cursor: pointer;
+  transition: all var(--fast); text-align: left;
+}
+.demo-pill:hover { background: rgba(245,158,11,0.18); border-color: var(--amber); transform: translateY(-1px); }
+.pill-role { font-weight: 700; color: var(--amber); }
+.pill-email { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+

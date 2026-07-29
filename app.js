@@ -21,6 +21,8 @@ const state = {
   hitlClaims: [],
   dashMetrics: null,
   serverLive: false,
+  authToken: localStorage.getItem('medclaim_user_token') || null,
+  currentUser: JSON.parse(localStorage.getItem('medclaim_user') || 'null'),
 };
 
 // Auto-check server health on startup
@@ -75,11 +77,16 @@ async function apiFetch(path, options = {}) {
     if (path === '/claims/submit') requestPath = '/claims/upload';
   }
 
+  const headers = { ...options.headers };
+  if (state.authToken) {
+    headers['Authorization'] = `Bearer ${state.authToken}`;
+  }
+
   const url = API_BASE + requestPath;
   try {
     const res = await fetch(url, {
-      headers: { ...options.headers },
       ...options,
+      headers: headers,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -999,6 +1006,170 @@ function randomJitter(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ─── Authentication System Management ──────────────────────────────────────────
+function initAuthSystem() {
+  // Update badge UI
+  updateUserProfileBadge();
+
+  // Tab switching inside auth modal
+  const tabLogin = $('auth-tab-login');
+  const tabRegister = $('auth-tab-register');
+  const formLogin = $('form-login');
+  const formRegister = $('form-register');
+
+  if (tabLogin && tabRegister) {
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      formLogin.style.display = 'flex';
+      formRegister.style.display = 'none';
+    });
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      formLogin.style.display = 'none';
+      formRegister.style.display = 'flex';
+    });
+  }
+
+  // Quick Demo Pills
+  $('pill-admin')?.addEventListener('click', () => {
+    $('login-email').value = 'admin@medclaim.gov.in';
+    $('login-password').value = 'AdminPass123!';
+    handleLogin('admin@medclaim.gov.in', 'AdminPass123!');
+  });
+  $('pill-caseworker')?.addEventListener('click', () => {
+    $('login-email').value = 'caseworker@medclaim.gov.in';
+    $('login-password').value = 'CasePass123!';
+    handleLogin('caseworker@medclaim.gov.in', 'CasePass123!');
+  });
+  $('pill-hospital')?.addEventListener('click', () => {
+    $('login-email').value = 'hospital@apollo.org';
+    $('login-password').value = 'HospPass123!';
+    handleLogin('hospital@apollo.org', 'HospPass123!');
+  });
+
+  // Login submit
+  formLogin?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleLogin($('login-email').value, $('login-password').value);
+  });
+
+  // Register submit
+  formRegister?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleRegister(
+      $('reg-email').value,
+      $('reg-fullname').value,
+      $('reg-password').value,
+      $('reg-role').value
+    );
+  });
+
+  // Logout button
+  $('btn-logout')?.addEventListener('click', handleLogout);
+
+  // If unauthenticated, show login modal overlay automatically
+  if (!state.authToken || !state.currentUser) {
+    showAuthModal();
+  }
+}
+
+function showAuthModal() {
+  const modal = $('auth-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function hideAuthModal() {
+  const modal = $('auth-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function updateUserProfileBadge() {
+  const user = state.currentUser;
+  if (!user) {
+    $('user-name').textContent = 'Guest User';
+    $('user-role').textContent = 'Unauthenticated';
+    $('user-avatar').textContent = '??';
+    return;
+  }
+  $('user-name').textContent = user.full_name || 'Authenticated User';
+  $('user-role').textContent = user.role || 'Caseworker';
+
+  // Compute initials
+  const parts = (user.full_name || 'U').split(' ');
+  const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
+  $('user-avatar').textContent = initials;
+}
+
+async function handleLogin(email, password) {
+  const btn = $('btn-login-submit');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Signing in...'; }
+
+  try {
+    const data = await apiFetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    state.authToken = data.access_token;
+    state.currentUser = data.user;
+    localStorage.setItem('medclaim_user_token', data.access_token);
+    localStorage.setItem('medclaim_user', JSON.stringify(data.user));
+
+    updateUserProfileBadge();
+    hideAuthModal();
+    toast(`Welcome back, ${data.user.full_name}! 👋`, 'success');
+  } catch (err) {
+    toast('Login failed: Invalid email or password.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In to Portal'; }
+  }
+}
+
+async function handleRegister(email, fullName, password, role) {
+  const btn = $('btn-register-submit');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Registering...'; }
+
+  try {
+    const data = await apiFetch('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, full_name: fullName, password, role })
+    });
+
+    state.authToken = data.access_token;
+    state.currentUser = data.user;
+    localStorage.setItem('medclaim_user_token', data.access_token);
+    localStorage.setItem('medclaim_user', JSON.stringify(data.user));
+
+    updateUserProfileBadge();
+    hideAuthModal();
+    toast(`Account registered successfully! Welcome, ${data.user.full_name}.`, 'success');
+  } catch (err) {
+    toast('Registration failed. Email may already be in use.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Register Account'; }
+  }
+}
+
+async function handleLogout() {
+  if (state.authToken) {
+    try {
+      await apiFetch(`/auth/logout?token=${encodeURIComponent(state.authToken)}`, { method: 'POST' });
+    } catch (_) {}
+  }
+  state.authToken = null;
+  state.currentUser = null;
+  localStorage.removeItem('medclaim_user_token');
+  localStorage.removeItem('medclaim_user');
+
+  updateUserProfileBadge();
+  showAuthModal();
+  toast('Signed out successfully.', 'info');
+}
+
 // ─── Initialise ───────────────────────────────────────────────────────────────
 async function init() {
   // Check server health
@@ -1010,7 +1181,6 @@ async function init() {
     $('server-dot').style.background   = 'var(--rose)';
     $('server-dot').style.animation    = 'none';
     $('server-status-text').textContent = 'Server offline';
-    toast('⚠ Mock server not detected. Run: python server.py', 'warning', 8000);
   }
 
   // Load HITL badge count on startup

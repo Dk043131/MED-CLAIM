@@ -20,9 +20,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db
-from app.models import ClaimRecord, DashboardMetrics, ApproveResponse
+from app.auth_db import init_auth_db
+from app.models import ClaimRecord, DashboardMetrics, ApproveResponse, LoginRequest, RegisterRequest, AuthResponse, UserOut
 from app.pipeline.orchestrator import process_claim
 from app import storage
+from app import auth
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -37,9 +39,10 @@ logger = logging.getLogger("med_claim")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("MED-CLAIM backend starting up — initialising database...")
+    logger.info("MED-CLAIM backend starting up — initialising claims & auth databases...")
     init_db()
-    logger.info("Database ready.")
+    init_auth_db()
+    logger.info("Claims DB (claims.db) & Auth DB (auth.db) ready.")
     yield
     logger.info("MED-CLAIM backend shutting down.")
 
@@ -217,3 +220,76 @@ def dashboard_metrics():
       - auto_adjudication_rate (percentage, 0–100)
     """
     return storage.get_metrics()
+
+
+# ── Authentication Endpoints (Dedicated auth.db) ──────────────────────────────
+
+@app.post(
+    "/auth/login",
+    response_model=AuthResponse,
+    summary="Authenticate user against auth.db",
+    tags=["Authentication"],
+)
+def login(payload: LoginRequest):
+    """Authenticates email & password against auth.db and returns a session token."""
+    user = auth.authenticate_user(payload.email, payload.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password.")
+
+    token = auth.create_session(user["id"])
+    return AuthResponse(
+        access_token=token,
+        token_type="bearer",
+        user=UserOut(**user)
+    )
+
+
+@app.post(
+    "/auth/register",
+    response_model=AuthResponse,
+    summary="Register a new user in auth.db",
+    tags=["Authentication"],
+)
+def register(payload: RegisterRequest):
+    """Registers a new user in auth.db and returns a session token."""
+    try:
+        user = auth.register_user(
+            email=payload.email,
+            full_name=payload.full_name,
+            password=payload.password,
+            role=payload.role or "Caseworker",
+            clinic_id=payload.clinic_id
+        )
+        token = auth.create_session(user["id"])
+        return AuthResponse(
+            access_token=token,
+            token_type="bearer",
+            user=UserOut(**user)
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get(
+    "/auth/me",
+    response_model=UserOut,
+    summary="Get current user profile from token",
+    tags=["Authentication"],
+)
+def get_current_user(token: str):
+    """Validates session token and returns active user profile."""
+    user = auth.verify_session(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Session expired or invalid token.")
+    return UserOut(**user)
+
+
+@app.post(
+    "/auth/logout",
+    summary="Revoke session token",
+    tags=["Authentication"],
+)
+def logout(token: str):
+    """Revokes session token in auth.db."""
+    revoked = auth.revoke_session(token)
+    return {"success": True, "revoked": revoked}
