@@ -125,57 +125,150 @@ def generate_surge_claim(index):
 PIPELINE_STAGES = ["SUBMITTED", "OCR", "CODING", "ELIGIBILITY", "DECISION"]
 
 def simulate_pipeline(filename, file_type):
-    """Deterministically decide outcome based on filename to support demo flow."""
-    messy_keywords = ["messy", "rural", "handwritten", "phc", "noisy"]
-    is_messy = any(kw in filename.lower() for kw in messy_keywords)
-
-    conf = round(random.uniform(0.44, 0.62), 2) if is_messy else round(random.uniform(0.84, 0.97), 2)
+    """Deterministically decide outcome based on filename to support demo flow with exact document types (Blood Report, Prescription, Hospital Bill)."""
+    fn_lower = filename.lower()
     now  = datetime.datetime.utcnow()
     claim_id = f"CLM-{now.strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
 
-    status = "FLAGGED" if (conf < 0.75 or is_messy) else "APPROVED"
-    flags  = []
-    if conf < 0.75:
-        flags.append(f"OCR confidence below threshold ({conf} < 0.75)")
-    if is_messy:
-        flags.append("Handwritten document — OCR accuracy reduced")
-        flags.append("ICD-10 top candidate confidence insufficient for auto-approval")
+    is_blood_report = any(kw in fn_lower for kw in ["blood", "lab", "cbc", "report", "thyrocare"])
+    is_prescription = any(kw in fn_lower for kw in ["rx", "prescription", "doctor", "med", "apollo"])
+    is_messy        = any(kw in fn_lower for kw in ["messy", "rural", "handwritten", "phc", "noisy"])
+
+    if is_blood_report:
+        conf = round(random.uniform(0.93, 0.98), 2)
+        status = "APPROVED"
+        doc_type = "BLOOD_TEST_REPORT"
+        patient_name = "Sunita Sharma"
+        hospital_name = "Metropolis PathLabs & Diagnostics"
+        extracted_json = {
+            "document_type": "Complete Blood Count (CBC) & Lipid Profile Report",
+            "lab_name": "Metropolis PathLabs & Diagnostics",
+            "patient_name": "Sunita Sharma",
+            "patient_age_sex": "34 Y / Female",
+            "ref_doctor": "Dr. S. K. Gupta, MD (Pathology)",
+            "report_date": now.strftime("%Y-%m-%d"),
+            "lab_results": [
+                {"parameter": "Hemoglobin (Hb)", "result": "13.8 g/dL", "reference_range": "12.0 - 15.5 g/dL", "status": "NORMAL"},
+                {"parameter": "Total Leukocyte Count (WBC)", "result": "8,200 /mcL", "reference_range": "4,500 - 11,000 /mcL", "status": "NORMAL"},
+                {"parameter": "Platelet Count", "result": "2.45 Lakhs /mcL", "reference_range": "1.5 - 4.5 Lakhs /mcL", "status": "NORMAL"},
+                {"parameter": "Fasting Blood Sugar (FBS)", "result": "94 mg/dL", "reference_range": "70 - 99 mg/dL", "status": "NORMAL"},
+                {"parameter": "Serum Creatinine", "result": "0.9 mg/dL", "reference_range": "0.6 - 1.2 mg/dL", "status": "NORMAL"}
+            ],
+            "line_items": [
+                {"description": "CBC Complete Profile", "amount": 650},
+                {"description": "Fasting Blood Sugar & Lipid Panel", "amount": 800}
+            ],
+            "total": 1450,
+            "currency": "INR"
+        }
+        icd_candidates = [
+            {"code": "Z00.00", "description": "Encounter for general adult medical examination without abnormal findings", "confidence": 0.97}
+        ]
+        flags = []
+
+    elif is_prescription:
+        conf = round(random.uniform(0.91, 0.96), 2)
+        status = "APPROVED"
+        doc_type = "DOCTOR_PRESCRIPTION"
+        patient_name = "Rajesh Varma"
+        hospital_name = "Apollo Specialty Clinic"
+        extracted_json = {
+            "document_type": "Outpatient Doctor Medical Prescription",
+            "clinic_name": "Apollo Specialty Clinic",
+            "patient_name": "Rajesh Varma",
+            "patient_id": "PT-APOLLO-9921",
+            "doctor_name": "Dr. Vikram Sethi, MD (Internal Med) - Reg #67291",
+            "diagnosis": "Acute Bronchitis with Mild Pyrexia",
+            "prescribed_medications": [
+                {"medication": "Tab. Paracetamol 650mg", "dosage": "1 tablet PO TID after food", "duration": "5 Days", "quantity": 15},
+                {"medication": "Cap. Amoxicillin + Clavulanate 625mg", "dosage": "1 capsule PO BID", "duration": "7 Days", "quantity": 14},
+                {"medication": "Syp. Benadryl Cough Formula 100ml", "dosage": "10 ml PO TID", "duration": "5 Days", "quantity": 1}
+            ],
+            "line_items": [
+                {"description": "OPD Specialist Consultation Fee", "amount": 500},
+                {"description": "Pharmacy Prescription Medicines (3 items)", "amount": 320}
+            ],
+            "total": 820,
+            "currency": "INR"
+        }
+        icd_candidates = [
+            {"code": "J20.9", "description": "Acute bronchitis, unspecified", "confidence": 0.95},
+            {"code": "R50.9", "description": "Fever, unspecified", "confidence": 0.92}
+        ]
+        flags = []
+
+    elif is_messy:
+        conf = round(random.uniform(0.48, 0.62), 2)
+        status = "FLAGGED"
+        doc_type = "HANDWRITTEN_RURAL_BILL"
+        patient_name = "Ram Lal"
+        hospital_name = "Primary Health Centre (PHC), Rampur"
+        extracted_json = {
+            "document_type": "Handwritten Clinic Slip",
+            "hospital_name": "Primary Health Centre (PHC), Rampur",
+            "patient_name": "Ram Lal",
+            "line_items": [
+                {"description": "Consultation (Ambiguous handwriting)", "amount": 150},
+                {"description": "Injection Charges (Unclear Rx)", "amount": 350}
+            ],
+            "total": 500,
+            "currency": "INR"
+        }
+        icd_candidates = [
+            {"code": "R50.9", "description": "Fever, unspecified", "confidence": 0.58},
+            {"code": "A09",   "description": "Infectious gastroenteritis", "confidence": 0.49}
+        ]
+        flags = [
+            f"OCR confidence below auto-approval threshold ({conf} < 0.75)",
+            "Handwritten document — Doctor handwriting ambiguous",
+            "ICD-10 top candidate confidence insufficient for auto-adjudication"
+        ]
+
+    else:
+        # Standard Clean Hospital Bill
+        conf = round(random.uniform(0.88, 0.97), 2)
+        status = "APPROVED"
+        doc_type = "HOSPITAL_BILL"
+        patient_name = "Ramesh Kumar"
+        hospital_name = "City Care Multispecialty Hospital"
+        extracted_json = {
+            "document_type": "Inpatient Itemized Hospital Bill",
+            "hospital_name": "City Care Multispecialty Hospital",
+            "patient_name": "Ramesh Kumar",
+            "patient_id": "PT-CITY-4412",
+            "line_items": [
+                {"description": "Emergency Ward Admission & Bed Charges (2 Days)", "amount": 3500},
+                {"description": "Specialist Physician Consultation Fee", "amount": 1500},
+                {"description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)", "amount": 2200},
+                {"description": "Complete Blood Count & Electrolyte Panel", "amount": 1400}
+            ],
+            "total": 8600,
+            "currency": "INR"
+        }
+        icd_candidates = [
+            {"code": "A09", "description": "Infectious gastroenteritis and colitis", "confidence": 0.95}
+        ]
+        flags = []
 
     stages_log = []
     for i, stage in enumerate(PIPELINE_STAGES):
-        ts = (now + datetime.timedelta(seconds=i * 3)).isoformat() + "Z"
+        ts = (now + datetime.timedelta(seconds=i * 2)).isoformat() + "Z"
         note = "Processing complete"
         if stage == "OCR":
-            note = f"OCR confidence {conf}" + (" — LOW" if conf < 0.75 else "")
+            note = f"OCR confidence {conf} ({doc_type})"
         elif stage == "DECISION":
             note = "Auto-approved" if status == "APPROVED" else "Flagged for human review"
         stages_log.append({"timestamp": ts, "stage": stage, "note": note})
 
-    icd_candidates = [
-        {"code": "J06.9", "description": "Acute upper respiratory infection", "confidence": round(conf * 0.98, 2)},
-        {"code": "R50.9", "description": "Fever, unspecified",               "confidence": round(conf * 0.91, 2)},
-        {"code": "A09",   "description": "Infectious gastroenteritis",        "confidence": round(conf * 0.72, 2)},
-    ]
-
     claim = {
         "id": claim_id,
-        "patient_name": "Demo Patient",
-        "patient_id": f"PT-DEMO-{random.randint(1000, 9999)}",
+        "patient_name": patient_name,
+        "patient_id": extracted_json.get("patient_id", f"PT-DEMO-{random.randint(1000, 9999)}"),
         "submitted_at": now.isoformat() + "Z",
         "status": status,
         "confidence_score": conf,
-        "raw_ocr": f"[OCR output for {filename} — confidence {conf}]",
-        "extracted_json": {
-            "hospital": "Demo Hospital",
-            "patient": "Demo Patient",
-            "date": now.strftime("%Y-%m-%d"),
-            "line_items": [
-                {"description": "Consultation Fee", "amount": 500},
-                {"description": "Diagnostic Test",  "amount": 800},
-            ],
-            "total": 1300,
-            "currency": "INR",
-        },
+        "raw_ocr": f"[OCR output for {filename} — {doc_type} confidence {conf}]",
+        "extracted_json": extracted_json,
         "icd_codes": icd_candidates,
         "eligibility_result": {
             "eligible": True,
@@ -187,6 +280,7 @@ def simulate_pipeline(filename, file_type):
         "image_url": "/assets/mock_bill_messy.png" if is_messy else "/assets/mock_bill_clean.png",
     }
     return claim
+
 
 # ─────────────────────────────────────────────
 # HTTP Handler

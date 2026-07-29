@@ -367,6 +367,14 @@ $('btn-demo-clean').addEventListener('click', async () => {
 $('btn-demo-messy').addEventListener('click', async () => {
   await runDemoSubmission('mock_bill_messy.png', 'image/png', 'ambiguous_bill.txt');
 });
+const bloodBtn = $('btn-demo-blood');
+if (bloodBtn) bloodBtn.addEventListener('click', async () => {
+  await runDemoSubmission('blood_report.png', 'image/png', 'blood_report.txt');
+});
+const rxBtn = $('btn-demo-prescription');
+if (rxBtn) rxBtn.addEventListener('click', async () => {
+  await runDemoSubmission('prescription.png', 'image/png', 'prescription.txt');
+});
 
 async function runDemoSubmission(filename, fileType, fallbackTxtFile = 'clean_bill.txt') {
   uploadPreview.style.display = 'block';
@@ -476,7 +484,7 @@ function activateStep(stageIndex, finalStatus) {
 
 function showResult(claim) {
   const rc = $('result-card');
-  const isApproved = claim.status === 'APPROVED';
+  const isApproved = claim.status === 'APPROVED' || claim.status === 'approved';
   const isIncomplete = claim.status === 'INCOMPLETE';
 
   rc.className = 'result-card show ' + (isApproved ? 'approved' : 'flagged');
@@ -498,6 +506,149 @@ function showResult(claim) {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${claim.time_saved_receipt}
     </div>`;
   }
+
+  // Clinic Fingerprint Matched Badge
+  if (claim.fingerprint_matched?.matched) {
+    bodyHtml += `<div style="margin-top:8px; padding:6px 12px; background:rgba(99,102,241,0.15); border:1px solid var(--border); border-radius:6px; font-size:12px; color:var(--indigo-bright);">
+      🧠 <strong>Matched from Clinic History:</strong> Pre-filled '${claim.fingerprint_matched.original}' → confirmed '${claim.fingerprint_matched.corrected}' (Used ${claim.fingerprint_matched.hit_count}x).
+    </div>`;
+  }
+
+  // ── Extracted Findings Panel (Blood / Prescription / Bill) ──
+  bodyHtml += buildExtractedFindingsHtml(claim);
+
+  bodyHtml += buildDetailedExplanationHtml(claim);
+
+  $('result-body').innerHTML = bodyHtml;
+
+
+  // ICD codes
+  const icdEl = $('result-icd');
+  icdEl.innerHTML = '';
+  (claim.icd_codes || []).slice(0, 3).forEach(icd => {
+    const chip = document.createElement('div');
+    chip.className = 'icd-chip';
+    chip.innerHTML = `<span class="icd-code">${icd.code}</span><span class="icd-desc">${icd.description}</span><span class="icd-conf">${formatConf(icd.confidence)}</span>`;
+    icdEl.appendChild(chip);
+  });
+
+  // Flags
+  const flagsEl = $('result-flags');
+  flagsEl.innerHTML = '';
+  (claim.flags || []).forEach(f => {
+    const li = document.createElement('li');
+    li.className = 'flag-item';
+    li.textContent = f;
+    flagsEl.appendChild(li);
+  });
+}
+
+// ── Build extracted findings panel based on document type ──────────────────────
+function buildExtractedFindingsHtml(claim) {
+  const ej = claim.extracted_json || {};
+  const labResults = ej.lab_results || [];
+  const medications = ej.prescribed_medications || [];
+  const lineItems = ej.line_items || [];
+  const docType = ej.document_type || '';
+
+  if (labResults.length === 0 && medications.length === 0 && lineItems.length === 0) return '';
+
+  const statusChip = (s) => {
+    const color = s === 'NORMAL' ? '#10b981' : s === 'HIGH' ? '#f43f5e' : s === 'LOW' ? '#f59e0b' : '#94a3b8';
+    return `<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;background:${color}22;color:${color};border:1px solid ${color}44">${s}</span>`;
+  };
+
+  let html = `<div style="margin-top:16px; padding:14px; background:rgba(15,23,42,0.85); border:1px solid rgba(255,255,255,0.1); border-radius:10px; text-align:left;">`;
+
+  // Header
+  const docLabel = docType || (labResults.length > 0 ? 'Lab Report' : medications.length > 0 ? 'Doctor Prescription' : 'Hospital Bill');
+  html += `<div style="font-size:13px; font-weight:700; color:#a78bfa; margin-bottom:12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:10px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Extracted Document Findings — ${docLabel}
+  </div>`;
+
+  // Patient / Doctor Meta
+  const metaFields = [];
+  if (ej.patient_name) metaFields.push(['Patient', ej.patient_name]);
+  if (ej.patient_age_sex) metaFields.push(['Age / Sex', ej.patient_age_sex]);
+  if (ej.lab_name || ej.clinic_name || ej.hospital_name) metaFields.push(['Facility', ej.lab_name || ej.clinic_name || ej.hospital_name]);
+  if (ej.doctor_name || ej.ref_doctor) metaFields.push(['Doctor', ej.doctor_name || ej.ref_doctor]);
+  if (ej.diagnosis) metaFields.push(['Diagnosis', ej.diagnosis]);
+  if (ej.report_date) metaFields.push(['Date', ej.report_date]);
+
+  if (metaFields.length > 0) {
+    html += `<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px; margin-bottom:12px; font-size:12px;">`;
+    metaFields.forEach(([k, v]) => {
+      html += `<div style="padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:6px;"><span style="color:#64748b; display:block; font-size:11px; margin-bottom:2px">${k}</span><span style="color:#e2e8f0; font-weight:500">${v}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // ── Blood / Lab Results Table ──
+  if (labResults.length > 0) {
+    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px">🧪 Lab Parameters</div>`;
+    html += `<table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">`;
+    html += `<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.08)">`;
+    ['Parameter', 'Result', 'Reference Range', 'Status'].forEach(h => {
+      html += `<th style="padding:6px 10px; text-align:left; color:#475569; font-weight:600">${h}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+    labResults.forEach((row, i) => {
+      const bg = i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent';
+      html += `<tr style="background:${bg}">`;
+      html += `<td style="padding:7px 10px; color:#cbd5e1; font-weight:500">${row.parameter}</td>`;
+      html += `<td style="padding:7px 10px; color:#e2e8f0; font-weight:700">${row.result}</td>`;
+      html += `<td style="padding:7px 10px; color:#64748b">${row.reference_range}</td>`;
+      html += `<td style="padding:7px 10px">${statusChip(row.status)}</td>`;
+      html += `</tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // ── Prescribed Medications ──
+  if (medications.length > 0) {
+    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:8px">💊 Prescribed Medications</div>`;
+    html += `<div style="display:grid; gap:6px; margin-bottom:12px;">`;
+    medications.forEach(med => {
+      html += `<div style="padding:10px 12px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:8px; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:8px; font-size:12px; align-items:center;">`;
+      html += `<div><span style="color:#a78bfa; font-weight:600">${med.medication}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Dosage</span><span style="color:#e2e8f0">${med.dosage}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Duration</span><span style="color:#e2e8f0">${med.duration}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Qty</span><span style="color:#e2e8f0; font-weight:700">${med.quantity}</span></div>`;
+      html += `</div>`;
+    });
+    html += `</div>`;
+  }
+
+  // ── Bill Line Items ──
+  if (lineItems.length > 0) {
+    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px">🧾 Bill Breakdown</div>`;
+    html += `<div style="border:1px solid rgba(255,255,255,0.07); border-radius:8px; overflow:hidden; margin-bottom:8px">`;
+    lineItems.forEach((item, i) => {
+      const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:${bg}; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04);">`;
+      html += `<span style="color:#cbd5e1">${item.description}</span>`;
+      html += `<span style="color:#10b981; font-weight:700; font-family:'JetBrains Mono',monospace">₹${Number(item.amount).toLocaleString('en-IN')}</span>`;
+      html += `</div>`;
+    });
+    if (ej.total) {
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(16,185,129,0.08); border-top:1px solid rgba(16,185,129,0.2); font-size:13px; font-weight:700;">`;
+      html += `<span style="color:#e2e8f0">Total</span>`;
+      html += `<span style="color:#10b981; font-family:'JetBrains Mono',monospace">₹${Number(ej.total).toLocaleString('en-IN')} ${ej.currency || 'INR'}</span>`;
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+
+  // Flag warning for messy/handwritten docs
+  if ((claim.flags || []).length > 0) {
+    html += `<div style="padding:8px 12px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:6px; font-size:12px; color:#f59e0b; margin-top:4px;">`;
+    html += `⚠ <strong>Low confidence extraction</strong> — details may require caseworker verification.</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
 
 function buildDetailedExplanationHtml(claim) {
   const isApproved = claim.status === 'APPROVED' || claim.status === 'approved' || claim.route === 'auto_approve';
@@ -1571,12 +1722,26 @@ async function checkExistingSession() {
     showAuthModal();
     return;
   }
+
+  // If we already have a stored user from a previous login, restore it immediately
+  // This prevents the mock server from overwriting the real logged-in user
+  const storedUser = JSON.parse(localStorage.getItem('medclaim_user') || 'null');
+  if (storedUser && storedUser.email) {
+    state.currentUser = storedUser;
+    updateUserProfileBadge();
+    return;
+  }
+
   try {
     const res = await fetch(`${API_BASE}/auth/check-session?token=${encodeURIComponent(state.authToken)}`);
     if (res.ok) {
       const user = await res.json();
-      state.currentUser = user;
-      localStorage.setItem('medclaim_user', JSON.stringify(user));
+      // Only use backend response if it carries a real user-specific email
+      // (not the generic mock fallback)
+      if (user && user.email && user.email !== 'admin@medclaim.gov.in') {
+        state.currentUser = user;
+        localStorage.setItem('medclaim_user', JSON.stringify(user));
+      }
     }
   } catch (_) {
     // Backend offline or mock — keep existing session if present

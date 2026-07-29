@@ -1,6 +1,463 @@
 {
   "claims": [
     {
+      "id": "CLM-20260729-0EC57F",
+      "patient_name": "Ramesh Kumar",
+      "patient_id": "PT-CITY-4412",
+      "submitted_at": "2026-07-29T13:16:10.108838Z",
+      "status": "APPROVED",
+      "confidence_score": 0.93,
+      "raw_ocr": "[OCR output for ChatGPT Image Jul 29, 2026, 02_54_59 PM.png — HOSPITAL_BILL confidence 0.93]",
+      "extracted_json": {
+        "document_type": "Inpatient Itemized Hospital Bill",
+        "hospital_name": "City Care Multispecialty Hospital",
+        "patient_name": "Ramesh Kumar",
+        "patient_id": "PT-CITY-4412",
+        "line_items": [
+          {
+            "description": "Emergency Ward Admission & Bed Charges (2 Days)",
+            "amount": 3500
+          },
+          {
+            "description": "Specialist Physician Consultation Fee",
+            "amount": 1500
+          },
+          {
+            "description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)",
+            "amount": 2200
+          },
+          {
+            "description": "Complete Blood Count & Electrolyte Panel",
+            "amount": 1400
+          }
+        ],
+        "total": 8600,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T13:16:10.108838Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:16:12.108838Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.93 (HOSPITAL_BILL)"
+        },
+        {
+          "timestamp": "2026-07-29T13:16:14.108838Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:16:16.108838Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:16:18.108838Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-20260729-0E1A12",
+      "patient_name": "Ramesh Kumar",
+      "patient_id": "PT-CITY-4412",
+      "submitted_at": "2026-07-29T13:15:11.164913Z",
+      "status": "APPROVED",
+      "confidence_score": 0.89,
+      "raw_ocr": "[OCR output for WhatsApp Image 2026-07-29 at 11.27.55 AM.jpeg — HOSPITAL_BILL confidence 0.89]",
+      "extracted_json": {
+        "document_type": "Inpatient Itemized Hospital Bill",
+        "hospital_name": "City Care Multispecialty Hospital",
+        "patient_name": "Ramesh Kumar",
+        "patient_id": "PT-CITY-4412",
+        "line_items": [
+          {
+            "description": "Emergency Ward Admission & Bed Charges (2 Days)",
+            "amount": 3500
+          },
+          {
+            "description": "Specialist Physician Consultation Fee",
+            "amount": 1500
+          },
+          {
+            "description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)",
+            "amount": 2200
+          },
+          {
+            "description": "Complete Blood Count & Electrolyte Panel",
+            "amount": 1400
+          }
+        ],
+        "total": 8600,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T13:15:11.164913Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:15:13.164913Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.89 (HOSPITAL_BILL)"
+        },
+        {
+          "timestamp": "2026-07-29T13:15:15.164913Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:15:17.164913Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:15:19.164913Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-20260729-7F6DA2",
+      "patient_name": "Ramesh Kumar",
+      "patient_id": "PT-CITY-4412",
+      "submitted_at": "2026-07-29T13:13:24.104686Z",
+      "status": "APPROVED",
+      "confidence_score": 0.96,
+      "raw_ocr": "[OCR output for WhatsApp Image 2026-07-29 at 11.27.55 AM.jpeg — HOSPITAL_BILL confidence 0.96]",
+      "extracted_json": {
+        "document_type": "Inpatient Itemized Hospital Bill",
+        "hospital_name": "City Care Multispecialty Hospital",
+        "patient_name": "Ramesh Kumar",
+        "patient_id": "PT-CITY-4412",
+        "line_items": [
+          {
+            "description": "Emergency Ward Admission & Bed Charges (2 Days)",
+            "amount": 3500
+          },
+          {
+            "description": "Specialist Physician Consultation Fee",
+            "amount": 1500
+          },
+          {
+            "description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)",
+            "amount": 2200
+          },
+          {
+            "description": "Complete Blood Count & Electrolyte Panel",
+            "amount": 1400
+          }
+        ],
+        "total": 8600,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T13:13:24.104686Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:13:26.104686Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.96 (HOSPITAL_BILL)"
+        },
+        {
+          "timestamp": "2026-07-29T13:13:28.104686Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:13:30.104686Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:13:32.104686Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-20260729-85B9AB",
+      "patient_name": "Ramesh Kumar",
+      "patient_id": "PT-CITY-4412",
+      "submitted_at": "2026-07-29T13:12:43.203381Z",
+      "status": "APPROVED",
+      "confidence_score": 0.97,
+      "raw_ocr": "[OCR output for ChatGPT Image Jul 29, 2026, 02_58_46 PM.png — HOSPITAL_BILL confidence 0.97]",
+      "extracted_json": {
+        "document_type": "Inpatient Itemized Hospital Bill",
+        "hospital_name": "City Care Multispecialty Hospital",
+        "patient_name": "Ramesh Kumar",
+        "patient_id": "PT-CITY-4412",
+        "line_items": [
+          {
+            "description": "Emergency Ward Admission & Bed Charges (2 Days)",
+            "amount": 3500
+          },
+          {
+            "description": "Specialist Physician Consultation Fee",
+            "amount": 1500
+          },
+          {
+            "description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)",
+            "amount": 2200
+          },
+          {
+            "description": "Complete Blood Count & Electrolyte Panel",
+            "amount": 1400
+          }
+        ],
+        "total": 8600,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T13:12:43.203381Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:12:45.203381Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.97 (HOSPITAL_BILL)"
+        },
+        {
+          "timestamp": "2026-07-29T13:12:47.203381Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:12:49.203381Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:12:51.203381Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-20260729-372026",
+      "patient_name": "Ramesh Kumar",
+      "patient_id": "PT-CITY-4412",
+      "submitted_at": "2026-07-29T13:10:49.185318Z",
+      "status": "APPROVED",
+      "confidence_score": 0.9,
+      "raw_ocr": "[OCR output for ChatGPT Image Jul 29, 2026, 05_33_45 PM.png — HOSPITAL_BILL confidence 0.9]",
+      "extracted_json": {
+        "document_type": "Inpatient Itemized Hospital Bill",
+        "hospital_name": "City Care Multispecialty Hospital",
+        "patient_name": "Ramesh Kumar",
+        "patient_id": "PT-CITY-4412",
+        "line_items": [
+          {
+            "description": "Emergency Ward Admission & Bed Charges (2 Days)",
+            "amount": 3500
+          },
+          {
+            "description": "Specialist Physician Consultation Fee",
+            "amount": 1500
+          },
+          {
+            "description": "IV Fluids & Injectable Antibiotics (Ceatriaxone 1g)",
+            "amount": 2200
+          },
+          {
+            "description": "Complete Blood Count & Electrolyte Panel",
+            "amount": 1400
+          }
+        ],
+        "total": 8600,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis and colitis",
+          "confidence": 0.95
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T13:10:49.185318Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:10:51.185318Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.9 (HOSPITAL_BILL)"
+        },
+        {
+          "timestamp": "2026-07-29T13:10:53.185318Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:10:55.185318Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T13:10:57.185318Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
+      "id": "CLM-20260729-DA7A28",
+      "patient_name": "Demo Patient",
+      "patient_id": "PT-DEMO-7196",
+      "submitted_at": "2026-07-29T12:57:59.444447Z",
+      "status": "APPROVED",
+      "confidence_score": 0.91,
+      "raw_ocr": "[OCR output for ChatGPT Image Jul 29, 2026, 02_54_49 PM.png — confidence 0.91]",
+      "extracted_json": {
+        "hospital": "Demo Hospital",
+        "patient": "Demo Patient",
+        "date": "2026-07-29",
+        "line_items": [
+          {
+            "description": "Consultation Fee",
+            "amount": 500
+          },
+          {
+            "description": "Diagnostic Test",
+            "amount": 800
+          }
+        ],
+        "total": 1300,
+        "currency": "INR"
+      },
+      "icd_codes": [
+        {
+          "code": "J06.9",
+          "description": "Acute upper respiratory infection",
+          "confidence": 0.89
+        },
+        {
+          "code": "R50.9",
+          "description": "Fever, unspecified",
+          "confidence": 0.83
+        },
+        {
+          "code": "A09",
+          "description": "Infectious gastroenteritis",
+          "confidence": 0.66
+        }
+      ],
+      "eligibility_result": {
+        "eligible": true,
+        "scheme": "Ayushman Bharat PM-JAY",
+        "coverage_percent": 100
+      },
+      "flags": [],
+      "audit_log": [
+        {
+          "timestamp": "2026-07-29T12:57:59.444447Z",
+          "stage": "SUBMITTED",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T12:58:02.444447Z",
+          "stage": "OCR",
+          "note": "OCR confidence 0.91"
+        },
+        {
+          "timestamp": "2026-07-29T12:58:05.444447Z",
+          "stage": "CODING",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T12:58:08.444447Z",
+          "stage": "ELIGIBILITY",
+          "note": "Processing complete"
+        },
+        {
+          "timestamp": "2026-07-29T12:58:11.444447Z",
+          "stage": "DECISION",
+          "note": "Auto-approved"
+        }
+      ],
+      "image_url": "/assets/mock_bill_clean.png"
+    },
+    {
       "id": "CLM-20260729-0558B5",
       "patient_name": "Demo Patient",
       "patient_id": "PT-DEMO-3662",
