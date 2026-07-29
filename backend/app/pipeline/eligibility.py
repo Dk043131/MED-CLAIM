@@ -224,6 +224,7 @@ def check_eligibility(
             patient_id="UNKNOWN",
             income_bracket="N/A",
             existing_coverage="None",
+            annual_cap_remaining_inr=0.0,
             reason=(
                 f"No PM-JAY beneficiary record found for '{patient_name}'. "
                 f"Visit a CSC with Aadhaar + ration card, or apply at beneficiary.nha.gov.in. "

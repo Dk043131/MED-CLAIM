@@ -1905,18 +1905,18 @@ function initPMJAYHandlers() {
         let html = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <span style="background:${badgeBg}; color:white; font-size:11px; font-weight:700; padding:3px 8px; border-radius:4px; text-transform:uppercase;">${statusText}</span>
-            <span style="font-size:12px; font-weight:600; color:#475569;">Scheme: <strong>${data.scheme}</strong></span>
+            <span style="font-size:12px; font-weight:600; color:#94a3b8;">Scheme: <strong style="color:#f8fafc;">${data.scheme}</strong></span>
           </div>
-          <p style="font-size:13px; color:#1e293b; margin:6px 0 10px 0; line-height:1.5;">${data.reason}</p>
+          <p style="font-size:13px; color:#e2e8f0; margin:6px 0 10px 0; line-height:1.5;">${data.reason}</p>
         `;
 
-        if (data.secc_category) {
-          html += `<div style="font-size:12px; color:#64748b;">SECC Category: <strong style="color:#0f172a;">${data.secc_category}</strong> | Family ID: <strong style="color:#0f172a;">${data.family_id || 'N/A'}</strong></div>`;
+        if (data.eligible && data.secc_category) {
+          html += `<div style="font-size:12px; color:#94a3b8;">SECC Category: <strong style="color:#f8fafc;">${data.secc_category}</strong> | Family ID: <strong style="color:#f8fafc;">${data.family_id || 'N/A'}</strong></div>`;
         }
 
-        if (data.annual_cap_remaining_inr !== undefined) {
+        if (data.eligible && data.annual_cap_remaining_inr !== undefined) {
           const rem = data.annual_cap_remaining_inr.toLocaleString('en-IN');
-          html += `<div style="margin-top:8px; font-size:12px; color:#0369a1; font-weight:600;">₹5 Lakh Cap Remaining: ₹${rem}</div>`;
+          html += `<div style="margin-top:8px; font-size:12px; color:#10b981; font-weight:600;">₹5 Lakh Cap Remaining: ₹${rem}</div>`;
         }
 
         resultEl.innerHTML = html;
