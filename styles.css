@@ -731,11 +731,12 @@ body::before {
 .flag-reason-item {
   display: flex; align-items: flex-start; gap: 8px;
   padding: 8px 12px;
-  background: rgba(245,158,11,0.08);
-  border: 1px solid rgba(245,158,11,0.2);
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
   border-radius: 6px;
   font-size: 13px;
-  color: var(--amber);
+  font-weight: 600;
+  color: #b45309;
   margin-bottom: 6px;
 }
 .flag-reason-item .icon { flex-shrink: 0; font-size: 14px; }

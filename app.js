@@ -559,12 +559,12 @@ function buildExtractedFindingsHtml(claim) {
     return `<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;background:${color}22;color:${color};border:1px solid ${color}44">${s}</span>`;
   };
 
-  let html = `<div style="margin-top:16px; padding:14px; background:rgba(15,23,42,0.85); border:1px solid rgba(255,255,255,0.1); border-radius:10px; text-align:left;">`;
+  let html = `<div style="margin-top:16px; padding:14px; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; text-align:left; box-shadow:0 2px 8px rgba(15,23,42,0.04);">`;
 
   // Header
   const docLabel = docType || (labResults.length > 0 ? 'Lab Report' : medications.length > 0 ? 'Doctor Prescription' : 'Hospital Bill');
-  html += `<div style="font-size:13px; font-weight:700; color:#a78bfa; margin-bottom:12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:10px;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+  html += `<div style="font-size:13px; font-weight:700; color:#4338ca; margin-bottom:12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     Extracted Document Findings — ${docLabel}
   </div>`;
 
@@ -580,25 +580,25 @@ function buildExtractedFindingsHtml(claim) {
   if (metaFields.length > 0) {
     html += `<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px; margin-bottom:12px; font-size:12px;">`;
     metaFields.forEach(([k, v]) => {
-      html += `<div style="padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:6px;"><span style="color:#64748b; display:block; font-size:11px; margin-bottom:2px">${k}</span><span style="color:#e2e8f0; font-weight:500">${v}</span></div>`;
+      html += `<div style="padding:6px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px;"><span style="color:#64748b; display:block; font-size:11px; margin-bottom:2px">${k}</span><span style="color:#0f172a; font-weight:600">${v}</span></div>`;
     });
     html += `</div>`;
   }
 
   // ── Blood / Lab Results Table ──
   if (labResults.length > 0) {
-    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px">🧪 Lab Parameters</div>`;
+    html += `<div style="font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">🧪 Lab Parameters</div>`;
     html += `<table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">`;
-    html += `<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.08)">`;
+    html += `<thead><tr style="border-bottom:1px solid #e2e8f0">`;
     ['Parameter', 'Result', 'Reference Range', 'Status'].forEach(h => {
       html += `<th style="padding:6px 10px; text-align:left; color:#475569; font-weight:600">${h}</th>`;
     });
     html += `</tr></thead><tbody>`;
     labResults.forEach((row, i) => {
-      const bg = i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent';
+      const bg = i % 2 === 0 ? '#f8fafc' : '#ffffff';
       html += `<tr style="background:${bg}">`;
-      html += `<td style="padding:7px 10px; color:#cbd5e1; font-weight:500">${row.parameter}</td>`;
-      html += `<td style="padding:7px 10px; color:#e2e8f0; font-weight:700">${row.result}</td>`;
+      html += `<td style="padding:7px 10px; color:#334155; font-weight:500">${row.parameter}</td>`;
+      html += `<td style="padding:7px 10px; color:#0f172a; font-weight:700">${row.result}</td>`;
       html += `<td style="padding:7px 10px; color:#64748b">${row.reference_range}</td>`;
       html += `<td style="padding:7px 10px">${statusChip(row.status)}</td>`;
       html += `</tr>`;
@@ -608,14 +608,14 @@ function buildExtractedFindingsHtml(claim) {
 
   // ── Prescribed Medications ──
   if (medications.length > 0) {
-    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:8px">💊 Prescribed Medications</div>`;
+    html += `<div style="font-size:12px; font-weight:600; color:#334155; margin-bottom:8px">💊 Prescribed Medications</div>`;
     html += `<div style="display:grid; gap:6px; margin-bottom:12px;">`;
     medications.forEach(med => {
-      html += `<div style="padding:10px 12px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:8px; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:8px; font-size:12px; align-items:center;">`;
-      html += `<div><span style="color:#a78bfa; font-weight:600">${med.medication}</span></div>`;
-      html += `<div><span style="color:#64748b; display:block; font-size:10px">Dosage</span><span style="color:#e2e8f0">${med.dosage}</span></div>`;
-      html += `<div><span style="color:#64748b; display:block; font-size:10px">Duration</span><span style="color:#e2e8f0">${med.duration}</span></div>`;
-      html += `<div><span style="color:#64748b; display:block; font-size:10px">Qty</span><span style="color:#e2e8f0; font-weight:700">${med.quantity}</span></div>`;
+      html += `<div style="padding:10px 12px; background:rgba(79,70,229,0.06); border:1px solid rgba(79,70,229,0.2); border-radius:8px; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:8px; font-size:12px; align-items:center;">`;
+      html += `<div><span style="color:#4338ca; font-weight:700">${med.medication}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Dosage</span><span style="color:#0f172a">${med.dosage}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Duration</span><span style="color:#0f172a">${med.duration}</span></div>`;
+      html += `<div><span style="color:#64748b; display:block; font-size:10px">Qty</span><span style="color:#0f172a; font-weight:700">${med.quantity}</span></div>`;
       html += `</div>`;
     });
     html += `</div>`;
@@ -623,21 +623,21 @@ function buildExtractedFindingsHtml(claim) {
 
   // ── Bill Line Items ──
   if (lineItems.length > 0) {
-    html += `<div style="font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px">🧾 Bill Breakdown</div>`;
-    html += `<div style="border:1px solid rgba(255,255,255,0.07); border-radius:8px; overflow:hidden; margin-bottom:8px">`;
+    html += `<div style="font-size:12px; font-weight:600; color:#334155; margin-bottom:6px">🧾 Bill Breakdown</div>`;
+    html += `<div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; margin-bottom:8px">`;
     lineItems.forEach((item, i) => {
-      const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
+      const bg = i % 2 === 0 ? '#f8fafc' : '#ffffff';
       const amt = Number(item.amount);
       const amtDisplay = (!isNaN(amt) && amt > 0) ? `₹${amt.toLocaleString('en-IN')}` : '—';
-      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:${bg}; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04);">`;
-      html += `<span style="color:#cbd5e1">${item.description}</span>`;
-      html += `<span style="color:${(!isNaN(amt) && amt > 0) ? '#10b981' : '#64748b'}; font-weight:700; font-family:'JetBrains Mono',monospace">${amtDisplay}</span>`;
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:${bg}; font-size:12px; border-bottom:1px solid #e2e8f0;">`;
+      html += `<span style="color:#334155">${item.description}</span>`;
+      html += `<span style="color:${(!isNaN(amt) && amt > 0) ? '#059669' : '#64748b'}; font-weight:700; font-family:'JetBrains Mono',monospace">${amtDisplay}</span>`;
       html += `</div>`;
     });
     if (ej.total && !isNaN(Number(ej.total)) && Number(ej.total) > 0) {
-      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(16,185,129,0.08); border-top:1px solid rgba(16,185,129,0.2); font-size:13px; font-weight:700;">`;
-      html += `<span style="color:#e2e8f0">Total</span>`;
-      html += `<span style="color:#10b981; font-family:'JetBrains Mono',monospace">₹${Number(ej.total).toLocaleString('en-IN')} ${ej.currency || 'INR'}</span>`;
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(5,150,105,0.08); border-top:1px solid rgba(5,150,105,0.2); font-size:13px; font-weight:700;">`;
+      html += `<span style="color:#0f172a">Total</span>`;
+      html += `<span style="color:#059669; font-family:'JetBrains Mono',monospace">₹${Number(ej.total).toLocaleString('en-IN')} ${ej.currency || 'INR'}</span>`;
       html += `</div>`;
     }
     html += `</div>`;
@@ -724,25 +724,25 @@ function buildDetailedExplanationHtml(claim) {
   const verdictLabel = isRejected ? 'REJECTED' : isApproved ? 'AUTO-APPROVED' : 'FLAGGED FOR REVIEW';
 
   const makeCard = (num, title, pass, passLabel, failLabel, passColor, why) => `
-    <div style="padding:12px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${passColor};">
-      <div style="font-weight:600; color:#94a3b8; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; border-left:3px solid ${passColor};">
+      <div style="font-weight:700; color:#334155; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
         <span>${num}. ${title}</span>
         <span style="font-size:11px; color:${passColor}; font-weight:700; letter-spacing:0.5px">${pass ? passLabel : failLabel}</span>
       </div>
-      <div style="color:var(--text-primary); line-height:1.6; font-size:11.5px">${why}</div>
+      <div style="color:#0f172a; line-height:1.6; font-size:11.5px">${why}</div>
     </div>`;
 
   return `
-    <div class="detailed-explanation-panel" style="margin-top:16px; padding:16px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; text-align:left;">
-      <div style="font-size:13px; font-weight:700; color:${verdictColor}; margin-bottom:14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+    <div class="detailed-explanation-panel" style="margin-top:16px; padding:16px; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; text-align:left; box-shadow:0 2px 8px rgba(15,23,42,0.04);">
+      <div style="font-size:13px; font-weight:700; color:${verdictColor}; margin-bottom:14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${verdictColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Why this claim was <span style="text-decoration:underline; text-underline-offset:3px">${verdictLabel}</span> — Step-by-step reasoning
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
-        ${makeCard('Step 1', 'OCR & Document Reading', ocrPass, '✓ ABOVE THRESHOLD', '⚠ BELOW THRESHOLD', ocrPass ? '#10b981' : '#f59e0b', ocrWhy)}
-        ${makeCard('Step 2', 'ICD-10 Clinical Coding', icdPass, '✓ ALL CODES ≥80%', icdCount === 0 ? '✗ NO CODES FOUND' : '⚠ LOW CONFIDENCE', icdPass ? '#10b981' : '#f59e0b', icdWhy)}
-        ${makeCard('Step 3', 'Welfare Eligibility', eligPass, '✓ ACTIVE COVERAGE', '✗ NOT ELIGIBLE', eligPass ? '#10b981' : '#f43f5e', eligWhy)}
-        ${makeCard('Step 4', 'Duplicate Detection', !isDup, '✓ UNIQUE CLAIM', '⚠ DUPLICATE FOUND', !isDup ? '#10b981' : '#f43f5e', dupWhy)}
+        ${makeCard('Step 1', 'OCR & Document Reading', ocrPass, '✓ ABOVE THRESHOLD', '⚠ BELOW THRESHOLD', ocrPass ? '#059669' : '#d97706', ocrWhy)}
+        ${makeCard('Step 2', 'ICD-10 Clinical Coding', icdPass, '✓ ALL CODES ≥80%', icdCount === 0 ? '✗ NO CODES FOUND' : '⚠ LOW CONFIDENCE', icdPass ? '#059669' : '#d97706', icdWhy)}
+        ${makeCard('Step 3', 'Welfare Eligibility', eligPass, '✓ ACTIVE COVERAGE', '✗ NOT ELIGIBLE', eligPass ? '#059669' : '#e11d48', eligWhy)}
+        ${makeCard('Step 4', 'Duplicate Detection', !isDup, '✓ UNIQUE CLAIM', '⚠ DUPLICATE FOUND', !isDup ? '#059669' : '#e11d48', dupWhy)}
         ${makeCard('Step 5', 'Fraud Risk Guardrail', fraudScore <= 0.6, '✓ SCORE BELOW LIMIT', '✗ SCORE EXCEEDS LIMIT', fraudColor, fraudWhy)}
         ${makeCard('Step 6', 'PMJAY Portal Submission', portal.submitted, '✓ REGISTERED', '⏳ PENDING', portalColor, portalWhy)}
       </div>
