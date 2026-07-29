@@ -86,7 +86,7 @@ def seed_initial_claims() -> None:
                 "existing_coverage": "PMJAY Gold",
                 "reason": "Active coverage under Ayushman Bharat PM-JAY Gold."
             }),
-            "route": "hitl_review",
+            "route": "human_review",
             "status": "pending_review",
         },
         {
@@ -113,7 +113,7 @@ def seed_initial_claims() -> None:
                 "existing_coverage": "PMJAY Gold",
                 "reason": "Active PMJAY coverage."
             }),
-            "route": "hitl_review",
+            "route": "human_review",
             "status": "pending_review",
         },
         {
