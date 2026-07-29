@@ -36,7 +36,8 @@ def ocr_bill_stub(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
             decoded = file_bytes.decode("utf-8").strip()
             if decoded and len(decoded) > 20:
                 print(f"[OCR Stub] Decoded uploaded file as UTF-8 text ({len(decoded)} chars)")
-                return decoded, 94.0
+                conf = 48.0 if ("ambiguous" in name_lower or "illegible" in name_lower) else 94.0
+                return decoded, conf
         except Exception:
             pass
 

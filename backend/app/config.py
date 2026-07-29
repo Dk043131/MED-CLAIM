@@ -53,3 +53,30 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 ICD10_CSV = os.path.join(DATA_DIR, "icd10_codes.csv")
 ELIGIBILITY_CSV = os.path.join(DATA_DIR, "eligibility.csv")
 SAMPLE_BILLS_DIR = os.path.join(DATA_DIR, "sample_bills")
+
+# ── PM-JAY Specific Data Paths ──────────────────────────────────────────────
+PMJAY_PROCEDURES_CSV = os.path.join(DATA_DIR, "pmjay_procedures.csv")
+EMPANELLED_HOSPITALS_CSV = os.path.join(DATA_DIR, "empanelled_hospitals.csv")
+
+# ── PM-JAY Scheme Constants ─────────────────────────────────────────────────
+# States where PM-JAY is NOT active (opted out) — route to state scheme
+PMJAY_OPTED_OUT_STATES: list = ["West Bengal", "WB"]
+
+# State → supplementary scheme mapping
+STATE_SCHEME_MAP: dict = {
+    "Tamil Nadu": "CMCHIS",
+    "TN": "CMCHIS",
+    "Maharashtra": "MJPJAY",
+    "MH": "MJPJAY",
+    "Rajasthan": "RGHS",
+    "RJ": "RGHS",
+    "West Bengal": "WBHS",
+    "WB": "WBHS",
+}
+
+# PM-JAY annual coverage cap per family
+PMJAY_FAMILY_CAP_INR: float = 500000.0
+PMJAY_SENIOR_CAP_INR: float = 500000.0   # Additional cap for 70+ members
+
+# Hospital name fuzzy match threshold (0-100, rapidfuzz score)
+HOSPITAL_MATCH_THRESHOLD: float = float(os.getenv("HOSPITAL_MATCH_THRESHOLD", "65.0"))

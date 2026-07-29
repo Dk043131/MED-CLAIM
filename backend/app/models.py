@@ -68,6 +68,60 @@ class Eligibility(BaseModel):
     reason: str = ""
 
 
+class PMJAYEligibility(Eligibility):
+    """Extended eligibility result for PM-JAY (Ayushman Bharat) claims."""
+    secc_category: str = ""                          # rural_deprivation|urban_occupation|senior_citizen_70plus|asha_worker|state_supplementary|none
+    family_id: str = ""                              # Shared floater pool key
+    annual_cap_remaining_inr: float = 500000.0       # ₹5L family cap remaining
+    senior_cap_remaining_inr: float = 500000.0       # Separate ₹5L for 70+ (2024 expansion)
+    hospital_empanelled: bool = True                 # Hospital on PM-JAY list
+    scheme: str = "PMJAY"                            # PMJAY|CMCHIS|MJPJAY|RGHS|WBHS|NONE
+    fallback_scheme: str = ""                        # State scheme if not in PMJAY
+    rejection_type: str = ""                         # hard_eligibility|procedure_scope|cap_exhausted|""
+    gate_results: Dict[str, Any] = {}               # Per-gate pass/fail details for audit
+
+
+class ProcedureScopeResult(BaseModel):
+    """Result of PM-JAY Stage 3.5 — procedure scope gate."""
+    covered: bool = True
+    package_code: str = ""
+    package_name: str = ""
+    max_rate_inr: float = 0.0
+    rejection_reason: str = ""                       # outpatient_only|dental_cosmetic|not_in_list|""
+
+
+class HospitalEmpanelmentResult(BaseModel):
+    """Result of hospital empanelment fuzzy lookup."""
+    empanelled: bool = True
+    hospital_id: str = ""
+    matched_name: str = ""
+    match_score: float = 0.0
+    empanelment_expiry: str = ""
+    state: str = ""
+
+
+class EnrollmentRecord(BaseModel):
+    """PM-JAY beneficiary enrollment record issued on card creation."""
+    aadhaar_number: str                              # Masked: XXXX-XXXX-XXXX
+    mobile_number: str
+    family_id: str
+    secc_category: str
+    scheme: str
+    card_number: str = ""                            # e.g. ABHA-XXXX-XXXX-XXXX
+    card_issued: bool = False
+    card_issued_at: str = ""
+    members: List[str] = []                          # Aadhaar numbers of family members
+
+
+class OTPSession(BaseModel):
+    """Transient OTP session for Aadhaar verification."""
+    otp_token: str
+    aadhaar_number: str
+    mobile_number: str
+    expires_at: str
+    verified: bool = False
+
+
 class LifecycleEvent(BaseModel):
     stage: str          # e.g. "SUBMITTED", "OCR", "STRUCTURED", "CODED", "ELIGIBILITY", "FRAUD_CHECK", "PORTAL", "COMPLETE"
     status: str         # "success", "warning", "error", "pending"

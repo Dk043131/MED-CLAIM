@@ -45,6 +45,7 @@ from app.models import (
 from app.pipeline.orchestrator import process_claim
 from app import storage
 from app import auth
+from app.api.enrollment import router as enrollment_router, hospitals_router, family_router
 
 
 # ── In-Memory Pre-Authorization Database (Seeded for Demo) ───────────────────
@@ -127,6 +128,11 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
     expose_headers=["X-Processing-Time"],
 )
+
+# ── PM-JAY Routers ───────────────────────────────────────────────────────────
+app.include_router(enrollment_router)
+app.include_router(hospitals_router)
+app.include_router(family_router)
 
 
 # ── Security Headers Middleware ───────────────────────────────────────────────

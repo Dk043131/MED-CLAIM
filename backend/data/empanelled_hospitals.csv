@@ -1,0 +1,151 @@
+hospital_id,hospital_name,state,district,empanelled,empanelment_expiry,hospital_type,contact
+HOSP-1001,City General Hospital,Karnataka,Bengaluru,True,2027-12-31,private,+91-8022334455
+HOSP-1002,Apollo Hospital,Tamil Nadu,Chennai,True,2028-06-30,private,+91-4428290200
+HOSP-1003,Fortis Hospital,Karnataka,Bengaluru,True,2027-09-30,private,+91-8066214444
+HOSP-1004,AIIMS,Delhi,New Delhi,True,2028-12-31,government,+91-1126588500
+HOSP-1005,Sunrise Health Clinic,Tamil Nadu,Chennai,False,2025-01-01,private,+91-4423456789
+HOSP-1006,City Care Nursing Home,Maharashtra,Mumbai,False,2025-01-01,private,+91-2225110022
+HOSP-1007,Apex Multi-Specialty Clinic,Rajasthan,Jaipur,False,2024-12-31,private,+91-1412554433
+HOSP-1008,Green Valley Hospital,West Bengal,Kolkata,False,2025-01-01,trust,+91-3324667788
+HOSP-1009,Metro Wellness Center,Delhi,North Delhi,False,2024-11-30,private,+91-1127889900
+HOSP-1010,Lifeline Nursing Home,Uttar Pradesh,Lucknow,False,2025-01-01,private,+91-5222345678
+HOSP-1011,Care & Cure Clinic,Gujarat,Ahmedabad,False,2024-10-31,private,+91-7926401122
+HOSP-1012,St. Mary's Community Hospital,Kerala,Kochi,False,2025-01-01,trust,+91-4842398877
+HOSP-1013,Shanti Medicare Center,Bihar,Patna,False,2024-09-30,private,+91-6122209988
+HOSP-1014,Royal Health Institute,Punjab,Ludhiana,False,2025-01-01,private,+91-1612405566
+HOSP-1015,AIIMS Jodhpur,Rajasthan,Jodhpur,True,2026-09-28,government,+91-2912740741
+HOSP-1016,AIIMS Bhopal,Madhya Pradesh,Bhopal,True,2027-03-28,government,+91-7552970016
+HOSP-1017,AIIMS Rishikesh,Uttarakhand,Rishikesh,True,2027-07-28,government,+91-1352462929
+HOSP-1018,AIIMS Patna,Bihar,Patna,True,2027-11-28,government,+91-6122451070
+HOSP-1019,AIIMS Bhubaneswar,Odisha,Bhubaneswar,True,2027-09-28,government,+91-6742476789
+HOSP-1020,AIIMS Raipur,Chhattisgarh,Raipur,True,2027-04-28,government,+91-7712573777
+HOSP-1021,Apollo Hospitals Hyderabad,Telangana,Hyderabad,True,2026-09-28,private,+91-4023607777
+HOSP-1022,Apollo Hospitals Ahmedabad,Gujarat,Ahmedabad,True,2028-07-28,private,+91-7966701800
+HOSP-1023,Apollo Multispeciality Hospitals Kolkata,West Bengal,Kolkata,True,2027-10-28,private,+91-3323203040
+HOSP-1024,Apollo Hospitals Delhi,Delhi,South Delhi,True,2027-12-28,private,+91-1126925858
+HOSP-1025,Fortis Hospital Mohali,Punjab,Mohali,True,2026-07-28,private,+91-1725021222
+HOSP-1026,Fortis Hospital Mulund,Maharashtra,Mumbai,True,2026-03-28,private,+91-2267994444
+HOSP-1027,Fortis Escorts Heart Institute,Delhi,South East Delhi,True,2028-02-28,private,+91-1147135000
+HOSP-1028,Fortis Hospital Anandapur,West Bengal,Kolkata,True,2026-11-28,private,+91-3366284444
+HOSP-1029,Manipal Hospital Old Airport Road,Karnataka,Bengaluru,True,2027-05-28,private,+91-8025024444
+HOSP-1030,Manipal Hospital Mangaluru,Karnataka,Mangaluru,True,2026-09-28,private,+91-8242222222
+HOSP-1031,Manipal Hospital Jaipur,Rajasthan,Jaipur,True,2026-04-28,private,+91-1415164000
+HOSP-1032,Max Super Speciality Hospital Saket,Delhi,South Delhi,True,2026-09-28,private,+91-1126515050
+HOSP-1033,Max Super Speciality Hospital Vaishali,Uttar Pradesh,Ghaziabad,True,2027-01-28,private,+91-1204188000
+HOSP-1034,Max Super Speciality Hospital Dehradun,Uttarakhand,Dehradun,True,2027-11-28,private,+91-1357193000
+HOSP-1035,Narayana Health City,Karnataka,Bengaluru,True,2027-04-28,private,+91-8071222222
+HOSP-1036,Narayana Multispeciality Hospital Jaipur,Rajasthan,Jaipur,True,2026-03-28,private,+91-1417122222
+HOSP-1037,Narayana Superspeciality Hospital Howrah,West Bengal,Howrah,True,2027-07-28,private,+91-3371222222
+HOSP-1038,Medanta - The Medicity,Haryana,Gurugram,True,2027-03-28,private,+91-1244141414
+HOSP-1039,Medanta Hospital Lucknow,Uttar Pradesh,Lucknow,True,2026-12-28,private,+91-5224505050
+HOSP-1040,Christian Medical College (CMC) Vellore,Tamil Nadu,Vellore,True,2028-02-28,trust,+91-4162281000
+HOSP-1041,Christian Medical College (CMC) Ludhiana,Punjab,Ludhiana,True,2027-12-28,trust,+91-1612115000
+HOSP-1042,Tata Memorial Hospital,Maharashtra,Mumbai,True,2027-09-28,government,+91-2224177000
+HOSP-1043,PGIMER Chandigarh,Chandigarh,Chandigarh,True,2026-03-28,government,+91-1722747585
+HOSP-1044,JIPMER Puducherry,Puducherry,Puducherry,True,2028-08-28,government,+91-4132272380
+HOSP-1045,Nizam's Institute of Medical Sciences (NIMS),Telangana,Hyderabad,True,2026-05-28,government,+91-4023489000
+HOSP-1046,King George's Medical University (KGMU),Uttar Pradesh,Lucknow,True,2026-05-28,government,+91-5222257540
+HOSP-1047,Victoria Hospital (BMCRI),Karnataka,Bengaluru,True,2026-11-28,government,+91-8026701150
+HOSP-1048,Rajiv Gandhi Government General Hospital,Tamil Nadu,Chennai,True,2027-07-28,government,+91-4425305000
+HOSP-1049,Sawai Man Singh (SMS) Hospital,Rajasthan,Jaipur,True,2026-03-28,government,+91-1412560291
+HOSP-1050,KEM Hospital & Seth GS Medical College,Maharashtra,Mumbai,True,2028-09-28,government,+91-2224107000
+HOSP-1051,Medical College Kolkata,West Bengal,Kolkata,True,2027-05-28,government,+91-3322551600
+HOSP-1052,Government Medical College Kozhikode,Kerala,Kozhikode,True,2026-01-28,government,+91-4952350216
+HOSP-1053,Government Medical College Nagpur,Maharashtra,Nagpur,True,2026-11-28,government,+91-7122743588
+HOSP-1054,Gandhi Hospital Secunderabad,Telangana,Hyderabad,True,2027-11-28,government,+91-4027505566
+HOSP-1055,Osmania General Hospital,Telangana,Hyderabad,True,2027-06-28,government,+91-4024600121
+HOSP-1056,Civil Hospital Ahmedabad,Gujarat,Ahmedabad,True,2027-03-28,government,+91-7922683721
+HOSP-1057,District Headquarters Hospital Mysuru,Karnataka,Mysuru,True,2027-05-28,government,+91-8212420311
+HOSP-1058,District Government Hospital Madurai,Tamil Nadu,Madurai,True,2028-01-28,government,+91-4522532535
+HOSP-1059,District Hospital Udaipur,Rajasthan,Udaipur,True,2028-04-28,government,+91-2942410311
+HOSP-1060,District Hospital Varanasi,Uttar Pradesh,Varanasi,True,2026-10-28,government,+91-5422502211
+HOSP-1061,District Civil Hospital Thane,Maharashtra,Thane,True,2027-05-28,government,+91-2225343322
+HOSP-1062,District Headquarters Hospital Malda,West Bengal,Malda,True,2026-11-28,government,+91-3512252311
+HOSP-1063,District Civil Hospital Surat,Gujarat,Surat,True,2026-04-28,government,+91-2612244211
+HOSP-1064,General Hospital Ernakulam,Kerala,Ernakulam,True,2027-11-28,government,+91-4842361251
+HOSP-1065,Indira Gandhi Medical College & Hospital Shimla,Himachal Pradesh,Shimla,True,2028-02-28,government,+91-1772804251
+HOSP-1066,Gauhati Medical College and Hospital,Assam,Guwahati,True,2028-12-28,government,+91-3612529457
+HOSP-1067,Rajendra Institute of Medical Sciences (RIMS),Jharkhand,Ranchi,True,2027-10-28,government,+91-6512541533
+HOSP-1068,Patna Medical College and Hospital (PMCH),Bihar,Patna,True,2026-05-28,government,+91-6122300080
+HOSP-1069,Mahatma Gandhi Memorial Hospital Indore,Madhya Pradesh,Indore,True,2026-06-28,government,+91-7312527001
+HOSP-1070,Dayanand Medical College and Hospital,Punjab,Ludhiana,True,2026-04-28,trust,+91-1614687700
+HOSP-1071,SCB Medical College & Hospital Cuttack,Odisha,Cuttack,True,2027-01-28,government,+91-6712414080
+HOSP-1072,Pt. JNM Medical College Raipur,Chhattisgarh,Raipur,True,2027-05-28,government,+91-7712523919
+HOSP-1073,Government Medical College Jammu,Jammu & Kashmir,Jammu,True,2027-03-28,government,+91-1912584290
+HOSP-1074,AIIMS Jodhpur Annex-2,Rajasthan,Jodhpur,True,2028-07-28,government,+91-9800000073
+HOSP-1075,AIIMS Bhopal Annex-2,Madhya Pradesh,Bhopal,True,2027-03-28,government,+91-9800000074
+HOSP-1076,AIIMS Rishikesh Annex-2,Uttarakhand,Rishikesh,True,2027-05-28,government,+91-9800000075
+HOSP-1077,AIIMS Patna Annex-2,Bihar,Patna,True,2027-09-28,government,+91-9800000076
+HOSP-1078,AIIMS Bhubaneswar Annex-2,Odisha,Bhubaneswar,True,2026-12-28,government,+91-9800000077
+HOSP-1079,AIIMS Raipur Annex-2,Chhattisgarh,Raipur,True,2027-12-28,government,+91-9800000078
+HOSP-1080,Apollo Hospitals Hyderabad Annex-2,Telangana,Hyderabad,True,2026-04-28,private,+91-9800000079
+HOSP-1081,Apollo Hospitals Ahmedabad Annex-2,Gujarat,Ahmedabad,True,2026-12-28,private,+91-9800000080
+HOSP-1082,Apollo Multispeciality Hospitals Kolkata Annex-2,West Bengal,Kolkata,True,2027-06-28,private,+91-9800000081
+HOSP-1083,Apollo Hospitals Delhi Annex-2,Delhi,South Delhi,True,2028-09-28,private,+91-9800000082
+HOSP-1084,Fortis Hospital Mohali Annex-2,Punjab,Mohali,True,2028-05-28,private,+91-9800000083
+HOSP-1085,Fortis Hospital Mulund Annex-2,Maharashtra,Mumbai,True,2028-04-28,private,+91-9800000084
+HOSP-1086,Fortis Escorts Heart Institute Annex-2,Delhi,South East Delhi,True,2026-09-28,private,+91-9800000085
+HOSP-1087,Fortis Hospital Anandapur Annex-2,West Bengal,Kolkata,True,2027-10-28,private,+91-9800000086
+HOSP-1088,Manipal Hospital Old Airport Road Annex-2,Karnataka,Bengaluru,True,2026-01-28,private,+91-9800000087
+HOSP-1089,Manipal Hospital Mangaluru Annex-2,Karnataka,Mangaluru,True,2027-01-28,private,+91-9800000088
+HOSP-1090,Manipal Hospital Jaipur Annex-2,Rajasthan,Jaipur,True,2027-07-28,private,+91-9800000089
+HOSP-1091,Max Super Speciality Hospital Saket Annex-2,Delhi,South Delhi,True,2028-10-28,private,+91-9800000090
+HOSP-1092,Max Super Speciality Hospital Vaishali Annex-2,Uttar Pradesh,Ghaziabad,True,2026-09-28,private,+91-9800000091
+HOSP-1093,Max Super Speciality Hospital Dehradun Annex-2,Uttarakhand,Dehradun,True,2027-10-28,private,+91-9800000092
+HOSP-1094,Narayana Health City Annex-2,Karnataka,Bengaluru,True,2027-08-28,private,+91-9800000093
+HOSP-1095,Narayana Multispeciality Hospital Jaipur Annex-2,Rajasthan,Jaipur,True,2026-10-28,private,+91-9800000094
+HOSP-1096,Narayana Superspeciality Hospital Howrah Annex-2,West Bengal,Howrah,True,2026-09-28,private,+91-9800000095
+HOSP-1097,Medanta - The Medicity Annex-2,Haryana,Gurugram,True,2027-07-28,private,+91-9800000096
+HOSP-1098,Medanta Hospital Lucknow Annex-2,Uttar Pradesh,Lucknow,True,2026-05-28,private,+91-9800000097
+HOSP-1099,Christian Medical College (CMC) Vellore Annex-2,Tamil Nadu,Vellore,True,2028-11-28,trust,+91-9800000098
+HOSP-1100,Christian Medical College (CMC) Ludhiana Annex-2,Punjab,Ludhiana,True,2028-03-28,trust,+91-9800000099
+HOSP-1101,Tata Memorial Hospital Annex-2,Maharashtra,Mumbai,True,2026-01-28,government,+91-9800000100
+HOSP-1102,PGIMER Chandigarh Annex-2,Chandigarh,Chandigarh,True,2028-04-28,government,+91-9800000101
+HOSP-1103,JIPMER Puducherry Annex-2,Puducherry,Puducherry,True,2026-03-28,government,+91-9800000102
+HOSP-1104,Nizam's Institute of Medical Sciences (NIMS) Annex-2,Telangana,Hyderabad,True,2026-06-28,government,+91-9800000103
+HOSP-1105,King George's Medical University (KGMU) Annex-2,Uttar Pradesh,Lucknow,True,2027-03-28,government,+91-9800000104
+HOSP-1106,Victoria Hospital (BMCRI) Annex-2,Karnataka,Bengaluru,True,2027-04-28,government,+91-9800000105
+HOSP-1107,Rajiv Gandhi Government General Hospital Annex-2,Tamil Nadu,Chennai,True,2026-08-28,government,+91-9800000106
+HOSP-1108,Sawai Man Singh (SMS) Hospital Annex-2,Rajasthan,Jaipur,True,2027-11-28,government,+91-9800000107
+HOSP-1109,KEM Hospital & Seth GS Medical College Annex-2,Maharashtra,Mumbai,True,2026-07-28,government,+91-9800000108
+HOSP-1110,Medical College Kolkata Annex-2,West Bengal,Kolkata,True,2028-07-28,government,+91-9800000109
+HOSP-1111,Government Medical College Kozhikode Annex-2,Kerala,Kozhikode,True,2028-01-28,government,+91-9800000110
+HOSP-1112,Government Medical College Nagpur Annex-2,Maharashtra,Nagpur,True,2028-05-28,government,+91-9800000111
+HOSP-1113,Gandhi Hospital Secunderabad Annex-2,Telangana,Hyderabad,True,2027-02-28,government,+91-9800000112
+HOSP-1114,Osmania General Hospital Annex-2,Telangana,Hyderabad,True,2026-03-28,government,+91-9800000113
+HOSP-1115,Civil Hospital Ahmedabad Annex-2,Gujarat,Ahmedabad,True,2026-10-28,government,+91-9800000114
+HOSP-1116,District Headquarters Hospital Mysuru Annex-2,Karnataka,Mysuru,True,2027-01-28,government,+91-9800000115
+HOSP-1117,District Government Hospital Madurai Annex-2,Tamil Nadu,Madurai,True,2028-02-28,government,+91-9800000116
+HOSP-1118,District Hospital Udaipur Annex-2,Rajasthan,Udaipur,True,2028-04-28,government,+91-9800000117
+HOSP-1119,District Hospital Varanasi Annex-2,Uttar Pradesh,Varanasi,True,2028-01-28,government,+91-9800000118
+HOSP-1120,District Civil Hospital Thane Annex-2,Maharashtra,Thane,True,2026-05-28,government,+91-9800000119
+HOSP-1121,District Headquarters Hospital Malda Annex-2,West Bengal,Malda,True,2027-02-28,government,+91-9800000120
+HOSP-1122,District Civil Hospital Surat Annex-2,Gujarat,Surat,True,2026-02-28,government,+91-9800000121
+HOSP-1123,General Hospital Ernakulam Annex-2,Kerala,Ernakulam,True,2028-09-28,government,+91-9800000122
+HOSP-1124,Indira Gandhi Medical College & Hospital Shimla Annex-2,Himachal Pradesh,Shimla,True,2026-03-28,government,+91-9800000123
+HOSP-1125,Gauhati Medical College and Hospital Annex-2,Assam,Guwahati,True,2028-06-28,government,+91-9800000124
+HOSP-1126,Rajendra Institute of Medical Sciences (RIMS) Annex-2,Jharkhand,Ranchi,True,2028-01-28,government,+91-9800000125
+HOSP-1127,Patna Medical College and Hospital (PMCH) Annex-2,Bihar,Patna,True,2028-01-28,government,+91-9800000126
+HOSP-1128,Mahatma Gandhi Memorial Hospital Indore Annex-2,Madhya Pradesh,Indore,True,2026-05-28,government,+91-9800000127
+HOSP-1129,Dayanand Medical College and Hospital Annex-2,Punjab,Ludhiana,True,2026-02-28,trust,+91-9800000128
+HOSP-1130,SCB Medical College & Hospital Cuttack Annex-2,Odisha,Cuttack,True,2028-10-28,government,+91-9800000129
+HOSP-1131,Pt. JNM Medical College Raipur Annex-2,Chhattisgarh,Raipur,True,2028-10-28,government,+91-9800000130
+HOSP-1132,Government Medical College Jammu Annex-2,Jammu & Kashmir,Jammu,True,2028-01-28,government,+91-9800000131
+HOSP-1133,AIIMS Jodhpur Annex-3,Rajasthan,Jodhpur,True,2028-05-28,government,+91-9800000132
+HOSP-1134,AIIMS Bhopal Annex-3,Madhya Pradesh,Bhopal,True,2027-03-28,government,+91-9800000133
+HOSP-1135,AIIMS Rishikesh Annex-3,Uttarakhand,Rishikesh,True,2028-02-28,government,+91-9800000134
+HOSP-1136,AIIMS Patna Annex-3,Bihar,Patna,True,2026-04-28,government,+91-9800000135
+HOSP-1137,AIIMS Bhubaneswar Annex-3,Odisha,Bhubaneswar,True,2026-12-28,government,+91-9800000136
+HOSP-1138,AIIMS Raipur Annex-3,Chhattisgarh,Raipur,True,2027-12-28,government,+91-9800000137
+HOSP-1139,Apollo Hospitals Hyderabad Annex-3,Telangana,Hyderabad,True,2027-11-28,private,+91-9800000138
+HOSP-1140,Apollo Hospitals Ahmedabad Annex-3,Gujarat,Ahmedabad,True,2027-06-28,private,+91-9800000139
+HOSP-1141,Apollo Multispeciality Hospitals Kolkata Annex-3,West Bengal,Kolkata,True,2026-10-28,private,+91-9800000140
+HOSP-1142,Apollo Hospitals Delhi Annex-3,Delhi,South Delhi,True,2027-05-28,private,+91-9800000141
+HOSP-1143,Fortis Hospital Mohali Annex-3,Punjab,Mohali,True,2027-12-28,private,+91-9800000142
+HOSP-1144,Fortis Hospital Mulund Annex-3,Maharashtra,Mumbai,True,2026-04-28,private,+91-9800000143
+HOSP-1145,Fortis Escorts Heart Institute Annex-3,Delhi,South East Delhi,True,2028-10-28,private,+91-9800000144
+HOSP-1146,Fortis Hospital Anandapur Annex-3,West Bengal,Kolkata,True,2028-04-28,private,+91-9800000145
+HOSP-1147,Manipal Hospital Old Airport Road Annex-3,Karnataka,Bengaluru,True,2028-04-28,private,+91-9800000146
+HOSP-1148,Manipal Hospital Mangaluru Annex-3,Karnataka,Mangaluru,True,2026-08-28,private,+91-9800000147
+HOSP-1149,Manipal Hospital Jaipur Annex-3,Rajasthan,Jaipur,True,2028-02-28,private,+91-9800000148
+HOSP-1150,Max Super Speciality Hospital Saket Annex-3,Delhi,South Delhi,True,2026-03-28,private,+91-9800000149

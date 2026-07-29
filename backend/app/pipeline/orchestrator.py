@@ -30,6 +30,7 @@ from app.pipeline.translator import translate_rejection_reasons
 from app.pipeline.snomed_mapper import lookup_snomed_ct
 from app.pipeline.fraud_scorer import evaluate_fraud_risk
 from app.pipeline.portal import submit_to_government_portal
+from app.pipeline.pmjay_procedure_check import check_procedure_scope, needs_procedure_review
 
 
 def _generate_claim_id() -> str:
@@ -179,10 +180,31 @@ def process_claim(
     print(f"[Pipeline] Stage 3 Harmonize done | Codes: {len(coding_result.coded_diagnoses)}")
     emit(4, "ICD-10 Clinical Code Harmonization", "done")
 
-    # ── Stage 4: Eligibility Check (with Family Fallback) ─────────────────────
-    emit(5, "Eligibility & Duplicate Check", "running")
+    # ── Stage 3.5: PM-JAY Procedure Scope Check (new) ──────────────────────
+    emit(5, "PM-JAY Procedure Scope Validation", "running")
+    t_proc = time.perf_counter()
+    icd10_codes = [d.icd10_code for d in coding_result.coded_diagnoses]
+    line_items_text = [li.description for li in extracted.line_items]
+    procedure_scope = check_procedure_scope(icd10_codes, line_items_text, extracted.symptoms)
+    stage_times["procedure_scope"] = time.perf_counter() - t_proc
+    record_event(
+        "PROCEDURE_SCOPE",
+        "warning" if not procedure_scope.covered else "success",
+        int(stage_times["procedure_scope"] * 1000),
+        f"Covered={procedure_scope.covered} | {procedure_scope.rejection_reason or procedure_scope.package_name or 'in scope'}",
+    )
+    print(f"[Pipeline] Stage 3.5 Procedure scope | Covered: {procedure_scope.covered} | Pkg: {procedure_scope.package_code}")
+    emit(5, "PM-JAY Procedure Scope Validation", "done")
+
+    # ── Stage 4: Eligibility Check with PM-JAY 3-Gate Engine ──────────────────
+    emit(6, "PM-JAY Eligibility & Duplicate Check", "running")
     t_stage = time.perf_counter()
-    eligibility = check_eligibility(extracted.patient_name, extracted.age)
+    eligibility = check_eligibility(
+        extracted.patient_name,
+        extracted.age,
+        hospital_name=extracted.hospital_name,  # Gate 3: empanelment check
+    )
+    print(f"[Pipeline] Stage 4 PM-JAY Eligibility | Scheme: {getattr(eligibility, 'scheme', 'N/A')} | Gate: {getattr(eligibility, 'gate_results', {})}")
     print(f"[Pipeline] Stage 4 Eligibility done | Reason: {eligibility.reason}")
 
     # ── Stage 4.5: Claim Twins (Duplicate Check) ──────────────────────────────
@@ -194,10 +216,15 @@ def process_claim(
         "ELIGIBILITY",
         "success" if eligibility.eligible else "warning",
         int(stage_times.get("eligibility", 0) * 1000),
-        eligibility.reason or "Patient eligible",
+        (
+            f"PM-JAY | Scheme={getattr(eligibility, 'scheme', 'N/A')} | "
+            f"SECC={getattr(eligibility, 'secc_category', 'N/A')} | "
+            f"Cap=₹{getattr(eligibility, 'annual_cap_remaining_inr', 0):,.0f} | "
+            f"{eligibility.reason or 'Patient eligible'}"
+        ),
     )
     print(f"[Pipeline] Stage 4.5 Duplicate check | Duplicate: {is_duplicate}")
-    emit(5, "Eligibility & Duplicate Check", "done")
+    emit(6, "PM-JAY Eligibility & Duplicate Check", "done")
 
     # ── Stage 4.8: Fraud Probability & Safety Guardrails ──────────────────────
     t_fraud = time.perf_counter()
@@ -227,8 +254,9 @@ def process_claim(
         reason_elig = not eligibility.eligible
         reason_dup = is_duplicate
         reason_fraud = fraud_result.escalated_to_hitl
+        reason_proc_scope = needs_procedure_review(procedure_scope)
 
-        if reason_ocr or reason_icd or reason_elig or reason_dup or reason_fraud:
+        if reason_ocr or reason_icd or reason_elig or reason_dup or reason_fraud or reason_proc_scope:
             route = "human_review"
             status = "pending_review"
             if reason_ocr:
@@ -236,7 +264,25 @@ def process_claim(
             if reason_icd:
                 reasons.append("One or more ICD-10 codes have low confidence — clinical review required")
             if reason_elig:
-                reasons.append(eligibility.reason)
+                # PM-JAY rejection type taxonomy
+                rej_type = getattr(eligibility, "rejection_type", "")
+                if rej_type == "cap_exhausted":
+                    reasons.append(f"PM-JAY cap exhausted: {eligibility.reason}")
+                elif rej_type == "hard_eligibility":
+                    reasons.append(f"PM-JAY eligibility rejected: {eligibility.reason}")
+                else:
+                    reasons.append(eligibility.reason)
+            if reason_proc_scope:
+                # PM-JAY procedure scope rejection
+                scope_rej = procedure_scope.rejection_reason
+                if scope_rej == "outpatient_only":
+                    reasons.append("PM-JAY covers hospitalisation only — outpatient-only visits are not reimbursed.")
+                elif scope_rej == "dental_cosmetic":
+                    reasons.append("PM-JAY does not cover dental, cosmetic, or elective aesthetic procedures.")
+                elif scope_rej == "not_in_list":
+                    reasons.append("Procedure is not in PM-JAY's covered 1,929-package list.")
+                else:
+                    reasons.append(f"Procedure scope check failed: {scope_rej}")
             if reason_dup:
                 reasons.append(twin_check["reason"])
             if reason_fraud:

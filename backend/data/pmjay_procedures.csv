@@ -1,0 +1,301 @@
+package_code,package_name,specialty,max_package_rate_inr,covered,icd10_code_hint
+PMJAY-CARD-001,Percutaneous Coronary Intervention (PCI) with Stent,Cardiology,120000,True,I25.10
+PMJAY-CARD-002,Coronary Artery Bypass Graft (CABG),Cardiology,180000,True,I25.10
+PMJAY-CARD-003,Permanent Pacemaker Implantation,Cardiology,95000,True,I44.2
+PMJAY-CARD-004,Primary Angioplasty in Acute Myocardial Infarction,Cardiology,135000,True,I21.0
+PMJAY-CARD-005,Mitral Valve Replacement,Cardiology,165000,True,I35.0
+PMJAY-CARD-006,Aortic Valve Replacement,Cardiology,175000,True,I35.0
+PMJAY-CARD-007,Balloon Mitral Valvuloplasty,Cardiology,65000,True,I05.0
+PMJAY-CARD-008,Radiofrequency Ablation for Arrhythmia,Cardiology,75000,True,I47.2
+PMJAY-CARD-009,ASD Closure (Transcatheter),Cardiology,85000,True,Q21.1
+PMJAY-CARD-010,VSD Closure (Surgical),Cardiology,110000,True,Q21.0
+PMJAY-CARD-011,Pericardiectomy,Cardiology,55000,True,I31.1
+PMJAY-CARD-012,Implantation of AICD (Defibrillator),Cardiology,195000,True,I47.2
+PMJAY-CARD-013,Cardiac Resynchronization Therapy (CRT-D),Cardiology,200000,True,I50.9
+PMJAY-CARD-014,Peripheral Angioplasty,Cardiology,60000,True,I73.9
+PMJAY-CARD-015,Coarctation of Aorta Repair,Cardiology,125000,True,Q25.1
+PMJAY-RESP-001,Fiberoptic Bronchoscopy with Biopsy,Respiratory,12000,True,J44.9
+PMJAY-RESP-002,Thoracoscopy and Pleural Biopsy,Respiratory,18000,True,J90
+PMJAY-RESP-003,Intercostal Drainage Insertion for Pneumothorax,Respiratory,15000,True,J93.9
+PMJAY-RESP-004,Decortication of Lung for Empyema,Respiratory,65000,True,J86.9
+PMJAY-RESP-005,Lobectomy for Lung Cancer,Respiratory,130000,True,C34.9
+PMJAY-RESP-006,Pneumonectomy,Respiratory,150000,True,C34.9
+PMJAY-RESP-007,Mechanical Ventilation in Severe ARDS,Respiratory,45000,True,J80
+PMJAY-RESP-008,Rigid Bronchoscopy for Foreign Body Removal,Respiratory,22000,True,T17.5
+PMJAY-RESP-009,Tracheostomy,Respiratory,20000,True,J95.0
+PMJAY-RESP-010,Pleurodesis for Recurrent Pleural Effusion,Respiratory,16000,True,J90
+PMJAY-RESP-011,Bronchial Artery Embolization for Hemoptysis,Respiratory,50000,True,R04.2
+PMJAY-RESP-012,Sleep Apnea Titration & CPAP Management,Respiratory,14000,True,G47.3
+PMJAY-RESP-013,Pulmonary Thromboendarterectomy,Respiratory,185000,True,I26.9
+PMJAY-RESP-014,Excision of Mediastinal Mass,Respiratory,85000,True,D15.2
+PMJAY-RESP-015,Diaphragmatic Hernia Repair,Respiratory,60000,True,K44.9
+PMJAY-GAST-001,Laparoscopic Cholecystectomy,Gastroenterology,35000,True,K80.20
+PMJAY-GAST-002,Open Appendectomy,Gastroenterology,25000,True,K35.80
+PMJAY-GAST-003,Laparoscopic Appendectomy,Gastroenterology,32000,True,K35.80
+PMJAY-GAST-004,Endoscopic Retrograde Cholangiopancreatography (ERCP),Gastroenterology,38000,True,K83.0
+PMJAY-GAST-005,Endoscopic Variceal Ligation (EVL),Gastroenterology,18000,True,I85.0
+PMJAY-GAST-006,Open Inguinal Hernia Repair,Gastroenterology,22000,True,K40.90
+PMJAY-GAST-007,Laparoscopic Ventral Hernia Repair with Mesh,Gastroenterology,45000,True,K43.9
+PMJAY-GAST-008,Distal Gastrectomy for Gastric Cancer,Gastroenterology,110000,True,C16.9
+PMJAY-GAST-009,Whipple Procedure (Pancreaticoduodenectomy),Gastroenterology,190000,True,C25.9
+PMJAY-GAST-010,Colectomy (Total / Partial),Gastroenterology,95000,True,C18.9
+PMJAY-GAST-011,Splenectomy,Gastroenterology,48000,True,D73.5
+PMJAY-GAST-012,Liver Resection for Hepatic Mass,Gastroenterology,140000,True,C22.0
+PMJAY-GAST-013,Perineal Abscess Drainage,Gastroenterology,15000,True,K61.0
+PMJAY-GAST-014,Haemorrhoidectomy (Stapled),Gastroenterology,28000,True,K64.9
+PMJAY-GAST-015,Diagnostic Upper GI Endoscopy with Biopsy,Gastroenterology,8000,True,K29.7
+PMJAY-NEUR-001,Craniotomy for Brain Tumor Resection,Neurology,145000,True,C71.9
+PMJAY-NEUR-002,Decompressive Craniotomy for Traumatic Brain Injury,Neurology,95000,True,S06.5
+PMJAY-NEUR-003,Ventriculoperitoneal (VP) Shunt for Hydrocephalus,Neurology,42000,True,G91.9
+PMJAY-NEUR-004,Microvascular Decompression for Trigeminal Neuralgia,Neurology,85000,True,G50.0
+PMJAY-NEUR-005,Endovascular Coiling of Cerebral Aneurysm,Neurology,190000,True,I67.1
+PMJAY-NEUR-006,Laminectomy & Discectomy for Lumbar Disc Herniation,Neurology,65000,True,M51.2
+PMJAY-NEUR-007,Anterior Cervical Discectomy and Fusion (ACDF),Neurology,98000,True,M50.2
+PMJAY-NEUR-008,Excision of Spinal Cord Tumor,Neurology,135000,True,D33.4
+PMJAY-NEUR-009,Carotid Endarterectomy,Neurology,115000,True,I65.2
+PMJAY-NEUR-010,Thrombolysis in Acute Ischemic Stroke,Neurology,55000,True,I63.9
+PMJAY-NEUR-011,Subdural Hematoma Evacuation,Neurology,50000,True,S06.5
+PMJAY-NEUR-012,Nerve Biopsy,Neurology,12000,True,G62.9
+PMJAY-NEUR-013,Temporal Lobe Resection for Intractable Epilepsy,Neurology,125000,True,G40.9
+PMJAY-NEUR-014,Transsphenoidal Resection of Pituitary Adenoma,Neurology,110000,True,D35.2
+PMJAY-NEUR-015,Peripheral Nerve Decompression,Neurology,25000,True,G56.0
+PMJAY-ORTH-001,Total Knee Arthroplasty (TKA),Orthopaedics,135000,True,M17.9
+PMJAY-ORTH-002,Total Hip Arthroplasty (THA),Orthopaedics,145000,True,M16.9
+PMJAY-ORTH-003,Open Reduction and Internal Fixation (ORIF) Femur,Orthopaedics,55000,True,S72.0
+PMJAY-ORTH-004,ORIF Tibia / Fibula Fracture,Orthopaedics,42000,True,S82.2
+PMJAY-ORTH-005,Arthroscopic ACL Reconstruction,Orthopaedics,68000,True,S83.5
+PMJAY-ORTH-006,Arthroscopic Meniscectomy,Orthopaedics,38000,True,M23.2
+PMJAY-ORTH-007,Spine Fusion Surgery (Posterior Lumbar),Orthopaedics,110000,True,M43.1
+PMJAY-ORTH-008,ORIF Radius / Ulna Fracture,Orthopaedics,35000,True,S52.5
+PMJAY-ORTH-009,Hemiarthroplasty of Hip,Orthopaedics,75000,True,S72.0
+PMJAY-ORTH-010,Correction of Clubfoot / Talipes Equinovarus,Orthopaedics,30000,True,Q66.0
+PMJAY-ORTH-011,Sequestrectomy & Debridement for Osteomyelitis,Orthopaedics,40000,True,M86.9
+PMJAY-ORTH-012,Excision of Bone Tumor with Reconstruction,Orthopaedics,125000,True,C40.9
+PMJAY-ORTH-013,Rotator Cuff Repair (Arthroscopic),Orthopaedics,62000,True,M75.1
+PMJAY-ORTH-014,External Fixation of Open Fracture,Orthopaedics,45000,True,S82.9
+PMJAY-ORTH-015,Tendon Transfer / Reconstruction,Orthopaedics,28000,True,M79.8
+PMJAY-UROL-001,Transurethral Resection of Prostate (TURP),Urology,42000,True,N40.1
+PMJAY-UROL-002,Percutaneous Nephrolithotomy (PCNL) for Renal Calculi,Urology,48000,True,N20.0
+PMJAY-UROL-003,Ureteroscopic Lithotripsy (URSL) with DJ Stenting,Urology,35000,True,N20.1
+PMJAY-UROL-004,Radical Nephrectomy for Renal Cell Carcinoma,Urology,115000,True,C64.9
+PMJAY-UROL-005,Radical Cystectomy with Urinary Diversion,Urology,160000,True,C67.9
+PMJAY-UROL-006,Pyeloplasty for Pelviureteric Junction Obstruction,Urology,52000,True,N13.0
+PMJAY-UROL-007,Extracorporeal Shock Wave Lithotripsy (ESWL),Urology,22000,True,N20.9
+PMJAY-UROL-008,Transurethral Resection of Bladder Tumor (TURBT),Urology,38000,True,C67.9
+PMJAY-UROL-009,Hypospadias Repair,Urology,45000,True,Q54.9
+PMJAY-UROL-010,Orchidopexy for Undescended Testis,Urology,30000,True,Q53.9
+PMJAY-UROL-011,AV Fistula Creation for Hemodialysis Access,Urology,18000,True,N18.9
+PMJAY-UROL-012,Radical Prostatectomy,Urology,140000,True,C61
+PMJAY-UROL-013,Internal Urethrotomy (VIU) for Urethral Stricture,Urology,25000,True,N35.9
+PMJAY-UROL-014,Cystolitholapaxy for Bladder Stone,Urology,28000,True,N21.0
+PMJAY-UROL-015,Nephrolithotomy / Open Stone Removal,Urology,40000,True,N20.0
+PMJAY-ONCO-001,Modified Radical Mastectomy (MRM) for Breast Cancer,Oncology,75000,True,C50.9
+PMJAY-ONCO-002,Breast Conserving Surgery with Sentinel Node Biopsy,Oncology,65000,True,C50.9
+PMJAY-ONCO-003,Chemotherapy Cycle - High Risk,Oncology,25000,True,C95.9
+PMJAY-ONCO-004,Chemotherapy Cycle - Standard Risk,Oncology,15000,True,C95.9
+PMJAY-ONCO-005,External Beam Radiotherapy (3D-CRT / IMRT Course),Oncology,85000,True,C95.9
+PMJAY-ONCO-006,Brachytherapy Session for Cervical Cancer,Oncology,35000,True,C53.9
+PMJAY-ONCO-007,Radical Hysterectomy with Pelvic Lymphadenectomy,Oncology,110000,True,C53.9
+PMJAY-ONCO-008,Commando Operation for Oral Cavity Cancer,Oncology,150000,True,C04.9
+PMJAY-ONCO-009,Esophagectomy for Esophageal Carcinoma,Oncology,165000,True,C15.9
+PMJAY-ONCO-010,Hyperthermic Intraperitoneal Chemotherapy (HIPEC),Oncology,195000,True,C48.2
+PMJAY-ONCO-011,Bone Marrow Biopsy & Staging Workup,Oncology,12000,True,C91.0
+PMJAY-ONCO-012,Target Therapy Administration (Monoclonal Antibodies),Oncology,45000,True,C95.9
+PMJAY-ONCO-013,Stereotactic Radiosurgery (SRS / SBRT),Oncology,130000,True,C71.9
+PMJAY-ONCO-014,Wide Local Excision of Sarcoma with Reconstruction,Oncology,90000,True,C49.9
+PMJAY-ONCO-015,Palliative Radiotherapy Course,Oncology,28000,True,C95.9
+PMJAY-OPHT-001,Phacoemulsification with Foldable IOL Implantation,Ophthalmology,18000,True,H26.9
+PMJAY-OPHT-002,Small Incision Cataract Surgery (SICS) with IOL,Ophthalmology,12000,True,H26.9
+PMJAY-OPHT-003,Pars Plana Vitrectomy (PPV) for Retinal Detachment,Ophthalmology,55000,True,H33.2
+PMJAY-OPHT-004,Trabeculectomy for Glaucoma,Ophthalmology,28000,True,H40.9
+PMJAY-OPHT-005,Penetrating Keratoplasty (Corneal Transplant),Ophthalmology,65000,True,H18.6
+PMJAY-OPHT-006,Intravitreal Injection (Anti-VEGF) for AMD,Ophthalmology,22000,True,H35.3
+PMJAY-OPHT-007,Pterygium Excision with Autograft,Ophthalmology,14000,True,H11.0
+PMJAY-OPHT-008,Dacryocystorhinostomy (DCR) Surgery,Ophthalmology,24000,True,H04.3
+PMJAY-OPHT-009,Squint Correction Surgery (Strabismus),Ophthalmology,32000,True,H50.9
+PMJAY-OPHT-010,Scleral Buckling for Retinal Detachment,Ophthalmology,48000,True,H33.0
+PMJAY-OPHT-011,Enucleation / Evisceration with Orbital Implant,Ophthalmology,30000,True,H05.8
+PMJAY-OPHT-012,Lid Reconstruction for Trauma / Tumour,Ophthalmology,26000,True,H02.8
+PMJAY-OPHT-013,Laser Photocoagulation for Diabetic Retinopathy,Ophthalmology,10000,True,E11.3
+PMJAY-OPHT-014,Secondary IOL Fixation (Scleral Fixated),Ophthalmology,35000,True,H27.1
+PMJAY-OPHT-015,Repair of Open Globe Injury,Ophthalmology,38000,True,S05.2
+PMJAY-ENTT-001,Tympanoplasty Type 1 for Perforated Eardrum,ENT,28000,True,H72.9
+PMJAY-ENTT-002,Functional Endoscopic Sinus Surgery (FESS),ENT,42000,True,J32.9
+PMJAY-ENTT-003,Tonsillectomy with Adenoidectomy,ENT,22000,True,J35.0
+PMJAY-ENTT-004,Mastoidectomy (Radical / Modified Radical),ENT,48000,True,H70.1
+PMJAY-ENTT-005,Septoplasty for Deviated Nasal Septum,ENT,24000,True,J34.2
+PMJAY-ENTT-006,Microlaryngeal Surgery for Vocal Cord Lesion,ENT,32000,True,J38.1
+PMJAY-ENTT-007,Stapedectomy for Otosclerosis,ENT,45000,True,H80.9
+PMJAY-ENTT-008,Total Laryngectomy for Laryngeal Cancer,ENT,125000,True,C32.9
+PMJAY-ENTT-009,Parotidectomy (Superficial / Total),ENT,55000,True,D11.0
+PMJAY-ENTT-010,Excision of Juvenile Nasopharyngeal Angiofibroma,ENT,85000,True,D10.6
+PMJAY-ENTT-011,Cochlear Implantation Surgery,ENT,195000,True,H90.3
+PMJAY-ENTT-012,Foreign Body Removal from Bronchus / Esophagus,ENT,18000,True,T17.5
+PMJAY-ENTT-013,Submandibular Gland Excision,ENT,35000,True,K11.8
+PMJAY-ENTT-014,Preauricular Sinus Excision,ENT,16000,True,Q18.1
+PMJAY-ENTT-015,Tracheal Stenosis Resection & Anastomosis,ENT,95000,True,J95.5
+PMJAY-SURG-001,Laparoscopic Incisional Hernia Repair,General Surgery,48000,True,K43.2
+PMJAY-SURG-002,Thyroidectomy (Total / Subtotal),General Surgery,52000,True,E07.9
+PMJAY-SURG-003,Modified Radical Neck Dissection,General Surgery,78000,True,C77.0
+PMJAY-SURG-004,Debridement & Dressing for Diabetic Foot Ulcer,General Surgery,18000,True,E11.62
+PMJAY-SURG-005,Amputation of Lower Limb (Above / Below Knee),General Surgery,42000,True,S88.1
+PMJAY-SURG-006,Incision and Drainage of Major Abscess,General Surgery,12000,True,L02.9
+PMJAY-SURG-007,Peritonitis Management & Exploratory Laparotomy,General Surgery,65000,True,K65.9
+PMJAY-SURG-008,Splenectomy for Trauma,General Surgery,55000,True,S36.0
+PMJAY-SURG-009,Excision of Large Lipoma / Soft Tissue Mass,General Surgery,16000,True,D21.9
+PMJAY-SURG-010,Fistulotomy / Fistulectomy for Anal Fistula,General Surgery,24000,True,K60.3
+PMJAY-SURG-011,Pilonidal Sinus Excision with Flap Coverage,General Surgery,28000,True,L05.0
+PMJAY-SURG-012,Varicose Vein Stripping / Laser Ablation,General Surgery,38000,True,I83.9
+PMJAY-SURG-013,Mesenteric Cyst Excision,General Surgery,45000,True,K66.8
+PMJAY-SURG-014,Drainage of Pancreatic Pseudocyst,General Surgery,60000,True,K86.3
+PMJAY-SURG-015,Laparoscopic Adhesiolysis,General Surgery,35000,True,K66.0
+PMJAY-OBST-001,Lower Segment Cesarean Section (LSCS),Obstetrics,25000,True,O82.0
+PMJAY-OBST-002,Normal Vaginal Delivery with Episiotomy,Obstetrics,15000,True,O80.0
+PMJAY-OBST-003,Total Abdominal Hysterectomy (TAH) with BSO,Obstetrics,45000,True,N80.9
+PMJAY-OBST-004,Laparoscopic Assisted Vaginal Hysterectomy (LAVH),Obstetrics,52000,True,N80.9
+PMJAY-OBST-005,Surgical Management of Ectopic Pregnancy,Obstetrics,35000,True,O00.9
+PMJAY-OBST-006,Laparoscopic Myomectomy for Uterine Fibroids,Obstetrics,48000,True,D25.9
+PMJAY-OBST-007,Repair of Complete Perineal Tear,Obstetrics,22000,True,O70.2
+PMJAY-OBST-008,Cervical Encirclage for Incompetent Cervix,Obstetrics,18000,True,O34.3
+PMJAY-OBST-009,Suction & Evacuation for Incomplete Abortion,Obstetrics,12000,True,O03.9
+PMJAY-OBST-010,Ovarian Cystectomy (Laparoscopic),Obstetrics,38000,True,N83.2
+PMJAY-OBST-011,Hysteroscopic Resection of Uterine Septum / Polyp,Obstetrics,28000,True,N85.8
+PMJAY-OBST-012,Management of Postpartum Hemorrhage (PPH),Obstetrics,30000,True,O72.1
+PMJAY-OBST-013,Pelvic Floor Reconstruction for Uterine Prolapse,Obstetrics,42000,True,N81.9
+PMJAY-OBST-014,Excision of Endometriotic Deposits,Obstetrics,45000,True,N80.9
+PMJAY-OBST-015,Exploratory Laparotomy for Ruptured Ovarian Abscess,Obstetrics,50000,True,N73.9
+PMJAY-NEON-001,NICU Level III Care for Respiratory Distress Syndrome,Neonatology,45000,True,P22.0
+PMJAY-NEON-002,Phototherapy & Exchange Transfusion for Neonatal Jaundice,Neonatology,18000,True,P59.9
+PMJAY-NEON-003,Management of Very Low Birth Weight (VLBW) Neonate,Neonatology,65000,True,P07.1
+PMJAY-NEON-004,Surgical Repair of Congenital Diaphragmatic Hernia,Neonatology,95000,True,Q79.0
+PMJAY-NEON-005,Surgical Repair of Tracheoesophageal Fistula,Neonatology,110000,True,Q39.1
+PMJAY-NEON-006,Surgical Repair of Imperforate Anus,Neonatology,85000,True,Q42.3
+PMJAY-NEON-007,Management of Neonatal Sepsis in NICU,Neonatology,35000,True,P36.9
+PMJAY-NEON-008,Repair of Omphalocele / Gastroschisis,Neonatology,90000,True,Q79.2
+PMJAY-NEON-009,Ventriculoperitoneal Shunting in Neonates,Neonatology,55000,True,Q03.9
+PMJAY-NEON-010,Laser Therapy for Retinopathy of Prematurity,Neonatology,32000,True,H35.1
+PMJAY-NEON-011,Treatment of Hypoxic Ischemic Encephalopathy (HIE),Neonatology,50000,True,P91.6
+PMJAY-NEON-012,Therapeutic Hypothermia in Neonates,Neonatology,42000,True,P91.6
+PMJAY-NEON-013,Closure of Patent Ductus Arteriosus (PDA) in Preterm,Neonatology,75000,True,Q25.0
+PMJAY-NEON-014,Surgical Correction of Hirschsprung Disease,Neonatology,98000,True,Q43.1
+PMJAY-NEON-015,Congenital Intestinal Atresia Repair,Neonatology,88000,True,Q41.9
+PMJAY-BURN-001,Inpatient Burn Care 10-20% Total Body Surface Area,Burns,35000,True,T20.0
+PMJAY-BURN-002,Inpatient Burn Care 21-40% Total Body Surface Area,Burns,75000,True,T20.0
+PMJAY-BURN-003,Inpatient Burn Care > 40% TBSA Intensive Care,Burns,140000,True,T20.0
+PMJAY-BURN-004,Burn Escharotomy,Burns,25000,True,T30.0
+PMJAY-BURN-005,Split-Thickness Skin Grafting (STSG) for Burn Wound,Burns,45000,True,T30.0
+PMJAY-BURN-006,Tangential Excision and Skin Grafting,Burns,55000,True,T30.0
+PMJAY-BURN-007,Release of Post-Burn Contracture (Neck / Axilla),Burns,42000,True,L90.5
+PMJAY-BURN-008,Release of Post-Burn Contracture (Hand / Fingers),Burns,38000,True,L90.5
+PMJAY-BURN-009,Chemical Burn Debridement & Management,Burns,30000,True,T30.0
+PMJAY-BURN-010,Electrical Burn Management with Fasciotomy,Burns,68000,True,T30.0
+PMJAY-BURN-011,Inhalation Burn Airway Management & ICU,Burns,85000,True,T27.0
+PMJAY-BURN-012,Full-Thickness Skin Grafting for Facial Burn,Burns,50000,True,T20.0
+PMJAY-BURN-013,Flap Coverage for Deep Exposed Burn Structure,Burns,72000,True,T30.0
+PMJAY-BURN-014,Burn Wound Debridement under Anesthesia,Burns,18000,True,T30.0
+PMJAY-BURN-015,Collagen Dressing Application for Partial Burns,Burns,22000,True,T30.0
+PMJAY-PLAS-001,Cleft Lip Repair (Unilateral / Bilateral),Plastic,35000,True,Q36.9
+PMJAY-PLAS-002,Cleft Palate Repair (Palatoplasty),Plastic,42000,True,Q35.9
+PMJAY-PLAS-003,Microvascular Free Flap Reconstruction,Plastic,125000,True,M79.8
+PMJAY-PLAS-004,Pedicle Flap Coverage for Tissue Defect,Plastic,65000,True,M79.8
+PMJAY-PLAS-005,Reconstruction of Soft Tissue Trauma,Plastic,48000,True,S09.9
+PMJAY-PLAS-006,Reimplantation of Amputated Digit / Hand,Plastic,160000,True,S68.1
+PMJAY-PLAS-007,Pressure Ulcer Debridement and Flap Closure,Plastic,52000,True,L89.9
+PMJAY-PLAS-008,Correction of Microtia / Auricular Reconstruction,Plastic,75000,True,Q17.2
+PMJAY-PLAS-009,Tendon and Nerve Repair in Hand Trauma,Plastic,38000,True,S64.9
+PMJAY-PLAS-010,Facial Bone Fracture Fixation (Maxillofacial),Plastic,60000,True,S02.4
+PMJAY-PLAS-011,Scar Revision for Functional Impairment,Plastic,25000,True,L90.5
+PMJAY-PLAS-012,Correction of Syndactyly / Polydactyly,Plastic,32000,True,Q70.9
+PMJAY-PLAS-013,Lymphatic Venous Anastomosis for Lymphedema,Plastic,85000,True,I89.0
+PMJAY-PLAS-014,Eyelid Reconstruction Post-Tumour Excision,Plastic,30000,True,H02.8
+PMJAY-PLAS-015,Scalp Defect Reconstruction with Tissue Expander,Plastic,55000,True,M79.8
+PMJAY-NEPH-001,Acute Hemodialysis Session,Nephrology,5000,True,N18.9
+PMJAY-NEPH-002,Maintenance Hemodialysis Package (Monthly),Nephrology,15000,True,N18.9
+PMJAY-NEPH-003,Continuous Ambulatory Peritoneal Dialysis (CAPD) Catheter Insertion,Nephrology,28000,True,N18.9
+PMJAY-NEPH-004,Renal Biopsy (Percutaneous),Nephrology,12000,True,N05.9
+PMJAY-NEPH-005,Renal Transplantation (Donor & Recipient Package),Nephrology,200000,True,N18.5
+PMJAY-NEPH-006,Plasmapheresis Session for Glomerulonephritis,Nephrology,22000,True,N00.9
+PMJAY-NEPH-007,Management of Acute Kidney Injury in ICU,Nephrology,45000,True,N17.9
+PMJAY-NEPH-008,AV Graft Placement for Vascular Access,Nephrology,35000,True,N18.9
+PMJAY-NEPH-009,Permcath Insertion for Long-Term Dialysis Access,Nephrology,18000,True,N18.9
+PMJAY-NEPH-010,Treatment of Lupus Nephritis,Nephrology,38000,True,M32.14
+PMJAY-NEPH-011,Management of Nephrotic Syndrome,Nephrology,25000,True,N04.9
+PMJAY-NEPH-012,CAPD Fluid & Supplies Package (Monthly),Nephrology,20000,True,N18.9
+PMJAY-NEPH-013,Fistulogram & Angioplasty of Failing AV Fistula,Nephrology,32000,True,N18.9
+PMJAY-NEPH-014,Management of Renal Osteodystrophy,Nephrology,18000,True,N25.0
+PMJAY-NEPH-015,Treatment of Uremic Encephalopathy,Nephrology,30000,True,N18.9
+PMJAY-ENDO-001,Inpatient Management of Diabetic Ketoacidosis (DKA),Endocrinology,28000,True,E11.1
+PMJAY-ENDO-002,Inpatient Management of Hyperosmolar Hyperglycemic State,Endocrinology,32000,True,E11.0
+PMJAY-ENDO-003,Management of Acute Adrenal Crisis,Endocrinology,25000,True,E27.2
+PMJAY-ENDO-004,Treatment of Severe Hypercalcemic Crisis,Endocrinology,22000,True,E83.5
+PMJAY-ENDO-005,Parathyroidectomy for Hyperparathyroidism,Endocrinology,58000,True,E21.0
+PMJAY-ENDO-006,Adrenalectomy (Laparoscopic) for Pheochromocytoma / Tumor,Endocrinology,95000,True,E27.5
+PMJAY-ENDO-007,Inpatient Management of Thyroid Storm,Endocrinology,35000,True,E05.9
+PMJAY-ENDO-008,Treatment of Pituitary Apoplexy,Endocrinology,65000,True,E23.6
+PMJAY-ENDO-009,Management of Severe Hypoglycemic Coma,Endocrinology,18000,True,E16.2
+PMJAY-ENDO-010,Evaluation & Treatment of Cushing Disease,Endocrinology,42000,True,E24.0
+PMJAY-ENDO-011,Radioactive Iodine Therapy for Thyrotoxicosis,Endocrinology,30000,True,E05.9
+PMJAY-ENDO-012,Management of Acromegaly,Endocrinology,48000,True,E22.0
+PMJAY-ENDO-013,Management of Diabetes Insipidus,Endocrinology,20000,True,E23.2
+PMJAY-ENDO-014,Treatment of Severe Osteoporosis with Fracture Risk,Endocrinology,24000,True,M81.0
+PMJAY-ENDO-015,Management of Congenital Adrenal Hyperplasia,Endocrinology,26000,True,E25.0
+PMJAY-RHEU-001,Biological Therapy Administration for Severe Rheumatoid Arthritis,Rheumatology,45000,True,M05.9
+PMJAY-RHEU-002,Management of Acute Systemic Lupus Erythematosus (SLE) Flare,Rheumatology,38000,True,M32.9
+PMJAY-RHEU-003,Inpatient Care for Vasculitis (Wegener / PAN),Rheumatology,42000,True,M31.3
+PMJAY-RHEU-004,Treatment of Severe Ankylosing Spondylitis,Rheumatology,35000,True,M45.9
+PMJAY-RHEU-005,Pulse Cyclophosphamide Therapy for Systemic Sclerosis,Rheumatology,28000,True,M34.0
+PMJAY-RHEU-006,Intra-articular Injections under Ultrasound Guidance,Rheumatology,12000,True,M25.5
+PMJAY-RHEU-007,Inpatient Management of Severe Gouty Arthritis Flare,Rheumatology,18000,True,M10.0
+PMJAY-RHEU-008,Treatment of Dermatomyositis / Polymyositis,Rheumatology,40000,True,M33.9
+PMJAY-RHEU-009,Management of Psoriatic Arthritis with Biologics,Rheumatology,42000,True,M07.3
+PMJAY-RHEU-010,Treatment of Antiphospholipid Syndrome,Rheumatology,25000,True,D68.6
+PMJAY-RHEU-011,Management of Juvenile Idiopathic Arthritis,Rheumatology,32000,True,M08.0
+PMJAY-RHEU-012,Management of Adult-Onset Still Disease,Rheumatology,36000,True,M06.1
+PMJAY-RHEU-013,Infusion Therapy for Osteoporosis (Zoledronic Acid),Rheumatology,15000,True,M81.0
+PMJAY-RHEU-014,Treatment of Giant Cell Arteritis,Rheumatology,22000,True,M31.5
+PMJAY-RHEU-015,Rehabilitation & Joint Mobilization in Severe Arthritis,Rheumatology,16000,True,M13.9
+PMJAY-HAEM-001,Allogeneic Bone Marrow Transplantation,Haematology,200000,True,C91.0
+PMJAY-HAEM-002,Autologous Stem Cell Transplantation,Haematology,180000,True,C90.0
+PMJAY-HAEM-003,Management of Acute Aplastic Anemia,Haematology,85000,True,D61.9
+PMJAY-HAEM-004,Inpatient Care for Vaso-Occlusive Crisis in Sickle Cell,Haematology,25000,True,D57.0
+PMJAY-HAEM-005,Blood Component Transfusion Package for Thalassemia,Haematology,15000,True,D56.1
+PMJAY-HAEM-006,Treatment of Severe Immune Thrombocytopenia (ITP),Haematology,32000,True,D69.3
+PMJAY-HAEM-007,Inpatient Induction Chemotherapy for Acute Myeloid Leukemia,Haematology,120000,True,C92.0
+PMJAY-HAEM-008,Management of Hemophilia with Factor VIII / IX,Haematology,65000,True,D66
+PMJAY-HAEM-009,Treatment of Multiple Myeloma with Targeted Agents,Haematology,95000,True,C90.0
+PMJAY-HAEM-010,Management of Febrile Neutropenia in Hematologic Malignancy,Haematology,45000,True,D70
+PMJAY-HAEM-011,Therapeutic Cytapheresis / Leukapheresis,Haematology,35000,True,C92.9
+PMJAY-HAEM-012,Inpatient Care for Disseminated Intravascular Coagulation,Haematology,50000,True,D65
+PMJAY-HAEM-013,Treatment of Myelofibrosis,Haematology,55000,True,D47.1
+PMJAY-HAEM-014,Treatment of Chronic Myeloid Leukemia (Tyrosine Kinase Inhibitor),Haematology,40000,True,C92.1
+PMJAY-HAEM-015,Iron Chelation Therapy Package for Transfusion Overload,Haematology,18000,True,E83.1
+PMJAY-PSYC-001,Inpatient Management of Severe Bipolar Mania Crisis,Psychiatry,28000,True,F31.9
+PMJAY-PSYC-002,Inpatient Treatment of Severe Schizophrenia Psychosis,Psychiatry,30000,True,F20.9
+PMJAY-PSYC-003,Electroconvulsive Therapy (ECT) Course under Anesthesia,Psychiatry,22000,True,F32.9
+PMJAY-PSYC-004,Inpatient De-addiction & Withdrawal Management,Psychiatry,25000,True,F10.2
+PMJAY-PSYC-005,Acute Management of Severe Major Depressive Disorder,Psychiatry,24000,True,F32.9
+PMJAY-PSYC-006,Inpatient Care for Catatonia,Psychiatry,26000,True,F20.2
+PMJAY-PSYC-007,Treatment of Delirium Tremens in ICU / HDU,Psychiatry,35000,True,F10.4
+PMJAY-PSYC-008,Management of Severe Obsessive Compulsive Disorder Crisis,Psychiatry,20000,True,F42.9
+PMJAY-PSYC-009,Inpatient Management of Acute Psychotic Episode,Psychiatry,25000,True,F23
+PMJAY-PSYC-010,Neuropsychiatric Rehabilitation Package,Psychiatry,32000,True,F03.90
+PMJAY-PSYC-011,Inpatient Care for Puerperal Psychosis,Psychiatry,28000,True,F53.1
+PMJAY-PSYC-012,Management of Eating Disorder with Severe Malnutrition,Psychiatry,30000,True,F50.0
+PMJAY-PSYC-013,Inpatient Management of Agitation in Dementia,Psychiatry,22000,True,F03.90
+PMJAY-PSYC-014,Crisis Stabilization for Acute Stress Disorder,Psychiatry,18000,True,F43.0
+PMJAY-PSYC-015,Adolescent Behavioral Inpatient Intervention,Psychiatry,20000,True,F91.9
+PMJAY-DERM-001,Inpatient Management of Pemphigus Vulgaris,Dermatology,45000,True,L10.0
+PMJAY-DERM-002,Inpatient Management of Stevens-Johnson Syndrome / TEN,Dermatology,85000,True,L51.1
+PMJAY-DERM-003,Treatment of Severe Exfoliative Dermatitis / Erythroderma,Dermatology,38000,True,L26
+PMJAY-DERM-004,Inpatient Care for Severe Psoriatic Erythroderma,Dermatology,42000,True,L40.0
+PMJAY-DERM-005,Surgical Excision of Melanoma with Sentinel Node Biopsy,Dermatology,95000,True,C43.9
+PMJAY-DERM-006,Surgical Excision of Basal Cell Carcinoma,Dermatology,28000,True,C44.9
+PMJAY-DERM-007,Surgical Excision of Squamous Cell Carcinoma of Skin,Dermatology,35000,True,C44.9
+PMJAY-DERM-008,Inpatient Care for Leprosy Reaction (Type 1 / Type 2),Dermatology,25000,True,A30.9
+PMJAY-DERM-009,Debridement & Management of Pyoderma Gangrenosum,Dermatology,32000,True,L88
+PMJAY-DERM-010,Phototherapy Course (Narrowband UVB) for Severe Psoriasis,Dermatology,15000,True,L40.0
+PMJAY-DERM-011,Surgical Debridement of Necrotizing Fasciitis,Dermatology,65000,True,M72.6
+PMJAY-DERM-012,Management of Toxic Epidermal Necrolysis in Burn / ICU Unit,Dermatology,98000,True,L51.2
+PMJAY-DERM-013,Biological Therapy for Refractory Severe Atopic Dermatitis,Dermatology,50000,True,L20.9
+PMJAY-DERM-014,Excision and Grafting for Large Cutaneous Malignancy,Dermatology,48000,True,C44.9
+PMJAY-DERM-015,Inpatient Management of Bullous Pemphigoid,Dermatology,40000,True,L12.0

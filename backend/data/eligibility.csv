@@ -1,54 +1,101 @@
-patient_id,patient_name,age,income_bracket,existing_coverage,coverage_expiry_date,eligible,reason
-PAT-1001,Rahul Sharma,34,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1050,Priya Sharma,28,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
-PAT-1051,Vivek S.,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
-PAT-1052,Vivek Sharma,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage
-PAT-1002,Priya Singh,28,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
-PAT-1003,Amit Verma,45,5-8 LPA,ESIC Standard,2026-11-30,True,Active coverage
-PAT-1004,Sunita Devi,60,Below 2.5 LPA,PMJAY Gold,2026-08-15,True,Active coverage
-PAT-1005,Rajesh Kumar,38,2.5-5 LPA,PMJAY Silver,2025-01-01,False,Coverage expired
-PAT-1006,Meena Iyer,45,8-12 LPA,Ayushman Plus,2027-03-31,True,Active coverage
-PAT-1007,Suresh Patel,61,5-8 LPA,PMJAY Silver,2026-10-31,True,Active coverage
-PAT-1008,Anita Joshi,33,2.5-5 LPA,ESIC Standard,2026-07-31,True,Active coverage
-PAT-1009,Deepak Nair,50,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1010,Kavitha Rao,42,5-8 LPA,PMJAY Silver,2024-06-30,False,Coverage expired
-PAT-1011,Vijay Menon,55,8-12 LPA,Ayushman Plus,2027-01-15,True,Active coverage
-PAT-1012,Lakshmi Pillai,67,Below 2.5 LPA,PMJAY Gold,2026-11-30,True,Senior citizen coverage active
-PAT-1013,Arjun Reddy,29,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
-PAT-1014,Fatima Shaikh,52,Below 2.5 LPA,PMJAY Gold,2022-03-15,False,Coverage expired 2022
-PAT-1015,Ravi Shankar,48,5-8 LPA,ESIC Standard,2026-12-31,True,Active coverage
-PAT-1016,Pooja Agarwal,26,2.5-5 LPA,PMJAY Silver,2026-10-31,True,Active coverage
-PAT-1017,Suresh Iyer,44,8-12 LPA,Ayushman Plus,2027-02-28,True,Active coverage
-PAT-1018,Geeta Kumari,58,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1019,Mohan Das,71,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Senior citizen coverage active
-PAT-1020,Nisha Gupta,35,2.5-5 LPA,PMJAY Silver,2026-07-31,True,Active coverage
-PAT-1021,Ramesh Yadav,40,Below 2.5 LPA,PMJAY Gold,2025-12-31,False,Coverage expired
-PAT-1022,Sita Devi,63,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Senior citizen active
-PAT-1023,Kiran Bhat,31,5-8 LPA,ESIC Standard,2026-09-30,True,Active coverage
-PAT-1024,Anand Swamy,47,2.5-5 LPA,PMJAY Silver,2026-11-30,True,Active coverage
-PAT-1025,Devika Nair,39,8-12 LPA,Ayushman Plus,2027-04-30,True,Active coverage
-PAT-1026,Harish Chandra,56,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1027,Parvati Devi,64,Below 2.5 LPA,PMJAY Gold,2023-06-30,False,Coverage expired 2023
-PAT-1028,Santosh Kumar,37,2.5-5 LPA,PMJAY Silver,2026-10-31,True,Active coverage
-PAT-1029,Usha Rani,49,5-8 LPA,ESIC Standard,2026-12-31,True,Active coverage
-PAT-1030,Balachandran M,52,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Active coverage
-PAT-1031,Chitra Suresh,43,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
-PAT-1032,Dinesh Patil,36,5-8 LPA,PMJAY Silver,2026-11-30,True,Active coverage
-PAT-1033,Esha Sharma,22,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1034,Firoz Khan,41,2.5-5 LPA,ESIC Standard,2026-10-31,True,Active coverage
-PAT-1035,Gopalan R,68,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Senior citizen active
-PAT-1036,Hema Malini,54,8-12 LPA,Ayushman Plus,2027-01-31,True,Active coverage
-PAT-1037,Indira Pillai,46,Below 2.5 LPA,PMJAY Gold,2025-06-30,False,Coverage expired
-PAT-1038,Jagdish Prasad,59,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
-PAT-1039,Kamala Devi,72,Below 2.5 LPA,PMJAY Gold,2026-07-31,True,Senior citizen active
-PAT-1040,Lokesh Kumar,33,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
-PAT-1041,Mangala P,57,5-8 LPA,ESIC Standard,2026-11-30,True,Active coverage
-PAT-1042,Naveen Raj,27,2.5-5 LPA,PMJAY Silver,2026-12-31,True,Active coverage
-PAT-1043,Omkar Singh,44,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Active coverage
-PAT-1044,Padma Lakshmi,61,Below 2.5 LPA,PMJAY Gold,2026-10-31,True,Senior citizen active
-PAT-1045,Qureshi Aziz,38,2.5-5 LPA,ESIC Standard,2026-09-30,True,Active coverage
-PAT-1046,Revathi Devi,50,Below 2.5 LPA,PMJAY Gold,2024-12-31,False,Coverage expired 2024
-PAT-1047,Srinivas Rao,48,5-8 LPA,PMJAY Silver,2027-02-28,True,Active coverage
-PAT-1048,Thenmozhi K,35,2.5-5 LPA,PMJAY Silver,2026-11-30,True,Active coverage
-PAT-1049,Uday Kumar,42,8-12 LPA,Ayushman Plus,2027-03-31,True,Active coverage
-PAT-1050,Vasudha Singh,30,2.5-5 LPA,PMJAY Silver,2026-12-31,True,Active coverage
+patient_id,patient_name,age,income_bracket,existing_coverage,coverage_expiry_date,eligible,reason,aadhaar_number,ration_card_number,secc_category,state,family_id,annual_utilization_inr,senior_citizen_utilization_inr,scheme
+PAT-1001,Rahul Sharma,34,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1001,RC-100000001001,none,Karnataka,FAM-1001,12000,0,PMJAY
+PAT-1002,Priya Sharma,28,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1002,RC-100000001001,none,Karnataka,FAM-1001,0,0,PMJAY
+PAT-1003,Meena Iyer,45,8-12 LPA,Ayushman Plus,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1003,RC-100000001002,none,Karnataka,FAM-1002,361000,0,PMJAY
+PAT-1004,Rajesh Iyer,38,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1004,RC-100000001002,none,Rajasthan,FAM-1002,0,0,PMJAY
+PAT-1005,Suresh Patel,61,5-8 LPA,PMJAY Silver,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1005,RC-100000001003,none,Gujarat,FAM-1003,22120,0,PMJAY
+PAT-1006,Taraben Patel,40,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1006,RC-100000001003,none,Maharashtra,FAM-1003,0,0,PMJAY
+PAT-1007,Amit Verma,41,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Kutcha wall and kutcha roof house,XXXX-XXXX-1007,RC-100000001004,rural_deprivation,Tamil Nadu,FAM-1004,0,0,PMJAY
+PAT-1008,Sunita Verma,42,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Deprived: No adult member aged 16 to 59,XXXX-XXXX-1008,RC-100000001004,rural_deprivation,Rajasthan,FAM-1004,0,0,PMJAY
+PAT-1009,Rajesh Kumar,43,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Female headed household with no adult male member aged 16-59,XXXX-XXXX-1009,RC-100000001005,rural_deprivation,Karnataka,FAM-1005,0,0,PMJAY
+PAT-1010,Meena Kumar,44,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Disabled member and no able-bodied adult member,XXXX-XXXX-1010,RC-100000001005,rural_deprivation,Maharashtra,FAM-1005,0,0,PMJAY
+PAT-1011,Vijay Menon,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Scheduled Caste / Scheduled Tribe household,XXXX-XXXX-1011,RC-100000001006,rural_deprivation,Tamil Nadu,FAM-1006,0,0,PMJAY
+PAT-1012,Sujata Menon,46,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Landless household deriving major income from manual casual labour,XXXX-XXXX-1012,RC-100000001006,rural_deprivation,Rajasthan,FAM-1006,0,0,PMJAY
+PAT-1013,Fatima Shaikh,52,Below 2.5 LPA,PMJAY Gold,2022-03-15,False,Coverage expired on 2022-03-15,XXXX-XXXX-1013,RC-100000001007,none,Karnataka,FAM-1007,0,0,PMJAY
+PAT-1014,Tariq Shaikh,48,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1014,RC-100000001007,none,Maharashtra,FAM-1007,0,0,PMJAY
+PAT-1015,Lakshmi Pillai,49,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Legally released bonded labourer,XXXX-XXXX-1015,RC-100000001008,rural_deprivation,Tamil Nadu,FAM-1008,0,0,PMJAY
+PAT-1016,Ramanan Pillai,50,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Destitute household living on alms,XXXX-XXXX-1016,RC-100000001008,rural_deprivation,Rajasthan,FAM-1008,0,0,PMJAY
+PAT-1017,Arjun Reddy,51,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Deprived: Kutcha wall and kutcha roof house,XXXX-XXXX-1017,RC-100000001009,rural_deprivation,Karnataka,FAM-1009,0,0,PMJAY
+PAT-1018,Kavya Reddy,52,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Deprived: No adult member aged 16 to 59,XXXX-XXXX-1018,RC-100000001009,rural_deprivation,Maharashtra,FAM-1009,0,0,PMJAY
+PAT-1019,Ravi Shankar,53,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Rag picker,XXXX-XXXX-1019,RC-100000001010,urban_occupation,Tamil Nadu,FAM-1010,0,0,PMJAY
+PAT-1020,Lata Shankar,54,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Domestic worker / maid,XXXX-XXXX-1020,RC-100000001010,urban_occupation,Rajasthan,FAM-1010,0,0,PMJAY
+PAT-1021,Pooja Agarwal,55,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Street vendor / cobbler / hawker,XXXX-XXXX-1021,RC-100000001011,urban_occupation,Karnataka,FAM-1011,0,0,PMJAY
+PAT-1022,Sanjay Agarwal,56,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Construction worker / plumber / mason,XXXX-XXXX-1022,RC-100000001011,urban_occupation,Maharashtra,FAM-1011,0,0,PMJAY
+PAT-1023,Suresh Iyer,57,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Transport worker / driver / conductor,XXXX-XXXX-1023,RC-100000001012,urban_occupation,Tamil Nadu,FAM-1012,0,0,PMJAY
+PAT-1024,Vidya Iyer,58,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Sweeper / sanitation worker,XXXX-XXXX-1024,RC-100000001012,urban_occupation,Rajasthan,FAM-1012,0,0,PMJAY
+PAT-1025,Geeta Kumari,59,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Artisan / handicraft worker,XXXX-XXXX-1025,RC-100000001013,urban_occupation,Karnataka,FAM-1013,0,0,PMJAY
+PAT-1026,Rameshwar Prasad,60,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Shop worker / assistant,XXXX-XXXX-1026,RC-100000001013,urban_occupation,Maharashtra,FAM-1013,0,0,PMJAY
+PAT-1027,Mohan Das,61,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Electrician / mechanic,XXXX-XXXX-1027,RC-100000001014,urban_occupation,Tamil Nadu,FAM-1014,0,0,PMJAY
+PAT-1028,Kasturi Das,62,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Urban worker: Washerman (Dhobi) / tailor,XXXX-XXXX-1028,RC-100000001014,urban_occupation,Rajasthan,FAM-1014,0,0,PMJAY
+PAT-1029,Nisha Gupta,70,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1029,RC-100000001015,senior_citizen_70plus,Karnataka,FAM-1015,0,0,PMJAY
+PAT-1030,Alok Gupta,72,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1030,RC-100000001015,senior_citizen_70plus,Maharashtra,FAM-1015,0,25000,PMJAY
+PAT-1031,Ramesh Yadav,74,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1031,RC-100000001016,senior_citizen_70plus,Tamil Nadu,FAM-1016,0,85000,PMJAY
+PAT-1032,Sarita Yadav,76,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1032,RC-100000001016,senior_citizen_70plus,Rajasthan,FAM-1016,0,120000,PMJAY
+PAT-1033,Sita Devi,78,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1033,RC-100000001017,senior_citizen_70plus,Karnataka,FAM-1017,0,210000,PMJAY
+PAT-1034,Ram Avatar,80,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1034,RC-100000001017,senior_citizen_70plus,Maharashtra,FAM-1017,0,0,PMJAY
+PAT-1035,Kiran Bhat,82,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1035,RC-100000001018,senior_citizen_70plus,Tamil Nadu,FAM-1018,0,150000,PMJAY
+PAT-1036,Nagesh Bhat,84,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Auto-eligible: Senior Citizen 70+ under AB-PMJAY Universal Senior Coverage,XXXX-XXXX-1036,RC-100000001018,senior_citizen_70plus,Rajasthan,FAM-1018,0,45000,PMJAY
+PAT-1037,Anand Swamy,41,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Eligible: Active Accredited Social Health Activist (ASHA worker),XXXX-XXXX-1037,RC-100000001019,asha_worker,Karnataka,FAM-1019,0,0,PMJAY
+PAT-1038,Revathi Swamy,42,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Eligible: Active Accredited Social Health Activist (ASHA worker),XXXX-XXXX-1038,RC-100000001019,asha_worker,Maharashtra,FAM-1019,0,0,PMJAY
+PAT-1039,Devika Nair,43,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Eligible: Active Accredited Social Health Activist (ASHA worker),XXXX-XXXX-1039,RC-100000001020,asha_worker,Tamil Nadu,FAM-1020,0,0,PMJAY
+PAT-1040,Unnikrishnan Nair,44,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Eligible: Active Accredited Social Health Activist (ASHA worker),XXXX-XXXX-1040,RC-100000001020,asha_worker,Rajasthan,FAM-1020,0,0,PMJAY
+PAT-1041,Harish Chandra,45,Below 2.5 LPA,CMCHIS,2027-12-31,True,Eligible under TN Chief Minister Comprehensive Health Insurance Scheme,XXXX-XXXX-1041,RC-100000001021,state_supplementary,Tamil Nadu,FAM-1021,0,0,CMCHIS
+PAT-1042,Kamla Devi,46,2.5-5 LPA,CMCHIS,2027-12-31,True,Eligible under TN Chief Minister Comprehensive Health Insurance Scheme,XXXX-XXXX-1042,RC-100000001021,state_supplementary,Tamil Nadu,FAM-1021,0,0,CMCHIS
+PAT-1043,Parvati Devi,47,Below 2.5 LPA,MJPJAY,2027-12-31,True,Eligible under Mahatma Jyotirao Phule Jan Arogya Yojana,XXXX-XXXX-1043,RC-100000001022,state_supplementary,Maharashtra,FAM-1022,0,0,MJPJAY
+PAT-1044,Babu Lal,48,2.5-5 LPA,MJPJAY,2027-12-31,True,Eligible under Mahatma Jyotirao Phule Jan Arogya Yojana,XXXX-XXXX-1044,RC-100000001022,state_supplementary,Maharashtra,FAM-1022,0,0,MJPJAY
+PAT-1045,Santosh Kumar,49,Below 2.5 LPA,RGHS,2027-12-31,True,Eligible under Rajasthan Government Health Scheme,XXXX-XXXX-1045,RC-100000001023,state_supplementary,Rajasthan,FAM-1023,0,0,RGHS
+PAT-1046,Reena Devi,50,2.5-5 LPA,RGHS,2027-12-31,True,Eligible under Rajasthan Government Health Scheme,XXXX-XXXX-1046,RC-100000001023,state_supplementary,Rajasthan,FAM-1023,0,0,RGHS
+PAT-1047,Usha Rani,51,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1047,RC-100000001024,none,Tamil Nadu,FAM-1024,0,0,PMJAY
+PAT-1048,Satish Chand,52,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1048,RC-100000001024,none,Rajasthan,FAM-1024,0,0,PMJAY
+PAT-1049,Balachandran M,53,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1049,RC-100000001025,none,Karnataka,FAM-1025,0,0,PMJAY
+PAT-1050,Sumathi B,54,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1050,RC-100000001025,none,Maharashtra,FAM-1025,0,0,PMJAY
+PAT-1051,Chitra Suresh,55,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1051,RC-100000001026,none,Tamil Nadu,FAM-1026,0,0,PMJAY
+PAT-1052,Suresh Kumar,56,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1052,RC-100000001026,none,Rajasthan,FAM-1026,0,0,PMJAY
+PAT-1053,Dinesh Patil,57,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1053,RC-100000001027,none,Karnataka,FAM-1027,0,0,PMJAY
+PAT-1054,Shobha Patil,58,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1054,RC-100000001027,none,Maharashtra,FAM-1027,0,0,PMJAY
+PAT-1055,Esha Sharma,59,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1055,RC-100000001028,none,Tamil Nadu,FAM-1028,0,0,PMJAY
+PAT-1056,Gaurav Sharma,60,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1056,RC-100000001028,none,Rajasthan,FAM-1028,0,0,PMJAY
+PAT-1057,Firoz Khan,61,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1057,RC-100000001029,none,Karnataka,FAM-1029,0,0,PMJAY
+PAT-1058,Shabana Khan,62,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1058,RC-100000001029,none,Maharashtra,FAM-1029,0,0,PMJAY
+PAT-1059,Gopalan R,63,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1059,RC-100000001030,none,Tamil Nadu,FAM-1030,0,0,PMJAY
+PAT-1060,Janaki G,64,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1060,RC-100000001030,none,Rajasthan,FAM-1030,0,0,PMJAY
+PAT-1061,Hema Malini,35,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1061,RC-100000001031,none,Karnataka,FAM-1031,0,0,PMJAY
+PAT-1062,Dharmendra Singh,36,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1062,RC-100000001031,none,Maharashtra,FAM-1031,0,0,PMJAY
+PAT-1063,Indira Pillai,37,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1063,RC-100000001032,none,Tamil Nadu,FAM-1032,0,0,PMJAY
+PAT-1064,Vasudevan Pillai,38,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1064,RC-100000001032,none,Rajasthan,FAM-1032,0,0,PMJAY
+PAT-1065,Jagdish Prasad,39,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1065,RC-100000001033,none,Karnataka,FAM-1033,0,0,PMJAY
+PAT-1066,Manju Devi,40,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1066,RC-100000001033,none,Maharashtra,FAM-1033,0,0,PMJAY
+PAT-1067,Kamala Devi,41,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1067,RC-100000001034,none,Tamil Nadu,FAM-1034,0,0,PMJAY
+PAT-1068,Shiv Ram,42,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1068,RC-100000001034,none,Rajasthan,FAM-1034,0,0,PMJAY
+PAT-1069,Lokesh Kumar,43,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1069,RC-100000001035,none,Karnataka,FAM-1035,0,0,PMJAY
+PAT-1070,Poonam Devi,44,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1070,RC-100000001035,none,Maharashtra,FAM-1035,0,0,PMJAY
+PAT-1071,Mangala P,45,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1071,RC-100000001036,none,Tamil Nadu,FAM-1036,0,0,PMJAY
+PAT-1072,Prabhakar P,46,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1072,RC-100000001036,none,Rajasthan,FAM-1036,0,0,PMJAY
+PAT-1073,Naveen Raj,47,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1073,RC-100000001037,none,Karnataka,FAM-1037,0,0,PMJAY
+PAT-1074,Sneha Raj,48,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1074,RC-100000001037,none,Maharashtra,FAM-1037,0,0,PMJAY
+PAT-1075,Omkar Singh,49,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1075,RC-100000001038,none,Tamil Nadu,FAM-1038,0,0,PMJAY
+PAT-1076,Preeti Singh,50,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1076,RC-100000001038,none,Rajasthan,FAM-1038,0,0,PMJAY
+PAT-1077,Padma Lakshmi,51,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1077,RC-100000001039,none,Karnataka,FAM-1039,0,0,PMJAY
+PAT-1078,Venkatesh L,52,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1078,RC-100000001039,none,Maharashtra,FAM-1039,0,0,PMJAY
+PAT-1079,Qureshi Aziz,53,Below 2.5 LPA,PMJAY Gold,2027-12-31,False,"Annual family utilization cap of INR 500,000 exhausted",XXXX-XXXX-1079,RC-100000001040,none,Uttar Pradesh,FAM-1040,490000,0,PMJAY
+PAT-1080,Farida Qureshi,54,2.5-5 LPA,PMJAY Gold,2027-12-31,False,"Annual family utilization cap of INR 500,000 exhausted",XXXX-XXXX-1080,RC-100000001040,none,Uttar Pradesh,FAM-1040,490000,0,PMJAY
+PAT-1081,Revathi Devi,55,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1081,RC-100000001041,none,Karnataka,FAM-1041,0,0,PMJAY
+PAT-1082,Subramanian R,56,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1082,RC-100000001041,none,Maharashtra,FAM-1041,0,0,PMJAY
+PAT-1083,Srinivas Rao,57,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1083,RC-100000001042,none,Tamil Nadu,FAM-1042,0,0,PMJAY
+PAT-1084,Shalini Rao,58,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1084,RC-100000001042,none,Rajasthan,FAM-1042,0,0,PMJAY
+PAT-1085,Thenmozhi K,59,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1085,RC-100000001043,none,Karnataka,FAM-1043,0,0,PMJAY
+PAT-1086,Karthik K,60,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1086,RC-100000001043,none,Maharashtra,FAM-1043,0,0,PMJAY
+PAT-1087,Uday Kumar,61,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1087,RC-100000001044,none,Tamil Nadu,FAM-1044,0,0,PMJAY
+PAT-1088,Deepa Kumar,62,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1088,RC-100000001044,none,Rajasthan,FAM-1044,0,0,PMJAY
+PAT-1089,Vasudha Singh,63,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1089,RC-100000001045,none,Karnataka,FAM-1045,0,0,PMJAY
+PAT-1090,Vikram Singh,64,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1090,RC-100000001045,none,Maharashtra,FAM-1045,0,0,PMJAY
+PAT-1091,Subhash Roy,35,Below 2.5 LPA,WBHS,2027-12-31,False,West Bengal opted out of PMJAY; covered under WBHS,XXXX-XXXX-1091,RC-100000001046,none,West Bengal,FAM-1046,0,0,WBHS
+PAT-1092,Mitali Roy,36,2.5-5 LPA,WBHS,2027-12-31,False,West Bengal opted out of PMJAY; covered under WBHS,XXXX-XXXX-1092,RC-100000001046,none,West Bengal,FAM-1046,0,0,WBHS
+PAT-1093,Debabrata Banerjee,37,Below 2.5 LPA,WBHS,2027-12-31,False,West Bengal opted out of PMJAY; covered under WBHS,XXXX-XXXX-1093,RC-100000001047,none,West Bengal,FAM-1047,0,0,WBHS
+PAT-1094,Suchitra Banerjee,38,2.5-5 LPA,WBHS,2027-12-31,False,West Bengal opted out of PMJAY; covered under WBHS,XXXX-XXXX-1094,RC-100000001047,none,West Bengal,FAM-1047,0,0,WBHS
+PAT-1095,Arup Das,39,Below 2.5 LPA,WBHS,2027-12-31,False,West Bengal opted out of PMJAY; covered under WBHS,XXXX-XXXX-1095,RC-100000001048,none,West Bengal,FAM-1048,0,0,WBHS
+PAT-1096,Kakali Das,40,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1096,RC-100000001048,none,Rajasthan,FAM-1048,0,0,PMJAY
+PAT-1097,Bikramjit Singh,41,Below 2.5 LPA,None,2027-12-31,False,Asset/income threshold exceeded (Owns motorized 3-wheeler/4-wheeler or mechanized boat),XXXX-XXXX-1097,RC-100000001049,none,Punjab,FAM-1049,0,0,NONE
+PAT-1098,Gurpreet Kaur,42,2.5-5 LPA,None,2027-12-31,False,Asset/income threshold exceeded (Owns motorized 3-wheeler/4-wheeler or mechanized boat),XXXX-XXXX-1098,RC-100000001049,none,Punjab,FAM-1049,0,0,NONE
+PAT-1099,Yogesh Joshi,43,Below 2.5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1099,RC-100000001050,none,Tamil Nadu,FAM-1050,0,0,PMJAY
+PAT-1100,Anita Joshi,44,2.5-5 LPA,PMJAY Gold,2027-12-31,True,Active coverage under PM-JAY,XXXX-XXXX-1100,RC-100000001050,none,Rajasthan,FAM-1050,0,0,PMJAY

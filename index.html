@@ -38,6 +38,9 @@
         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Pre-Authorization
         <span class="nav-badge" id="preauth-badge">2</span>
       </a>
+      <a class="nav-item" id="nav-pmjay" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span> PM-JAY Ayushman Portal
+      </a>
 
       <div class="nav-section-label">Analytics</div>
 
@@ -502,6 +505,195 @@
           </div>
 
         </div>
+      </section>
+
+      <!-- ══════════════ SCREEN 6 — PM-JAY AYUSHMAN PORTAL ══════════════ -->
+      <section id="screen-pmjay" class="screen" aria-label="PM-JAY Ayushman Portal">
+        
+        <!-- Header Banner -->
+        <div class="card pmjay-hero-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); color: white; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+          <div style="display:flex; justify-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+              <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; font-weight:600; padding:4px 10px; border-radius:20px; font-size:12px;">GOVERNMENT OF INDIA • NHA</span>
+              <h2 style="font-size:22px; margin:8px 0 4px 0; color:#ffffff;">Ayushman Bharat (PM-JAY) Eligibility & Enrollment Portal</h2>
+              <p style="margin:0; opacity:0.9; font-size:13.5px;">Cashless health coverage up to ₹5,00,000/year per family across 1,929 procedure packages and 27 specialties.</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:12px; opacity:0.8;">Helpline (24/7)</span>
+              <div style="font-size:20px; font-weight:700; font-family:monospace;">14555 / 1800-111-565</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="gap:24px;">
+          
+          <!-- Column 1: Eligibility Check & Hospital Search -->
+          <div style="display:flex; flex-direction:column; gap:24px;">
+            
+            <!-- Eligibility Checker -->
+            <div class="card">
+              <div class="card-title">
+                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+                Instant Eligibility Checker
+              </div>
+              <form id="pmjay-check-form" style="margin-top:16px;">
+                <div class="form-group">
+                  <label for="pmjay-patient-name">Patient Name *</label>
+                  <input type="text" id="pmjay-patient-name" required placeholder="e.g. Amit Verma, Sunita Devi, Ramesh Patel" class="input" />
+                </div>
+                <div class="grid grid-2" style="gap:12px;">
+                  <div class="form-group">
+                    <label for="pmjay-state">State *</label>
+                    <select id="pmjay-state" class="input">
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="West Bengal">West Bengal</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="Delhi">Delhi</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="pmjay-age">Age</label>
+                    <input type="number" id="pmjay-age" placeholder="e.g. 45 (70+ for auto-eligibility)" class="input" />
+                  </div>
+                </div>
+                <div class="grid grid-2" style="gap:12px;">
+                  <div class="form-group">
+                    <label for="pmjay-aadhaar-input">Aadhaar / Ration Card No.</label>
+                    <input type="text" id="pmjay-aadhaar-input" placeholder="XXXX-XXXX-1007 or RC-..." class="input" />
+                  </div>
+                  <div class="form-group">
+                    <label for="pmjay-hospital-input">Hospital Name</label>
+                    <input type="text" id="pmjay-hospital-input" placeholder="e.g. City General Hospital" class="input" />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">
+                  Verify 3-Gate PM-JAY Eligibility
+                </button>
+              </form>
+
+              <!-- Result Display Area -->
+              <div id="pmjay-check-result" style="display:none; margin-top:20px; padding:16px; border-radius:8px; border:1px solid #e2e8f0;"></div>
+            </div>
+
+            <!-- Hospital Search -->
+            <div class="card">
+              <div class="card-title">
+                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+                PM-JAY Empannelled Hospital Lookup
+              </div>
+              <div style="display:flex; gap:8px; margin-top:12px;">
+                <input type="text" id="hosp-search-input" placeholder="Search hospital name (e.g. Apollo, AIIMS, Fortis)..." class="input" style="flex:1;" />
+                <button class="btn btn-secondary" id="btn-search-hosp">Search</button>
+              </div>
+              <div id="hosp-search-results" style="margin-top:12px; max-height:220px; overflow-y:auto;"></div>
+            </div>
+
+          </div>
+
+          <!-- Column 2: Aadhaar KYC & Digital Ayushman Card Preview -->
+          <div style="display:flex; flex-direction:column; gap:24px;">
+            
+            <!-- Aadhaar OTP Enrollment Wizard -->
+            <div class="card">
+              <div class="card-title">
+                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                Online Aadhaar KYC & Card Issuance
+              </div>
+
+              <div id="enrollment-stepper" style="display:flex; justify-content:space-between; margin:16px 0; padding-bottom:12px; border-bottom:1px solid #e2e8f0;">
+                <div class="step active" id="step-1-lbl" style="font-weight:600; font-size:12px; color:#0284c7;">1. Enter Aadhaar</div>
+                <div class="step" id="step-2-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;">2. Verify OTP</div>
+                <div class="step" id="step-3-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;">3. Ayushman Card</div>
+              </div>
+
+              <!-- Step 1 Form -->
+              <div id="enroll-step-1">
+                <div class="form-group">
+                  <label for="enroll-aadhaar">Aadhaar Number (12 Digits) *</label>
+                  <input type="text" id="enroll-aadhaar" placeholder="999932123456 (Verhoeff Checksum Validated)" class="input" />
+                </div>
+                <div class="form-group">
+                  <label for="enroll-mobile">Mobile Number *</label>
+                  <input type="text" id="enroll-mobile" placeholder="9876543210" class="input" />
+                </div>
+                <button class="btn btn-primary btn-full" id="btn-send-otp">Dispatch Aadhaar OTP</button>
+              </div>
+
+              <!-- Step 2 Form (Hidden initially) -->
+              <div id="enroll-step-2" style="display:none;">
+                <div class="alert alert-info" style="margin-bottom:12px; font-size:13px;" id="otp-demo-hint">
+                  OTP dispatched to your registered mobile. Valid for 10 minutes.
+                </div>
+                <div class="form-group">
+                  <label for="enroll-otp">Enter 4-Digit OTP *</label>
+                  <input type="text" id="enroll-otp" placeholder="Enter OTP" class="input" style="font-size:18px; letter-spacing:4px; text-align:center;" />
+                </div>
+                <div style="margin-bottom:16px;">
+                  <label style="font-size:12px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="enroll-consent" checked /> I consent to share Aadhaar KYC details for PM-JAY e-card generation.
+                  </label>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-ghost" id="btn-back-step1" style="flex:1;">Back</button>
+                  <button class="btn btn-primary" id="btn-verify-otp" style="flex:2;">Verify & Generate Card</button>
+                </div>
+              </div>
+
+              <!-- Step 3 Rendered Ayushman PVC Card (Hidden initially) -->
+              <div id="enroll-step-3" style="display:none;">
+                <div id="ayushman-card-container" style="background: linear-gradient(135deg, #15803d 0%, #047857 100%); color:white; border-radius:12px; padding:20px; position:relative; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:8px;">
+                    <div>
+                      <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">National Health Authority</div>
+                      <div style="font-size:16px; font-weight:700;">AYUSHMAN CARD</div>
+                    </div>
+                    <div style="background:#f59e0b; color:#78350f; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;">
+                      PM-JAY GOLD
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:16px; align-items:center; margin-bottom:12px;">
+                    <div style="width:50px; height:50px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;">
+                      👤
+                    </div>
+                    <div>
+                      <div id="card-name" style="font-size:16px; font-weight:700;">Rahul Sharma</div>
+                      <div id="card-abha" style="font-size:12px; opacity:0.9; font-family:monospace;">ABHA: 91-8492-1049-2041</div>
+                      <div id="card-family" style="font-size:11px; opacity:0.8;">Family ID: FAM-1001</div>
+                    </div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.9; border-top:1px solid rgba(255,255,255,0.2); padding-top:8px;">
+                    <div>Annual Coverage: <strong>₹5,00,000</strong></div>
+                    <div>Scheme: <strong id="card-scheme-lbl">PMJAY</strong></div>
+                  </div>
+                </div>
+
+                <button class="btn btn-secondary btn-full" id="btn-reset-enroll" style="margin-top:12px;">
+                  Issue Another Ayushman Card
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Family ₹5 Lakh Cap Utilization Tracker -->
+            <div class="card">
+              <div class="card-title">
+                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                Family ₹5 Lakh Annual Cap Tracker
+              </div>
+              <div style="display:flex; gap:8px; margin-top:12px;">
+                <input type="text" id="cap-family-id" placeholder="Enter Family ID (e.g. FAM-1001, FAM-1040)..." class="input" style="flex:1;" />
+                <button class="btn btn-secondary" id="btn-check-cap">Check Utilization</button>
+              </div>
+              <div id="cap-tracker-result" style="margin-top:16px;"></div>
+            </div>
+
+          </div>
+
+        </div>
+
       </section>
 
     </div><!-- /content-area -->

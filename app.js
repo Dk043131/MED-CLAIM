@@ -6,12 +6,8 @@
    ================================================================ */
 
 // ─── API Configuration ────────────────────────────────────────────────────────
-const isPort8080 = window.location.port === '8080' || window.location.href.includes('8080');
-const USE_MOCK = isPort8080 || !window.location.port; // Auto-detect mock server
-
-const API_BASE = USE_MOCK 
-  ? '/api' 
-  : 'http://localhost:8000';
+let USE_MOCK = false;
+let API_BASE = 'http://localhost:8000';
 
 
 // ─── App State ────────────────────────────────────────────────────────────────
@@ -34,17 +30,22 @@ async function checkServerHealth() {
   try {
     const res = await fetch('http://localhost:8000/health');
     if (res.ok) {
-      const data = await res.json();
       state.serverLive = true;
+      USE_MOCK = false;
+      API_BASE = 'http://localhost:8000';
       if (textEl) textEl.textContent = 'FastAPI Engine Live';
       if (dotEl) dotEl.className = 'status-dot online';
-      return;
+      return true;
     }
   } catch (err) {
     console.warn('Backend server check failed:', err);
   }
-  if (textEl) textEl.textContent = USE_MOCK ? 'Mock server' : 'FastAPI Offline';
-  if (dotEl) dotEl.className = 'status-dot ' + (USE_MOCK ? 'online' : 'offline');
+  state.serverLive = false;
+  USE_MOCK = true;
+  API_BASE = '/api';
+  if (textEl) textEl.textContent = 'Mock server';
+  if (dotEl) dotEl.className = 'status-dot warning';
+  return false;
 }
 window.addEventListener('DOMContentLoaded', checkServerHealth);
 
@@ -271,6 +272,7 @@ const screens = {
   submit:    { el: 'screen-submit',    title: 'Submit Claim',          sub: 'Upload a hospital bill to begin automated processing' },
   hitl:      { el: 'screen-hitl',      title: 'HITL Review Queue',     sub: 'Review flagged claims before they are submitted to the insurer' },
   preauth:   { el: 'screen-preauth',   title: 'Pre-Authorization Workflow', sub: 'Hospital requests for elective or emergency procedure prior approval' },
+  pmjay:     { el: 'screen-pmjay',     title: 'Ayushman Bharat (PM-JAY) Portal', sub: 'Instant 3-gate eligibility check, Aadhaar KYC, hospital empanelment, and ₹5L family cap tracking' },
   dashboard: { el: 'screen-dashboard', title: 'Observability Dashboard', sub: 'Live metrics for the claims processing pipeline' },
   pitch:     { el: 'screen-pitch',     title: 'Pitch Prep',            sub: 'Demo script, verification checklist, and Q&A preparation' },
 };
@@ -300,7 +302,7 @@ function navigate(screenId) {
 }
 
 // Wire nav clicks
-['submit', 'hitl', 'preauth', 'dashboard', 'pitch'].forEach(id => {
+['submit', 'hitl', 'preauth', 'pmjay', 'dashboard', 'pitch'].forEach(id => {
   const el = $('nav-' + id);
   if (!el) return;
   el.addEventListener('click', () => navigate(id));
@@ -745,41 +747,6 @@ function buildDetailedExplanationHtml(claim) {
       </div>
     </div>
   `;
-}
-
-
-  // Clinic Fingerprint Matched Badge
-
-  if (claim.fingerprint_matched?.matched) {
-    bodyHtml += `<div style="margin-top:8px; padding:6px 12px; background:rgba(99,102,241,0.15); border:1px solid var(--border); border-radius:6px; font-size:12px; color:var(--indigo-bright);">
-      🧠 <strong>Matched from Clinic History:</strong> Pre-filled '${claim.fingerprint_matched.original}' → confirmed '${claim.fingerprint_matched.corrected}' (Used ${claim.fingerprint_matched.hit_count}x).
-    </div>`;
-  }
-
-  bodyHtml += buildDetailedExplanationHtml(claim);
-
-  $('result-body').innerHTML = bodyHtml;
-
-
-  // ICD codes
-  const icdEl = $('result-icd');
-  icdEl.innerHTML = '';
-  (claim.icd_codes || []).slice(0, 3).forEach(icd => {
-    const chip = document.createElement('div');
-    chip.className = 'icd-chip';
-    chip.innerHTML = `<span class="icd-code">${icd.code}</span><span class="icd-desc">${icd.description}</span><span class="icd-conf">${formatConf(icd.confidence)}</span>`;
-    icdEl.appendChild(chip);
-  });
-
-  // Flags
-  const flagsEl = $('result-flags');
-  flagsEl.innerHTML = '';
-  (claim.flags || []).forEach(f => {
-    const li = document.createElement('li');
-    li.className = 'flag-item';
-    li.textContent = f;
-    flagsEl.appendChild(li);
-  });
 }
 
 async function submitClaim(filename, fileType, base64Data) {
@@ -1896,20 +1863,270 @@ async function handleLogout(e) {
   toast('Signed out successfully.', 'info');
 }
 
+// ─── PM-JAY Ayushman Portal Frontend Logic ─────────────────────────────────
+
+function initPMJAYHandlers() {
+  // 1. Eligibility Check Form
+  const checkForm = $('pmjay-check-form');
+  if (checkForm) {
+    checkForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const patientName = $('pmjay-patient-name').value.trim();
+      const state = $('pmjay-state').value;
+      const age = parseInt($('pmjay-age').value) || 0;
+      const aadhaar = $('pmjay-aadhaar-input').value.trim();
+      const hospitalName = $('pmjay-hospital-input').value.trim();
+
+      const resultEl = $('pmjay-check-result');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = '<div style="color:#64748b; font-size:13px;">Checking 3-Gate PM-JAY Eligibility...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/enrollment/check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patient_name: patientName,
+            state: state,
+            age: age,
+            aadhaar_number: aadhaar,
+            hospital_name: hospitalName,
+          })
+        });
+
+        if (!res.ok) throw new Error('Eligibility check server response error');
+        const data = await res.json();
+
+        const badgeBg = data.eligible ? '#10b981' : (data.scheme === 'WBHS' ? '#f59e0b' : '#ef4444');
+        const statusText = data.eligible ? 'ELIGIBLE (VERIFIED)' : (data.scheme === 'WBHS' ? 'WEST BENGAL REDIRECT' : 'INELIGIBLE / REJECTED');
+
+        let html = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="background:${badgeBg}; color:white; font-size:11px; font-weight:700; padding:3px 8px; border-radius:4px; text-transform:uppercase;">${statusText}</span>
+            <span style="font-size:12px; font-weight:600; color:#475569;">Scheme: <strong>${data.scheme}</strong></span>
+          </div>
+          <p style="font-size:13px; color:#1e293b; margin:6px 0 10px 0; line-height:1.5;">${data.reason}</p>
+        `;
+
+        if (data.secc_category) {
+          html += `<div style="font-size:12px; color:#64748b;">SECC Category: <strong style="color:#0f172a;">${data.secc_category}</strong> | Family ID: <strong style="color:#0f172a;">${data.family_id || 'N/A'}</strong></div>`;
+        }
+
+        if (data.annual_cap_remaining_inr !== undefined) {
+          const rem = data.annual_cap_remaining_inr.toLocaleString('en-IN');
+          html += `<div style="margin-top:8px; font-size:12px; color:#0369a1; font-weight:600;">₹5 Lakh Cap Remaining: ₹${rem}</div>`;
+        }
+
+        resultEl.innerHTML = html;
+        toast(data.eligible ? 'PM-JAY Beneficiary Verified!' : 'Eligibility Notice', data.eligible ? 'success' : 'warning');
+      } catch (err) {
+        resultEl.innerHTML = `<div style="color:#ef4444; font-size:13px;">Error verifying eligibility. Ensure FastAPI backend is live at http://localhost:8000.</div>`;
+      }
+    });
+  }
+
+  // 2. Aadhaar OTP Dispatch (Step 1 -> Step 2)
+  let currentOtpToken = '';
+  const btnSendOtp = $('btn-send-otp');
+  if (btnSendOtp) {
+    btnSendOtp.addEventListener('click', async () => {
+      const aadhaar = $('enroll-aadhaar').value.trim();
+      const mobile = $('enroll-mobile').value.trim();
+
+      if (!aadhaar || aadhaar.length < 12) {
+        toast('Please enter a valid 12-digit Aadhaar number', 'warning');
+        return;
+      }
+      if (!mobile || mobile.length < 10) {
+        toast('Please enter a valid 10-digit mobile number', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/enrollment/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ aadhaar_number: aadhaar, mobile_number: mobile })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'OTP dispatch failed');
+
+        currentOtpToken = data.otp_token;
+        $('otp-demo-hint').textContent = `${data.message} [DEMO OTP: ${data.demo_otp}]`;
+        $('enroll-step-1').style.display = 'none';
+        $('enroll-step-2').style.display = 'block';
+        $('step-1-lbl').style.color = '#10b981';
+        $('step-2-lbl').style.color = '#0284c7';
+        toast('OTP Dispatched!', 'success');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+  }
+
+  // Back button Step 2 -> Step 1
+  $('btn-back-step1')?.addEventListener('click', () => {
+    $('enroll-step-2').style.display = 'none';
+    $('enroll-step-1').style.display = 'block';
+    $('step-2-lbl').style.color = '#94a3b8';
+    $('step-1-lbl').style.color = '#0284c7';
+  });
+
+  // 3. Verify OTP & Issue Card (Step 2 -> Step 3)
+  const btnVerifyOtp = $('btn-verify-otp');
+  if (btnVerifyOtp) {
+    btnVerifyOtp.addEventListener('click', async () => {
+      const otp = $('enroll-otp').value.trim();
+      const aadhaar = $('enroll-aadhaar').value.trim();
+      const mobile = $('enroll-mobile').value.trim();
+      const consent = $('enroll-consent').checked;
+
+      if (!otp) {
+        toast('Please enter the OTP', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/enrollment/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            otp_token: currentOtpToken,
+            entered_otp: otp,
+            aadhaar_number: aadhaar,
+            mobile_number: mobile,
+            consent_given: consent
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Card issuance failed');
+
+        const ecard = data.ecard_data || {};
+        $('card-name').textContent = ecard.patient_name || 'Ayushman Beneficiary';
+        $('card-abha').textContent = `ABHA: ${ecard.card_number || 'ABHA-9104-9201-4920'}`;
+        $('card-family').textContent = `Family ID: ${ecard.family_id || 'FAM-1001'}`;
+        $('card-scheme-lbl').textContent = ecard.scheme || 'PMJAY';
+
+        $('enroll-step-2').style.display = 'none';
+        $('enroll-step-3').style.display = 'block';
+        $('step-2-lbl').style.color = '#10b981';
+        $('step-3-lbl').style.color = '#10b981';
+        toast('Ayushman Card Issued Successfully!', 'success');
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+  }
+
+  // Reset enrollment
+  $('btn-reset-enroll')?.addEventListener('click', () => {
+    $('enroll-step-3').style.display = 'none';
+    $('enroll-step-1').style.display = 'block';
+    $('enroll-aadhaar').value = '';
+    $('enroll-mobile').value = '';
+    $('enroll-otp').value = '';
+    $('step-1-lbl').style.color = '#0284c7';
+    $('step-2-lbl').style.color = '#94a3b8';
+    $('step-3-lbl').style.color = '#94a3b8';
+  });
+
+  // 4. Hospital Search
+  $('btn-search-hosp')?.addEventListener('click', async () => {
+    const q = $('hosp-search-input').value.trim();
+    const resEl = $('hosp-search-results');
+    resEl.innerHTML = '<div style="color:#64748b; font-size:12px;">Searching empanelled hospitals...</div>';
+
+    try {
+      const res = await fetch(`${API_BASE}/hospitals/search?name=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      if (!data.hospitals || data.hospitals.length === 0) {
+        resEl.innerHTML = '<div style="color:#94a3b8; font-size:12px;">No empanelled hospitals found matching search.</div>';
+        return;
+      }
+
+      let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+      data.hospitals.forEach(h => {
+        const emp = h.empanelled ? '<span style="color:#10b981; font-weight:700;">✓ EMPANELLED</span>' : '<span style="color:#ef4444; font-weight:700;">✗ NOT EMPANELLED</span>';
+        html += `
+          <div style="padding:8px 12px; background:#f8fafc; border-radius:6px; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600; color:#0f172a;">${h.hospital_name}</div>
+              <div style="color:#64748b; font-size:11px;">${h.district}, ${h.state} (${h.hospital_type})</div>
+            </div>
+            <div>${emp}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      resEl.innerHTML = html;
+    } catch (err) {
+      resEl.innerHTML = '<div style="color:#ef4444; font-size:12px;">Error fetching hospital database.</div>';
+    }
+  });
+
+  // 5. Check Family Cap Utilization
+  $('btn-check-cap')?.addEventListener('click', async () => {
+    const famId = $('cap-family-id').value.trim();
+    const resEl = $('cap-tracker-result');
+    if (!famId) {
+      toast('Please enter a Family ID (e.g. FAM-1001)', 'warning');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/family/${encodeURIComponent(famId)}/cap`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Family ID not found');
+
+      const pct = data.utilization_percentage;
+      const barColor = pct > 90 ? '#ef4444' : (pct > 50 ? '#f59e0b' : '#10b981');
+
+      resEl.innerHTML = `
+        <div style="background:#f8fafc; padding:12px; border-radius:8px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; font-weight:600; margin-bottom:4px;">
+            <span>Family ID: ${data.family_id} (${data.member_count} members)</span>
+            <span style="color:${barColor}">${pct}% Utilized</span>
+          </div>
+          <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:8px;">
+            <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:4px;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; color:#475569; font-size:11px;">
+            <span>Utilized: ₹${data.total_utilized_inr.toLocaleString('en-IN')}</span>
+            <span>Remaining Cap: <strong>₹${data.cap_remaining_inr.toLocaleString('en-IN')}</strong></span>
+          </div>
+          <div style="margin-top:6px; font-size:11px; color:#0284c7;">
+            Senior Citizen (70+) Separate Cap Remaining: ₹${data.senior_cap_remaining_inr.toLocaleString('en-IN')}
+          </div>
+        </div>
+      `;
+    } catch (err) {
+      resEl.innerHTML = `<div style="color:#ef4444; font-size:12px;">${err.message}</div>`;
+    }
+  });
+}
+
+
 // ─── Initialise ───────────────────────────────────────────────────────────────
 async function init() {
+  await checkServerHealth();
+
   // Initialize authentication event listeners and session check
   initAuthSystem();
 
-  // Check server health
+  // Initialize PM-JAY handlers
+  initPMJAYHandlers();
+
+  // Check server health / metrics
   try {
     await apiFetch('/dashboard/metrics');
-    $('server-dot').style.background   = 'var(--green)';
-    $('server-status-text').textContent = USE_MOCK ? 'Mock server ✓' : 'Live API ✓';
+    if ($('server-dot')) $('server-dot').className = 'status-dot ' + (USE_MOCK ? 'warning' : 'online');
+    if ($('server-status-text')) $('server-status-text').textContent = USE_MOCK ? 'Mock server' : 'FastAPI Engine Live';
   } catch (_) {
-    $('server-dot').style.background   = 'var(--rose)';
-    $('server-dot').style.animation    = 'none';
-    $('server-status-text').textContent = 'Server offline';
+    if ($('server-dot')) $('server-dot').className = 'status-dot offline';
+    if ($('server-status-text')) $('server-status-text').textContent = 'FastAPI Offline';
   }
 
   // Load HITL badge count on startup
