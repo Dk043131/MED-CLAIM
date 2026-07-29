@@ -22,6 +22,8 @@ import uuid
 import random
 import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import urllib.request
+import urllib.error
 
 # ─────────────────────────────────────────────
 # Config
@@ -285,6 +287,46 @@ def simulate_pipeline(filename, file_type):
 # ─────────────────────────────────────────────
 # HTTP Handler
 # ─────────────────────────────────────────────
+FASTAPI_URL = "http://localhost:8000"
+
+def try_proxy_to_fastapi(handler, method="GET"):
+    """Proxy non-static request to FastAPI engine if live."""
+    path = handler.path
+    if not (path.startswith("/api") or path.startswith("/claims") or path.startswith("/enrollment") or path.startswith("/hospitals") or path.startswith("/family") or path.startswith("/auth") or path.startswith("/dashboard") or path.startswith("/health")):
+        return False
+
+    target_path = path[4:] if path.startswith("/api/") else path
+    if not target_path.startswith("/"):
+        target_path = "/" + target_path
+    target_url = FASTAPI_URL + target_path
+    
+    body = None
+    if method in ("POST", "PUT", "PATCH"):
+        content_len = int(handler.headers.get("Content-Length", 0))
+        if content_len > 0:
+            body = handler.rfile.read(content_len)
+            
+    headers = {"Content-Type": handler.headers.get("Content-Type", "application/json")}
+    if "Authorization" in handler.headers:
+        headers["Authorization"] = handler.headers["Authorization"]
+
+    req = urllib.request.Request(target_url, data=body, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=4) as resp:
+            handler.send_response(resp.status)
+            for k, v in resp.getheaders():
+                if k.lower() not in ("transfer-encoding", "content-encoding", "content-length"):
+                    handler.send_header(k, v)
+            resp_body = resp.read()
+            handler.send_header("Content-Length", str(len(resp_body)))
+            handler.send_header("Access-Control-Allow-Origin", "*")
+            handler.end_headers()
+            handler.wfile.write(resp_body)
+            return True
+    except Exception:
+        return False
+
+
 class MedClaimHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
@@ -334,7 +376,7 @@ class MedClaimHandler(BaseHTTPRequestHandler):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         self.end_headers()
 
     # ── GET ──────────────────────────────────
@@ -344,6 +386,9 @@ class MedClaimHandler(BaseHTTPRequestHandler):
         # Root → index.html
         if p == "/" or p == "":
             return self.serve_static("index.html")
+
+        if try_proxy_to_fastapi(self, "GET"):
+            return
 
         # API routes
         if p == "/api/auth/check-session":
@@ -370,6 +415,9 @@ class MedClaimHandler(BaseHTTPRequestHandler):
     # ── POST ─────────────────────────────────
     def do_POST(self):
         p = self.path.split("?")[0]
+
+        if try_proxy_to_fastapi(self, "POST"):
+            return
 
         # Auth routes
         if p == "/api/auth/login":

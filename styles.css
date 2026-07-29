@@ -1358,3 +1358,27 @@ body::before {
   font-weight: 700;
   color: #60a5fa;
 }
+
+/* ── Form Controls & Inputs ─────────────────────────────────────────── */
+.input, select.input, input.input, textarea.input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+  font-size: 13px !important;
+  box-sizing: border-box !important;
+  transition: all var(--fast);
+}
+
+.input:focus, select.input:focus, input.input:focus, textarea.input:focus {
+  border-color: var(--indigo, #6366f1) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+select.input option {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
