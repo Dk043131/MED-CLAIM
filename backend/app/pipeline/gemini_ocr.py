@@ -22,41 +22,41 @@ from app.config import GEMINI_API_KEY
 OCR_MODEL = "gemini-2.0-flash"
 
 # ── Combined extraction prompt ────────────────────────────────────────────────
-_COMBINED_PROMPT = """You are a clinical document AI for Indian hospital prescriptions and medical bills.
-Your task: extract ALL information from this medical document image in ONE pass.
+_COMBINED_PROMPT = """You are an expert clinical vision AI for Indian hospital records, discharge summaries, lab reports, prescriptions, and medical bills.
+Extract ALL information from this medical document image with 100% precision.
 
 Return ONLY valid JSON (no markdown fences, no commentary) with this exact structure:
 {
-  "raw_text": "complete verbatim text extracted from the image",
+  "raw_text": "complete verbatim text extracted from the document",
+  "document_type": "Discharge Summary / Medical Report / Lab Report / Doctor Prescription / Hospital Bill",
   "patient_name": "full patient name",
-  "patient_id": "UHID or IP number if visible",
-  "hospital_name": "hospital or clinic name",
+  "patient_id": "UHID, IP Number, or Patient ID if visible",
+  "hospital_name": "hospital, clinic, or diagnostic center name",
   "age": 0,
   "sex": "M or F",
   "date": "YYYY-MM-DD",
   "doctor_name": "doctor name with title",
   "doctor_id": "doctor registration ID if visible",
-  "symptoms": ["complaint 1", "complaint 2"],
-  "diagnosis": ["diagnosis 1"],
-  "vitals": {"bp": "110/70", "pulse": "60 bpm", "rbs": "50 mg/dL"},
-  "medications": [{"name": "drug", "dose": "dose", "route": "oral/IV", "frequency": "TID", "raw_text": "original"}],
-  "line_items": [{"description": "item", "raw_text": "item Rs. 500"}],
-  "advice": ["advice 1", "advice 2"],
+  "symptoms": ["chief complaint 1", "complaint 2"],
+  "diagnosis": ["diagnosis 1", "diagnosis 2"],
+  "procedure_performed": "name of surgery or procedure performed (e.g. CABG x 3, Appendectomy)",
+  "vitals": {"bp": "110/70", "pulse": "60 bpm", "rbs": "50 mg/dL", "ef": "LVEF 45%"},
+  "medications": [{"name": "drug name", "dose": "dosage e.g. 75mg", "route": "oral/IV", "frequency": "OD/BD/TID", "duration": "duration", "raw_text": "original string"}],
+  "lab_results": [{"parameter": "test name e.g. Hb / LAD Stenosis", "result": "result value", "reference_range": "normal range", "status": "NORMAL/HIGH/LOW"}],
+  "line_items": [{"description": "bill item name", "amount": 500.0, "raw_text": "original string"}],
+  "advice": ["advice or discharge instruction 1", "advice 2"],
   "consultation_fee": 0.0,
+  "total": 0.0,
   "ocr_confidence_notes": "describe any blurry or unclear parts"
 }
 
-Indian prescription rules:
-- c/o = complaints of (symptoms section)
-- Imp/Impression = diagnosis section  
-- Adv = advice/instructions
-- 22/12/22 style date → 2022-12-22
-- 19/M shorthand → age=19, sex=M
-- UHID/IP No = patient identifier
-- RBS = random blood sugar (mg/dL)
-- PR = pulse rate (bpm)
-- BP = blood pressure (mmHg)
-- If a field is missing: use "" for strings, 0 for numbers, [] for lists, {} for objects
+Extraction Guidelines:
+- Chief complaints / c/o → "symptoms" list
+- Diagnosis / Impression / Imp → "diagnosis" list
+- Surgical / Procedure performed → "procedure_performed" string
+- Medications section → "medications" list (Do NOT place medications inside "line_items" unless they have explicit prices on a bill!)
+- Financial bill line items → ONLY place items with monetary values into "line_items" (e.g., {"description": "Bed Charges", "amount": 1500.0}). Never put raw non-financial text lines in line_items!
+- If a field is not present: use "" for strings, 0 for numbers, [] for lists, {} for objects
 """
 
 # ── Text-only structuring prompt (when no image bytes available) ──────────────
@@ -197,52 +197,81 @@ def extract_text_with_gemini(raw_ocr: str) -> dict:
 def gemini_dict_to_extracted(data: dict):
     """
     Convert the Gemini JSON response dict into an ExtractedJSON model.
-    Merges symptoms + diagnosis into a single symptom list for ICD harmonization.
+    Merges symptoms + diagnosis + procedures into symptom list for ICD harmonization.
     """
     from app.models import ExtractedJSON, LineItem
 
-    # Build line items — merge explicit line_items + medications
-    line_items = [
-        LineItem(
-            description=li.get("description", ""),
-            raw_text=li.get("raw_text", ""),
-        )
-        for li in data.get("line_items", [])
-    ]
-    for med in data.get("medications", []):
-        desc = " ".join(filter(None, [
-            med.get("name", ""),
-            med.get("dose", ""),
-            med.get("route", ""),
-            med.get("frequency", ""),
-        ])).strip()
-        line_items.append(LineItem(description=desc, raw_text=med.get("raw_text", "")))
+    # Build line items (only items that have financial amounts or valid bill items)
+    line_items = []
+    for li in data.get("line_items", []):
+        if isinstance(li, dict):
+            desc = li.get("description", "") or li.get("item", "") or li.get("raw_text", "")
+            try:
+                amt = float(li.get("amount", 0.0) or li.get("price", 0.0) or 0.0)
+            except (ValueError, TypeError):
+                amt = 0.0
+            if desc:
+                line_items.append(LineItem(
+                    description=desc,
+                    raw_text=li.get("raw_text", desc),
+                    amount=amt
+                ))
 
-    # Merge symptoms + diagnosis (deduplicated)
+    # Medications list
+    medications = data.get("medications", []) or []
+    prescribed_medications = []
+    for med in medications:
+        if isinstance(med, dict):
+            prescribed_medications.append({
+                "medication": med.get("name", "") or med.get("medication", ""),
+                "dosage": med.get("dose", "") or med.get("dosage", ""),
+                "duration": med.get("duration", "") or med.get("frequency", ""),
+                "quantity": med.get("quantity", "1")
+            })
+
+    # Lab results list
+    lab_results = data.get("lab_results", []) or []
+
+    # Merge symptoms + diagnosis + procedure performed (deduplicated)
     symptoms = list(data.get("symptoms", []))
     for d in data.get("diagnosis", []):
         if d and d not in symptoms:
             symptoms.append(d)
+    procedure = str(data.get("procedure_performed", "") or "")
+    if procedure and procedure not in symptoms:
+        symptoms.append(procedure)
 
     # Vitals dict
     vitals = data.get("vitals", {}) or {}
 
-    # Build OCR notes with vitals summary prepended
+    # Build OCR notes
     vitals_parts = []
     if vitals.get("bp"):    vitals_parts.append(f"BP: {vitals['bp']}")
     if vitals.get("pulse"): vitals_parts.append(f"PR: {vitals['pulse']}")
     if vitals.get("rbs"):   vitals_parts.append(f"RBS: {vitals['rbs']}")
+    if vitals.get("ef"):    vitals_parts.append(f"EF: {vitals['ef']}")
     vitals_note = " | ".join(vitals_parts)
     ocr_note = str(data.get("ocr_confidence_notes", "") or "")
     full_note = f"{vitals_note} | {ocr_note}" if vitals_note and ocr_note else (vitals_note or ocr_note)
 
-    # Safely parse age
+    # Safely parse numeric fields
     try:
         age = int(data.get("age", 0) or 0)
     except (ValueError, TypeError):
         age = 0
 
+    try:
+        consultation_fee = float(data.get("consultation_fee", 0) or 0)
+    except (ValueError, TypeError):
+        consultation_fee = 0.0
+
+    try:
+        total_amt = float(data.get("total", 0) or 0)
+    except (ValueError, TypeError):
+        total_amt = 0.0
+
     return ExtractedJSON(
+        document_type=str(data.get("document_type", "") or ""),
         patient_name=str(data.get("patient_name", "") or ""),
         patient_id=str(data.get("patient_id", "") or ""),
         hospital_name=str(data.get("hospital_name", "") or ""),
@@ -252,8 +281,13 @@ def gemini_dict_to_extracted(data: dict):
         doctor_name=str(data.get("doctor_name", "") or ""),
         doctor_id=str(data.get("doctor_id", "") or ""),
         symptoms=symptoms[:12],
+        diagnosis=list(data.get("diagnosis", []) or []),
+        procedure_performed=procedure,
         line_items=line_items[:20],
-        consultation_fee=float(data.get("consultation_fee", 0) or 0),
+        prescribed_medications=prescribed_medications[:15],
+        lab_results=lab_results[:15],
+        consultation_fee=consultation_fee,
+        total=total_amt,
         ocr_confidence_notes=full_note,
         vitals=vitals,
         advice=list(data.get("advice", []) or []),

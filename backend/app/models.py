@@ -12,11 +12,13 @@ from pydantic import BaseModel, Field
 
 class LineItem(BaseModel):
     description: str
-    raw_text: str
+    raw_text: str = ""
+    amount: float = 0.0
 
 
 class ExtractedJSON(BaseModel):
     clinic_id: str = "CLINIC-GENERAL"
+    document_type: str = ""       # Discharge Summary, Lab Report, Prescription, Bill
     patient_name: str = ""
     patient_id: str = ""          # UHID / IP number
     hospital_name: str = ""       # Hospital/clinic name from bill
@@ -24,10 +26,15 @@ class ExtractedJSON(BaseModel):
     sex: str = ""
     date: str = ""
     symptoms: List[str] = []
+    diagnosis: List[str] = []
+    procedure_performed: str = "" # e.g. CABG x 3, Appendectomy
     line_items: List[LineItem] = []
+    prescribed_medications: List[Dict[str, Any]] = []
+    lab_results: List[Dict[str, Any]] = []
     doctor_name: str = ""
     doctor_id: str = ""           # Doctor's registration/signature ID
     consultation_fee: float = 0.0
+    total: float = 0.0
     ocr_confidence_notes: str = ""
     vitals: Dict[str, Any] = {}   # BP, pulse, RBS, SpO2, temp, weight
     advice: List[str] = []        # Non-medication instructions

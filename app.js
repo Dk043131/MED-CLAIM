@@ -628,12 +628,14 @@ function buildExtractedFindingsHtml(claim) {
     html += `<div style="border:1px solid rgba(255,255,255,0.07); border-radius:8px; overflow:hidden; margin-bottom:8px">`;
     lineItems.forEach((item, i) => {
       const bg = i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent';
+      const amt = Number(item.amount);
+      const amtDisplay = (!isNaN(amt) && amt > 0) ? `₹${amt.toLocaleString('en-IN')}` : '—';
       html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:${bg}; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04);">`;
       html += `<span style="color:#cbd5e1">${item.description}</span>`;
-      html += `<span style="color:#10b981; font-weight:700; font-family:'JetBrains Mono',monospace">₹${Number(item.amount).toLocaleString('en-IN')}</span>`;
+      html += `<span style="color:${(!isNaN(amt) && amt > 0) ? '#10b981' : '#64748b'}; font-weight:700; font-family:'JetBrains Mono',monospace">${amtDisplay}</span>`;
       html += `</div>`;
     });
-    if (ej.total) {
+    if (ej.total && !isNaN(Number(ej.total)) && Number(ej.total) > 0) {
       html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(16,185,129,0.08); border-top:1px solid rgba(16,185,129,0.2); font-size:13px; font-weight:700;">`;
       html += `<span style="color:#e2e8f0">Total</span>`;
       html += `<span style="color:#10b981; font-family:'JetBrains Mono',monospace">₹${Number(ej.total).toLocaleString('en-IN')} ${ej.currency || 'INR'}</span>`;
