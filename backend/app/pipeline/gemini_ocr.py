@@ -19,7 +19,7 @@ from typing import Any
 from app.config import GEMINI_API_KEY
 
 # ── Model names ───────────────────────────────────────────────────────────────
-OCR_MODEL = "gemini-3-flash-preview"
+OCR_MODEL = "gemini-2.0-flash"
 
 # ── Combined extraction prompt ────────────────────────────────────────────────
 _COMBINED_PROMPT = """You are a clinical document AI for Indian hospital prescriptions and medical bills.
@@ -128,37 +128,15 @@ def extract_with_gemini(file_bytes: bytes, filename: str = "") -> tuple[str, dic
 
     image_part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
 
-    # Try multiple models in fallback order when quota is exhausted
-    model_chain = [
-        "gemini-3-flash-preview",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-exp",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-latest",
-    ]
-
-    last_exc = None
-    for model_name in model_chain:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=[image_part, _COMBINED_PROMPT],
-                config=types.GenerateContentConfig(
-                    temperature=0.0,
-                    max_output_tokens=2048,
-                ),
-            )
-            print(f"[GeminiOCR] Used model: {model_name}")
-            break
-        except Exception as exc:
-            err_str = str(exc)
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
-                print(f"[GeminiOCR] {model_name} quota exhausted, trying next model...")
-                last_exc = exc
-                continue
-            raise  # Re-raise non-quota errors immediately
-    else:
-        raise RuntimeError(f"All Gemini models quota exhausted: {last_exc}")
+    response = client.models.generate_content(
+        model=OCR_MODEL,
+        contents=[image_part, _COMBINED_PROMPT],
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=2048,
+        ),
+    )
+    print(f"[GeminiOCR] Used model: {OCR_MODEL}")
 
     raw_text = response.text or ""
     cleaned = _clean_json(raw_text)
@@ -196,37 +174,15 @@ def extract_text_with_gemini(raw_ocr: str) -> dict:
     client = _get_client()
     prompt = _TEXT_PROMPT.replace("{raw_ocr}", raw_ocr)
 
-    model_chain = [
-        "gemini-3-flash-preview",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-exp",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-latest",
-    ]
-
-    last_exc = None
-    response = None
-    for model_name in model_chain:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.0,
-                    max_output_tokens=1536,
-                ),
-            )
-            print(f"[GeminiOCR text] Used model: {model_name}")
-            break
-        except Exception as exc:
-            err_str = str(exc)
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
-                print(f"[GeminiOCR text] {model_name} quota exhausted, trying next...")
-                last_exc = exc
-                continue
-            raise
-    else:
-        raise RuntimeError(f"All Gemini models quota exhausted: {last_exc}")
+    response = client.models.generate_content(
+        model=OCR_MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+            max_output_tokens=1536,
+        ),
+    )
+    print(f"[GeminiOCR text] Used model: {OCR_MODEL}")
 
     cleaned = _clean_json(response.text or "")
     try:

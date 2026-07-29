@@ -28,7 +28,7 @@ from app.models import CodedDiagnosis, CodingResult
 TOP_N_CANDIDATES = 8
 
 # ICD-10 coding model — Gemini 3.1 Flash-Lite (fast, cheap, text-only)
-CODING_MODEL = "gemini-3.1-flash-lite"
+CODING_MODEL = "gemini-2.0-flash"
 
 # ── PANDA Clinical Synonym Dictionary ────────────────────────────────────────
 # Maps common Indian clinical abbreviations/synonyms → preferred ICD-10 search terms

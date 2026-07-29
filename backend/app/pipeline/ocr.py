@@ -144,7 +144,7 @@ def ocr_bill_gemini_raw(file_bytes: bytes, filename: str = "") -> tuple[str, flo
     )
 
     response = client.models.generate_content(
-        model="gemini-3-flash-preview",
+        model="gemini-2.0-flash",
         contents=[image_part, prompt],
         config=types.GenerateContentConfig(
             temperature=0.0,
