@@ -56,21 +56,34 @@ from app.storage import save_claim, get_claims
 
 def test_claim_twins_duplicate_check(tmp_path):
     """Verify duplicate check flags twin claims for same patient & symptoms."""
-    # Process and save initial claim
-    claim1 = process_claim(b"Patient Name: Rahul Sharma\nFever, Cough\nRs 500", "clean_bill.txt")
+    from app.models import ClaimRecord, ExtractedJSON, CodingResult, Eligibility
+    import uuid
+
+    # Create deterministic initial claim
+    claim1 = ClaimRecord(
+        claim_id=f"CLM-TWIN-{uuid.uuid4().hex[:6]}",
+        raw_ocr="Patient Name: Rahul Sharma\nFever, Cough",
+        extracted_json=ExtractedJSON(
+            patient_name="Rahul Sharma",
+            symptoms=["Fever", "Cough"]
+        ),
+        coding_result=CodingResult(coded_diagnoses=[]),
+        eligibility=Eligibility(eligible=True),
+        route="auto_approve",
+        status="approved"
+    )
     save_claim(claim1)
-    
+
     # Confirm persisted
     all_claims = get_claims()
     assert len(all_claims) >= 1
 
-    # Check for duplicate with matching symptoms from initial claim (simulating new claim CLM-NEW)
+    # Check for duplicate with matching symptoms from initial claim
     dup_res = check_duplicate_claims(
-        claim1.extracted_json.patient_name,
-        claim1.extracted_json.symptoms,
+        "Rahul Sharma",
+        ["Fever", "Cough"],
         current_claim_id="CLM-NEW"
     )
-    print("DEBUG dup_res:", dup_res, "patient:", repr(claim1.extracted_json.patient_name), "symptoms:", claim1.extracted_json.symptoms)
     assert dup_res["is_duplicate"] is True
     assert claim1.claim_id in dup_res["twin_claim_ids"]
 
