@@ -2,48 +2,48 @@
    MED-CLAIM Design System — Dark Glassmorphic Theme
    ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* ── CSS Variables ───────────────────────────────────────────── */
 :root {
   /* Background layers */
-  --bg-base:      #050a14;
-  --bg-surface:   #0a1628;
-  --bg-card:      rgba(14, 26, 48, 0.72);
-  --bg-card-hover:rgba(20, 38, 68, 0.85);
-  --bg-glass:     rgba(255, 255, 255, 0.04);
-  --bg-glass-hover:rgba(255,255,255,0.07);
+  --bg-base:      #060911;
+  --bg-surface:   #0b111d;
+  --bg-card:      rgba(13, 20, 34, 0.78);
+  --bg-card-hover:rgba(18, 28, 48, 0.88);
+  --bg-glass:     rgba(255, 255, 255, 0.03);
+  --bg-glass-hover:rgba(255, 255, 255, 0.06);
 
   /* Brand / Accent */
   --indigo:       #6366f1;
   --indigo-bright:#818cf8;
-  --indigo-glow:  rgba(99,102,241,0.35);
+  --indigo-glow:  rgba(99, 102, 241, 0.25);
   --violet:       #8b5cf6;
-  --violet-glow:  rgba(139,92,246,0.3);
+  --violet-glow:  rgba(139, 92, 246, 0.2);
 
   /* Status colors */
   --green:        #10b981;
-  --green-dim:    rgba(16,185,129,0.15);
-  --green-glow:   rgba(16,185,129,0.4);
+  --green-dim:    rgba(16, 185, 129, 0.12);
+  --green-glow:   rgba(16, 185, 129, 0.35);
   --amber:        #f59e0b;
-  --amber-dim:    rgba(245,158,11,0.15);
-  --amber-glow:   rgba(245,158,11,0.4);
+  --amber-dim:    rgba(245, 158, 11, 0.12);
+  --amber-glow:   rgba(245, 158, 11, 0.35);
   --rose:         #f43f5e;
-  --rose-dim:     rgba(244,63,94,0.15);
-  --rose-glow:    rgba(244,63,94,0.4);
+  --rose-dim:     rgba(244, 63, 94, 0.12);
+  --rose-glow:    rgba(244, 63, 94, 0.35);
   --blue:         #38bdf8;
-  --blue-dim:     rgba(56,189,248,0.15);
+  --blue-dim:     rgba(56, 189, 248, 0.12);
 
   /* Text */
-  --text-primary:   #f1f5f9;
+  --text-primary:   #f8fafc;
   --text-secondary: #94a3b8;
-  --text-muted:     #475569;
+  --text-muted:     #64748b;
   --text-accent:    #818cf8;
 
   /* Borders */
-  --border:       rgba(99,102,241,0.18);
-  --border-subtle:rgba(255,255,255,0.06);
-  --border-glow:  rgba(99,102,241,0.45);
+  --border:       rgba(99, 102, 241, 0.22);
+  --border-subtle:rgba(255, 255, 255, 0.07);
+  --border-glow:  rgba(99, 102, 241, 0.4);
 
   /* Spacing */
   --sidebar-w:    240px;
@@ -52,22 +52,22 @@
   --radius-lg:    20px;
 
   /* Shadows */
-  --shadow-card:  0 4px 24px rgba(0,0,0,0.45), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-glow:  0 0 32px rgba(99,102,241,0.2), 0 4px 24px rgba(0,0,0,0.5);
-  --shadow-btn:   0 4px 14px rgba(99,102,241,0.4);
+  --shadow-card:  0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-glow:  0 0 32px rgba(99, 102, 241, 0.18), 0 10px 30px rgba(0,0,0,0.6);
+  --shadow-btn:   0 4px 16px rgba(99, 102, 241, 0.35);
 
   /* Transitions */
-  --ease:         cubic-bezier(0.23, 1, 0.32, 1);
+  --ease:         cubic-bezier(0.16, 1, 0.3, 1);
   --fast:         150ms;
-  --med:          280ms;
-  --slow:         500ms;
+  --med:          250ms;
+  --slow:         450ms;
 }
 
 /* ── Reset ───────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   background: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;
@@ -222,6 +222,16 @@ body::before {
   background: var(--green);
   box-shadow: 0 0 8px var(--green-glow);
   animation: pulse-dot 2s ease-in-out infinite;
+}
+.status-dot.online {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.status-dot.offline {
+  background: var(--rose);
+  box-shadow: 0 0 8px var(--rose-glow);
+  animation: none;
 }
 @keyframes pulse-dot {
   0%,100% { opacity: 1; box-shadow: 0 0 8px var(--green-glow); }

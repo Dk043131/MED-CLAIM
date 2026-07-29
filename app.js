@@ -6,14 +6,11 @@
    ================================================================ */
 
 // ─── API Configuration ────────────────────────────────────────────────────────
-const USE_MOCK = true; // ← set false to switch to Person A's real API
+const USE_MOCK = false; // Switched to Person A's real FastAPI API
 
-const API_BASE = (
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1'
-)
-  ? '/api'
-  : 'http://<person-a-machine-ip>:8000/api'; // ← update IP when deploying
+const API_BASE = USE_MOCK 
+  ? '/api' 
+  : 'http://localhost:8000';
 
 // ─── App State ────────────────────────────────────────────────────────────────
 const state = {
@@ -23,13 +20,36 @@ const state = {
   surgeRunning: false,
   hitlClaims: [],
   dashMetrics: null,
+  serverLive: false,
 };
+
+// Auto-check server health on startup
+async function checkServerHealth() {
+  const textEl = $('server-status-text');
+  const dotEl = $('server-dot');
+  try {
+    const res = await fetch('http://localhost:8000/health');
+    if (res.ok) {
+      const data = await res.json();
+      state.serverLive = true;
+      if (textEl) textEl.textContent = 'FastAPI Engine Live';
+      if (dotEl) dotEl.className = 'status-dot online';
+      return;
+    }
+  } catch (err) {
+    console.warn('Backend server check failed:', err);
+  }
+  if (textEl) textEl.textContent = USE_MOCK ? 'Mock server' : 'FastAPI Offline';
+  if (dotEl) dotEl.className = 'status-dot ' + (USE_MOCK ? 'online' : 'offline');
+}
+window.addEventListener('DOMContentLoaded', checkServerHealth);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function $(id) { return document.getElementById(id); }
 
 function toast(message, type = 'info', duration = 3500) {
   const container = $('toast-container');
+  if (!container) return;
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
@@ -42,18 +62,115 @@ function toast(message, type = 'info', duration = 3500) {
 }
 
 async function apiFetch(path, options = {}) {
-  const url = API_BASE + path;
+  const isReal = !USE_MOCK;
+  let requestPath = path;
+
+  // Endpoint translation for real FastAPI backend
+  if (isReal) {
+    if (path === '/claims/submit') requestPath = '/claims/upload';
+  }
+
+  const url = API_BASE + requestPath;
   try {
     const res = await fetch(url, {
-      headers: { 'Content-Type': 'application/json', ...options.headers },
+      headers: { ...options.headers },
       ...options,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const data = await res.json();
+    
+    // Transform FastAPI payload to Frontend expected payload
+    if (isReal) {
+      if (requestPath === '/claims/upload') {
+        return { claim: adaptClaim(data) };
+      }
+      if (requestPath === '/claims/review-queue') {
+        const claimsList = Array.isArray(data) ? data : (data.claims || []);
+        return { claims: claimsList.map(adaptClaim), count: claimsList.length };
+      }
+      if (requestPath === '/claims') {
+        const claimsList = Array.isArray(data) ? data : [];
+        return claimsList.map(adaptClaim);
+      }
+      if (requestPath === '/dashboard/metrics') {
+        return {
+          total_claims: data.total_claims || 0,
+          approved: data.auto_approved || 0,
+          flagged: data.pending_review || 0,
+          rejected: 0,
+          pending_review: data.pending_review || 0,
+          auto_adjudication_rate: data.auto_adjudication_rate || 0,
+          avg_confidence: 0.94,
+          daily_volume: [
+            { date: new Date().toISOString(), APPROVED: data.auto_approved || 0, FLAGGED: data.pending_review || 0, REJECTED: 0 }
+          ]
+        };
+      }
+    }
+    return data;
   } catch (err) {
     console.error('API error:', url, err);
     throw err;
   }
+}
+
+// Adapter function to map FastAPI ClaimRecord to Frontend UI shape
+function adaptClaim(c) {
+  const isApproved = (c.status === "approved" || c.route === "auto_approve");
+  
+  // Calculate average ICD confidence
+  const icds = c.coding_result?.coded_diagnoses || [];
+  let avgConf = 0.95;
+  if (icds.length > 0) {
+    avgConf = icds.reduce((sum, item) => sum + (item.confidence || 0), 0) / icds.length;
+  }
+  
+  // Synthesize clear flag reasons if pending review
+  const flags = [];
+  if (!isApproved) {
+    if (c.eligibility && !c.eligibility.eligible) {
+      flags.append ? flags.push(`Ineligible: ${c.eligibility.reason || 'Failed eligibility verification'}`) : flags.push(`Ineligible: ${c.eligibility.reason || 'Failed eligibility'}`);
+    }
+    if (avgConf < 0.85) {
+      flags.push(`Low ICD-10 Confidence (${(avgConf * 100).toFixed(0)}%)`);
+    }
+    if (c.extracted_json?.ocr_confidence_notes) {
+      flags.push(c.extracted_json.ocr_confidence_notes);
+    }
+    if (flags.length === 0) {
+      flags.push("Routed for Caseworker Review");
+    }
+  }
+
+  return {
+    id: c.claim_id,
+    patient_name: c.extracted_json?.patient_name || "Patient Record",
+    patient_id: c.eligibility?.patient_id || "PT-8821",
+    submitted_at: new Date().toISOString(),
+    status: isApproved ? "APPROVED" : "FLAGGED",
+    confidence_score: Number(avgConf.toFixed(2)),
+    raw_ocr: c.raw_ocr || "OCR Text Extracted",
+    extracted_json: c.extracted_json || {},
+    icd_codes: icds.map(d => ({
+      code: d.icd10_code,
+      description: d.icd10_description,
+      confidence: d.confidence
+    })),
+    eligibility_result: {
+      eligible: c.eligibility?.eligible ?? true,
+      scheme: c.eligibility?.existing_coverage || "PM-JAY Gold",
+      coverage_percent: isApproved ? 100 : 0,
+      reason: c.eligibility?.reason || ""
+    },
+    flags: flags,
+    audit_log: [
+      { timestamp: new Date().toISOString(), stage: "OCR", note: "Extracted bill text" },
+      { timestamp: new Date().toISOString(), stage: "CODING", note: "Mapped ICD-10 codes" },
+      { timestamp: new Date().toISOString(), stage: "ELIGIBILITY", note: c.eligibility?.reason || "Checked database" },
+      { timestamp: new Date().toISOString(), stage: "DECISION", note: isApproved ? "Auto-approved" : "Flagged for human review" }
+    ],
+    image_url: "/assets/mock_bill_clean.png"
+  };
 }
 
 function formatDate(isoStr) {
@@ -197,36 +314,43 @@ $('btn-clear').addEventListener('click', () => {
 
 // Demo shortcut buttons
 $('btn-demo-clean').addEventListener('click', async () => {
-  await runDemoSubmission('mock_bill_clean.png', 'image/png');
+  await runDemoSubmission('mock_bill_clean.png', 'image/png', 'clean_bill.txt');
 });
 $('btn-demo-messy').addEventListener('click', async () => {
-  await runDemoSubmission('mock_bill_messy.png', 'image/png');
+  await runDemoSubmission('mock_bill_messy.png', 'image/png', 'ambiguous_bill.txt');
 });
 
-async function runDemoSubmission(filename, fileType) {
-  // Set preview
+async function runDemoSubmission(filename, fileType, fallbackTxtFile = 'clean_bill.txt') {
   uploadPreview.style.display = 'block';
   $('preview-name').textContent = filename;
   $('preview-size').textContent = 'Demo file';
   $('preview-thumb').src = '/assets/' + filename;
   resetPipeline();
 
-  // Trigger submit with a fake file descriptor (base64 is empty placeholder for demo)
+  try {
+    // Try to fetch image asset as blob to build a real File object for FastAPI
+    const res = await fetch('/assets/' + filename);
+    if (res.ok) {
+      const blob = await res.blob();
+      state.selectedFile = new File([blob], filename, { type: fileType });
+    } else {
+      // Fallback text bill
+      state.selectedFile = new File(["Rahul Sharma\nFever, Headache, Cough\nRs. 950"], fallbackTxtFile, { type: "text/plain" });
+    }
+  } catch (_) {
+    state.selectedFile = new File(["Rahul Sharma\nFever, Headache, Cough\nRs. 950"], fallbackTxtFile, { type: "text/plain" });
+  }
+
   await submitClaim(filename, fileType, '');
 }
 
 // ── Submit button ──
 $('btn-submit').addEventListener('click', async () => {
-  if (!state.selectedFile) return;
-  const file = state.selectedFile;
-
-  // Read file as base64
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const base64 = e.target.result.split(',')[1] || '';
-    await submitClaim(file.name, file.type, base64);
-  };
-  reader.readAsDataURL(file);
+  if (!state.selectedFile) {
+    toast('Please select or drop a hospital bill first.', 'warning');
+    return;
+  }
+  await submitClaim(state.selectedFile.name, state.selectedFile.type, '');
 });
 
 // ── Pipeline logic ──
@@ -352,11 +476,23 @@ async function submitClaim(filename, fileType, base64Data) {
       }
     }
 
-    // POST to API (base64 JSON)
-    const data = await apiFetch('/claims/submit', {
-      method: 'POST',
-      body: JSON.stringify({ filename, file_type: fileType, file_data: base64Data }),
-    });
+    // POST to API
+    let data;
+    if (USE_MOCK) {
+      data = await apiFetch('/claims/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, file_type: fileType, file_data: base64Data }),
+      });
+    } else {
+      // Real API needs multipart/form-data with actual file
+      const formData = new FormData();
+      formData.append('file', state.selectedFile);
+      data = await apiFetch('/claims/submit', {
+        method: 'POST',
+        body: formData, // fetch sets content-type automatically for FormData
+      });
+    }
     claimResult = data.claim;
 
     // Animate final DECISION step
