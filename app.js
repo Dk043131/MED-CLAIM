@@ -7,7 +7,9 @@
 
 // ─── API Configuration ────────────────────────────────────────────────────────
 let USE_MOCK = false;
-let API_BASE = 'http://localhost:8000';
+let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8000'
+  : (localStorage.getItem('medclaim_backend_url') || 'https://med-claim-backend.onrender.com');
 
 
 // ─── App State ────────────────────────────────────────────────────────────────
@@ -28,11 +30,10 @@ async function checkServerHealth() {
   const textEl = $('server-status-text');
   const dotEl = $('server-dot');
   try {
-    const res = await fetch('http://localhost:8000/health');
+    const res = await fetch(`${API_BASE}/health`);
     if (res.ok) {
       state.serverLive = true;
       USE_MOCK = false;
-      API_BASE = 'http://localhost:8000';
       if (textEl) textEl.textContent = 'FastAPI Engine Live';
       if (dotEl) dotEl.className = 'status-dot online';
       return true;
@@ -42,7 +43,6 @@ async function checkServerHealth() {
   }
   state.serverLive = false;
   USE_MOCK = true;
-  API_BASE = '/api';
   if (textEl) textEl.textContent = 'Mock server';
   if (dotEl) dotEl.className = 'status-dot warning';
   return false;
@@ -274,7 +274,6 @@ const screens = {
   preauth:   { el: 'screen-preauth',   title: 'Pre-Authorization Workflow', sub: 'Hospital requests for elective or emergency procedure prior approval' },
   pmjay:     { el: 'screen-pmjay',     title: 'Ayushman Bharat (PM-JAY) Portal', sub: 'Instant 3-gate eligibility check, Aadhaar KYC, hospital empanelment, and ₹5L family cap tracking' },
   dashboard: { el: 'screen-dashboard', title: 'Observability Dashboard', sub: 'Live metrics for the claims processing pipeline' },
-  pitch:     { el: 'screen-pitch',     title: 'Pitch Prep',            sub: 'Demo script, verification checklist, and Q&A preparation' },
 };
 
 function navigate(screenId) {
@@ -302,7 +301,7 @@ function navigate(screenId) {
 }
 
 // Wire nav clicks
-['submit', 'hitl', 'preauth', 'pmjay', 'dashboard', 'pitch'].forEach(id => {
+['submit', 'hitl', 'preauth', 'pmjay', 'dashboard'].forEach(id => {
   const el = $('nav-' + id);
   if (!el) return;
   el.addEventListener('click', () => navigate(id));

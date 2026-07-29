@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "name": "med-claim-frontend",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

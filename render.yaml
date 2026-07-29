@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: med-claim-backend
+    env: python
+    region: singapore
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:///./claims.db
+      - key: ALLOWED_ORIGINS
+        value: "*"

@@ -31,6 +31,7 @@ from typing import Optional, AsyncGenerator
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 import datetime
 import uuid
@@ -441,6 +442,79 @@ def submit_claim_to_portal(claim_id: str):
         raise HTTPException(status_code=404, detail=f"Claim '{claim_id}' not found.")
     sub = submit_to_government_portal(claim)
     return sub
+
+
+class SurgeRequest(BaseModel):
+    count: int = 50
+
+
+@app.post(
+    "/claims/surge",
+    summary="Inject N synthetic claims for high-volume surge simulation",
+    tags=["Claims"],
+)
+def claims_surge(payload: SurgeRequest = SurgeRequest(count=50)):
+    """Inject synthetic surge claims into DB and return new claims & metrics."""
+    import random
+    count = min(max(payload.count, 1), 100)
+
+    hospitals = ["City Hospital", "Apollo Clinic", "District Hospital", "ESI Hospital", "Fortis Hospital", "KGH"]
+    symptoms_pool = ["Fever, Headache", "Chest Pain", "Acute Cough", "Abdominal Pain", "Joint Pain"]
+    icd_pool = [
+        {"icd10_code": "J06.9", "icd10_description": "Acute upper respiratory infection", "confidence": 0.94},
+        {"icd10_code": "E11.9", "icd10_description": "Type 2 diabetes mellitus", "confidence": 0.91},
+        {"icd10_code": "K37",   "icd10_description": "Unspecified appendicitis", "confidence": 0.89},
+        {"icd10_code": "A91",   "icd10_description": "Dengue haemorrhagic fever", "confidence": 0.93},
+    ]
+
+    new_claims_frontend = []
+    for i in range(count):
+        claim_id = f"CLM-SURGE-{str(uuid.uuid4())[:8].upper()}"
+        conf = round(random.uniform(0.85, 0.98), 2)
+        icd = random.choice(icd_pool)
+
+        extracted = ExtractedJSON(
+            patient_name=f"Patient {i+1}",
+            patient_id=f"PT-SURGE-{1000+i}",
+            hospital_name=random.choice(hospitals),
+            symptoms=[random.choice(symptoms_pool)]
+        )
+        coding = CodingResult(coded_diagnoses=[CodedDiagnosis(**icd)])
+        elig = Eligibility(eligible=True, scheme="PM-JAY Gold", existing_coverage="PM-JAY Gold")
+
+        claim_rec = ClaimRecord(
+            claim_id=claim_id,
+            raw_ocr="Synthetic surge claim document text",
+            extracted_json=extracted,
+            coding_result=coding,
+            eligibility=elig,
+            route="auto_approve",
+            status="approved"
+        )
+        storage.save_claim(claim_rec)
+        new_claims_frontend.append({
+            "id": claim_id,
+            "patient_name": f"Patient {i+1}",
+            "status": "APPROVED",
+            "confidence_score": conf,
+        })
+
+    metrics = storage.get_metrics()
+
+    return {
+        "success": True,
+        "injected": count,
+        "metrics": {
+            "total_claims": metrics.total_claims,
+            "approved": metrics.auto_approved,
+            "flagged": metrics.pending_review,
+            "rejected": 0,
+            "pending_review": metrics.pending_review,
+            "auto_adjudication_rate": metrics.auto_adjudication_rate,
+            "avg_confidence": 0.94,
+        },
+        "new_claims": new_claims_frontend
+    }
 
 
 # ── Pre-Authorization Endpoints ──────────────────────────────────────────────

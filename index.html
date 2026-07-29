@@ -47,11 +47,6 @@
       <a class="nav-item" id="nav-dashboard" role="button" tabindex="0">
         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Observability
       </a>
-
-      <div class="nav-section-label">Demo</div>
-      <a class="nav-item" id="nav-pitch" role="button" tabindex="0">
-        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg></span> Pitch Prep
-      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -406,104 +401,6 @@
             </thead>
             <tbody id="recent-tbody"></tbody>
           </table>
-        </div>
-      </section>
-
-      <!-- ══════════════ SCREEN 4 — PITCH PREP ══════════════ -->
-      <section id="screen-pitch" class="screen" aria-label="Pitch Preparation">
-        <div class="pitch-grid">
-
-          <div class="card pitch-card">
-            <div class="pitch-tag">90-Second Demo Script</div>
-            <h3>Demo Run Order</h3>
-            <p>Follow this exact sequence during the judging panel. Rehearse at least twice with a stopwatch.</p>
-            <ol class="checklist" style="padding-left:0; counter-reset:step; list-style:none; margin-top:12px">
-              <li class="check-item" style="counter-increment:step">
-                <span class="check-icon">1</span>
-                <span><strong style="color:var(--text-primary)">Hook (15s):</strong> "A coding error on one line of a hospital bill can push a family into debt." Open MED-CLAIM dashboard.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon">2</span>
-                <span><strong style="color:var(--text-primary)">Clean bill (20s):</strong> Upload clean bill → watch all 5 stages turn green → Auto-Approved verdict.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon">3</span>
-                <span><strong style="color:var(--text-primary)">Messy bill (20s):</strong> Upload handwritten bill → watch OCR struggle → Flagged verdict → switch to HITL queue.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon">4</span>
-                <span><strong style="color:var(--text-primary)">HITL review (15s):</strong> Expand flagged claim, show image + extracted JSON side-by-side, click Approve.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon">5</span>
-                <span><strong style="color:var(--text-primary)">Surge Mode (15s):</strong> Switch to dashboard → click SURGE MODE → watch charts climb live. Close on 90%+ auto-rate.</span>
-              </li>
-            </ol>
-          </div>
-
-          <div class="card pitch-card">
-            <div class="pitch-tag">Verification Checklist</div>
-            <h3>Pre-Demo Checks</h3>
-            <p>Must all pass before Day 2 PM. Run in browser on the deployed URL, not localhost.</p>
-            <ul class="checklist" style="margin-top:12px">
-              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Upload flow shows all 5 state transitions (not just a spinner)</span></li>
-              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Flagged claim in HITL queue shows original image + flag reason clearly</span></li>
-              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Approving a claim removes it from the queue immediately</span></li>
-              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Dashboard auto-adjudication rate updates after approval</span></li>
-              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Surge mode shows live chart animation (4–6 second climb)</span></li>
-              <li class="check-item"><span class="check-icon pending">○</span><span>Demo runs end-to-end on deployed URL (not localhost)</span></li>
-              <li class="check-item"><span class="check-icon pending">○</span><span>Backup demo video recorded in advance</span></li>
-            </ul>
-          </div>
-
-          <div class="card pitch-card">
-            <div class="pitch-tag">Q&amp;A Prep</div>
-            <h3>Likely Judge Questions</h3>
-            <ul class="checklist" style="margin-top:12px">
-              <li class="check-item">
-                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                <span><strong style="color:var(--text-primary)">Why only 3 screens?</strong> Scope discipline. Each screen maps to one real-world user (patient/submitter, caseworker, manager). More screens = more surface area to break in demo.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                <span><strong style="color:var(--text-primary)">How does HITL help a caseworker?</strong> Original image + extracted JSON side-by-side eliminates paper-hunting. One-click approve with audit trail. Average review time &lt;30 seconds.</span>
-              </li>
-              <li class="check-item">
-                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                <span><strong style="color:var(--text-primary)">How is auto-adjudication rate calculated?</strong> Approved claims ÷ total claims. Recomputed live on every state change. 90%+ means 9 in 10 claims need zero human time.</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="card pitch-card">
-            <div class="pitch-tag">Architecture</div>
-            <h3>System Design at a Glance</h3>
-            <p style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.8; color:var(--text-secondary); margin-top:10px">
-              Bill Upload (image/PDF)<br>
-              &nbsp;&nbsp;&nbsp;↓<br>
-              IDP Bot: OCR + LLM cleanup<br>
-              &nbsp;&nbsp;&nbsp;↓<br>
-              Clinical Code Bot: ICD-10 mapping<br>
-              &nbsp;&nbsp;&nbsp;↓<br>
-              Eligibility Bot: mock welfare DB<br>
-              &nbsp;&nbsp;&nbsp;↓<br>
-              Orchestrator (LangGraph / FastAPI)<br>
-              &nbsp;&nbsp;↙&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↘<br>
-              Auto-Approve&nbsp;&nbsp;HITL Queue<br>
-              &nbsp;&nbsp;&nbsp;↓<br>
-              Observability Dashboard
-            </p>
-            <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:6px">
-              <span class="format-tag">FastAPI</span>
-              <span class="format-tag">LangGraph</span>
-              <span class="format-tag">Google Vision OCR</span>
-              <span class="format-tag">ICD-10 CM</span>
-              <span class="format-tag">SQLite</span>
-              <span class="format-tag">Chart.js</span>
-              <span class="format-tag">Python stdlib</span>
-            </div>
-          </div>
-
         </div>
       </section>
 
