@@ -289,10 +289,41 @@ def simulate_pipeline(filename, file_type):
 # ─────────────────────────────────────────────
 FASTAPI_URL = "http://localhost:8000"
 
+PREAUTH_DB = [
+    {
+        "preauth_id": "PA-2026-001",
+        "patient_id": "10193",
+        "patient_name": "Vivek S.",
+        "hospital_name": "Adichunchanagiri Institute of Medical Sciences",
+        "procedure_name": "Emergency Diagnostic Workup & IV Dextrose Stabilization",
+        "estimated_cost": 8500.0,
+        "clinical_justification": "Patient presented with acute giddiness, restlessness and severe hypoglycemia (RBS 50mg).",
+        "urgency": "emergency",
+        "status": "approved",
+        "created_at": "2026-07-28T14:30:00Z",
+        "decided_at": "2026-07-28T14:32:15Z",
+        "decision_reason": "Auto-approved: matches emergency hypoglycemia guideline."
+    },
+    {
+        "preauth_id": "PA-2026-002",
+        "patient_id": "88412",
+        "patient_name": "Ananya Sharma",
+        "hospital_name": "Apollo City Care Hospital",
+        "procedure_name": "Laparoscopic Appendectomy",
+        "estimated_cost": 42000.0,
+        "clinical_justification": "Acute right lower quadrant abdominal pain with rebound tenderness and leukocytosis.",
+        "urgency": "urgent",
+        "status": "pending",
+        "created_at": "2026-07-29T09:15:00Z",
+        "decided_at": "",
+        "decision_reason": ""
+    }
+]
+
 def try_proxy_to_fastapi(handler, method="GET"):
     """Proxy non-static request to FastAPI engine if live."""
     path = handler.path
-    if not (path.startswith("/api") or path.startswith("/claims") or path.startswith("/enrollment") or path.startswith("/hospitals") or path.startswith("/family") or path.startswith("/auth") or path.startswith("/dashboard") or path.startswith("/health")):
+    if not (path.startswith("/api") or path.startswith("/claims") or path.startswith("/enrollment") or path.startswith("/hospitals") or path.startswith("/family") or path.startswith("/auth") or path.startswith("/dashboard") or path.startswith("/health") or path.startswith("/preauth")):
         return False
 
     target_path = path[4:] if path.startswith("/api/") else path
@@ -408,6 +439,9 @@ class MedClaimHandler(BaseHTTPRequestHandler):
             claims = load_claims()
             return self.send_json(compute_metrics(claims))
 
+        if p in ("/preauth/queue", "/api/preauth/queue"):
+            return self.send_json(PREAUTH_DB)
+
 
         # Static files
         return self.serve_static(p)
@@ -510,6 +544,49 @@ class MedClaimHandler(BaseHTTPRequestHandler):
                 "metrics": metrics,
                 "new_claims": new_claims,
             })
+
+        # Pre-authorization endpoints
+        if p in ("/preauth/request", "/api/preauth/request"):
+            body = self.read_json_body()
+            pa_id = f"PA-2026-{random.randint(100, 999)}"
+            record = {
+                "preauth_id": pa_id,
+                "patient_id": body.get("patient_id", f"PT-{random.randint(10000, 99999)}"),
+                "patient_name": body.get("patient_name", "Unknown Patient"),
+                "hospital_name": body.get("hospital_name", "General Hospital"),
+                "procedure_name": body.get("procedure_name", "General Medical Care"),
+                "estimated_cost": float(body.get("estimated_cost", 0)),
+                "clinical_justification": body.get("clinical_justification", ""),
+                "urgency": body.get("urgency", "routine"),
+                "status": "pending",
+                "created_at": datetime.datetime.utcnow().isoformat() + "Z",
+                "decided_at": "",
+                "decision_reason": ""
+            }
+            PREAUTH_DB.insert(0, record)
+            return self.send_json(record)
+
+        m_app = re.match(r"^/(?:api/)?preauth/([^/]+)/approve$", p)
+        if m_app:
+            pa_id = m_app.group(1)
+            for r in PREAUTH_DB:
+                if r["preauth_id"] == pa_id:
+                    r["status"] = "approved"
+                    r["decided_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+                    r["decision_reason"] = "Approved by Caseworker via HITL queue."
+                    return self.send_json(r)
+            return self.send_error_json(f"Pre-authorization '{pa_id}' not found", 404)
+
+        m_rej = re.match(r"^/(?:api/)?preauth/([^/]+)/reject$", p)
+        if m_rej:
+            pa_id = m_rej.group(1)
+            for r in PREAUTH_DB:
+                if r["preauth_id"] == pa_id:
+                    r["status"] = "rejected"
+                    r["decided_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+                    r["decision_reason"] = "Rejected by Caseworker via HITL queue."
+                    return self.send_json(r)
+            return self.send_error_json(f"Pre-authorization '{pa_id}' not found", 404)
 
         self.send_error_json("Not found", 404)
 
