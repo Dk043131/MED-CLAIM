@@ -1583,8 +1583,13 @@ function initAuthSystem() {
     );
   });
 
-  // Logout button
+  // Logout button & Profile badge click
   $('btn-logout')?.addEventListener('click', handleLogout);
+  $('user-profile-badge')?.addEventListener('click', (e) => {
+    if (!state.currentUser && !e.target.closest('#btn-logout')) {
+      showAuthModal();
+    }
+  });
 
   // Session restoration: validate stored token with backend
   if (state.authToken) {
@@ -1637,7 +1642,7 @@ function updateUserProfileBadge() {
   const user = state.currentUser;
   if (!user) {
     $('user-name').textContent = 'Guest User';
-    $('user-role').textContent = 'Unauthenticated';
+    $('user-role').textContent = 'Click to Sign In';
     $('user-avatar').textContent = '??';
     return;
   }
@@ -1714,7 +1719,8 @@ async function handleRegister(email, fullName, password, role) {
   }
 }
 
-async function handleLogout() {
+async function handleLogout(e) {
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
   if (state.authToken) {
     try {
       await apiFetch(`/auth/logout?token=${encodeURIComponent(state.authToken)}`, { method: 'POST' });
@@ -1732,6 +1738,9 @@ async function handleLogout() {
 
 // ─── Initialise ───────────────────────────────────────────────────────────────
 async function init() {
+  // Initialize authentication event listeners and session check
+  initAuthSystem();
+
   // Check server health
   try {
     await apiFetch('/dashboard/metrics');
@@ -1751,4 +1760,5 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
 
