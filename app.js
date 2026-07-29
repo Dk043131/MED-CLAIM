@@ -503,130 +503,94 @@ function buildDetailedExplanationHtml(claim) {
   const isApproved = claim.status === 'APPROVED' || claim.status === 'approved' || claim.route === 'auto_approve';
   const isRejected = claim.status === 'REJECTED' || claim.status === 'rejected';
 
-  // ── Step 1: OCR ── real confidence from claim
-  const ocrConf = Math.round(
-    claim.ocr_confidence ||
-    claim.extracted_json?.confidence ||
-    (claim.coding_result?.coded_diagnoses?.length > 0 ? 93 : 62)
-  );
-  const ocrNotes = claim.extracted_json?.ocr_confidence_notes || '';
+  // ── Step 1: OCR — WHY it passed or failed ──────────────────────────────────
+  const ocrConf = Math.round(claim.ocr_confidence || (claim.coding_result?.coded_diagnoses?.length > 0 ? 93 : 62));
   const ocrPass = ocrConf >= 60;
-  const ocrDetail = ocrNotes
-    ? `${ocrConf}% confidence. ${ocrNotes}`
-    : ocrPass
-      ? `${ocrConf}% confidence. Document parsed successfully.`
-      : `Low confidence (${ocrConf}%). Handwriting unclear — routed to HITL review.`;
+  // Threshold: OCR must score ≥ 60% to pass without HITL escalation
+  const ocrWhy = ocrPass
+    ? `Passed because confidence score ${ocrConf}% ≥ required threshold of 60%. The document had legible text and sufficient structure for automated extraction.`
+    : `Failed because confidence score ${ocrConf}% is below the 60% minimum threshold. Handwritten or low-resolution input requires a caseworker to manually verify the extracted text.`;
 
-  // ── Step 2: ICD Coding ── real codes
+  // ── Step 2: ICD-10 Coding — WHY it passed or failed ───────────────────────
   const diagnoses = claim.coding_result?.coded_diagnoses || claim.icd_codes || [];
   const icdCount = diagnoses.length;
-  const lowConfDiag = diagnoses.filter(d => (d.confidence || d.icd_confidence || 1) < 0.8);
-  const icdSummary = diagnoses.slice(0, 3).map(d =>
-    `${d.icd10_code || d.code} ${d.symptom || d.description}`
-  ).join(', ') || 'No codes mapped';
+  const lowConfDiag = diagnoses.filter(d => (d.confidence || d.icd_confidence || 1) < 0.80);
   const icdPass = icdCount > 0 && lowConfDiag.length === 0;
-  const icdDetail = icdCount === 0
-    ? 'No ICD-10 codes could be mapped from this document. Clinical review required.'
+  const codesList = diagnoses.slice(0, 3).map(d => `${d.icd10_code || d.code}`).join(', ') || 'none';
+  // Threshold: all codes must have ≥ 80% confidence and at least 1 code must be assigned
+  const icdWhy = icdCount === 0
+    ? `Failed because no diagnosis terms matched any ICD-10 code in the PANDA clinical dictionary. The system requires at least 1 code to process a claim automatically.`
     : lowConfDiag.length > 0
-      ? `${icdCount} code(s) mapped but ${lowConfDiag.length} have low confidence: ${icdSummary}. Human verification needed.`
-      : `${icdCount} code(s) mapped with high confidence via PANDA: ${icdSummary}.`;
+      ? `Flagged because ${lowConfDiag.length} of ${icdCount} code(s) scored below the 80% confidence threshold. Only codes with ≥80% certainty are accepted without human review. Mapped: ${codesList}.`
+      : `Passed because all ${icdCount} code(s) (${codesList}) scored ≥80% confidence using the PANDA clinical synonym dictionary, meeting the minimum threshold for auto-adjudication.`;
 
-  // ── Step 3: Eligibility ── real reason from backend
+  // ── Step 3: Eligibility — WHY it passed or failed ─────────────────────────
   const elig = claim.eligibility_result || claim.eligibility || {};
   const eligPass = elig.eligible !== false;
-  const eligScheme = elig.scheme || elig.scheme_name || elig.existing_coverage || 'Ayushman Bharat (PMJAY)';
-  const eligPatientId = elig.patient_id || elig.member_id || '';
-  const eligDetail = elig.reason
-    ? `${elig.reason}${eligScheme ? ` | Scheme: ${eligScheme}` : ''}${eligPatientId ? ` | ID: ${eligPatientId}` : ''}`
-    : eligPass
-      ? `Active coverage under ${eligScheme}.${eligPatientId ? ` Patient ID: ${eligPatientId}.` : ''}`
-      : `Not eligible: No matching patient record in welfare database.`;
+  const eligScheme = elig.existing_coverage || elig.scheme || elig.scheme_name || 'PMJAY Gold';
+  const eligPatientId = elig.patient_id || '';
+  const eligExpiry = elig.coverage_expiry_date || '';
+  // Rule: patient must have an active, non-expired coverage record in eligibility.csv
+  const eligWhy = eligPass
+    ? `Passed because patient${eligPatientId ? ` (ID: ${eligPatientId})` : ''} was found in the welfare database with active ${eligScheme} coverage${eligExpiry ? `, valid until ${eligExpiry}` : ''}. Coverage has not expired.`
+    : `Failed because: "${elig.reason || 'No matching patient record found in the welfare eligibility database.'}". The system requires a valid, non-expired scheme enrollment to approve a claim automatically.`;
 
-  // ── Step 4: Duplicate Check ── real twin IDs
+  // ── Step 4: Duplicate Check — WHY it passed or failed ────────────────────
   const isDup = claim.is_duplicate || false;
   const twins = claim.twin_claim_ids || [];
-  const dupDetail = isDup
-    ? `⚠ Duplicate detected — matches claim(s): ${twins.join(', ')} for same patient within ±7 days.`
-    : 'No duplicate billing found for this patient within the ±7 day submission window.';
+  // Rule: claims for the same patient within ±7 days are blocked as duplicates
+  const dupWhy = isDup
+    ? `Flagged because an identical claim for this patient already exists in the system: ${twins.join(', ')}. The duplicate detection rule blocks claims submitted within a ±7 day window for the same patient to prevent double billing.`
+    : `Passed because no matching claim was found for this patient within the ±7 day duplicate detection window. Each claim is fingerprinted by patient name and symptom profile.`;
 
-  // ── Step 5: Fraud Score ── real score + real flags
+  // ── Step 5: Fraud Score — WHY it passed or failed ────────────────────────
   const fraud = claim.fraud_result || {};
   const fraudScore = fraud.fraud_score !== undefined ? Number(fraud.fraud_score) : 0.05;
   const fraudLevel = fraud.risk_level || (fraudScore > 0.6 ? 'high' : fraudScore > 0.3 ? 'medium' : 'low');
   const fraudFlags = (fraud.flags || []);
   const fraudColor = fraudLevel === 'high' ? '#f43f5e' : fraudLevel === 'medium' ? '#f59e0b' : '#10b981';
-  const fraudDetail = fraudFlags.length > 0
-    ? `Risk score ${fraudScore.toFixed(2)} (${fraudLevel.toUpperCase()}). Flags: ${fraudFlags.join('; ')}.`
-    : `Risk score ${fraudScore.toFixed(2)} (${fraudLevel.toUpperCase()}). No suspicious patterns detected.`;
+  // Threshold: fraud score > 0.6 escalates to HITL; > 0.3 adds a soft flag
+  const fraudWhy = fraudScore > 0.6
+    ? `Escalated to HITL because fraud score ${fraudScore.toFixed(2)} exceeds the 0.60 escalation threshold. Triggered flags: ${fraudFlags.join('; ') || 'unusual billing pattern'}.`
+    : fraudScore > 0.3
+      ? `Soft flag raised because fraud score ${fraudScore.toFixed(2)} is above 0.30 (warning zone). Reasons: ${fraudFlags.join('; ') || 'cost anomaly'}. Did not exceed 0.60 escalation threshold, so not blocked automatically.`
+      : `Passed because fraud score ${fraudScore.toFixed(2)} is below the 0.30 warning threshold. ${fraudFlags.length === 0 ? 'No suspicious billing patterns, unusual procedures, or pricing anomalies were detected.' : `Minor flags noted but within acceptable limits: ${fraudFlags.join('; ')}.`}`;
 
-  // ── Step 6: Portal ── real reference and status
+  // ── Step 6: Portal — WHY it passed or failed ─────────────────────────────
   const portal = claim.portal_submission || {};
   const portalRef = portal.portal_ref || '—';
   const portalStatus = portal.portal_status || (portal.submitted ? 'PORTAL_ACCEPTED' : 'NOT_SUBMITTED');
   const portalColor = portalStatus === 'PORTAL_ACCEPTED' ? '#10b981' : '#f59e0b';
-  const portalDetail = portal.submitted
-    ? `Submitted to government portal. Ref: ${portalRef} | Status: ${portalStatus}.`
-    : `Not yet submitted to PMJAY portal. Portal submission pending.`;
+  // Rule: only auto-approved claims are submitted to PMJAY portal
+  const portalWhy = portal.submitted
+    ? `Passed. Claim was registered with the government portal because all prior checks cleared. Reference: ${portalRef}. Portal returned status: ${portalStatus}, confirming eligibility for settlement disbursement.`
+    : `Not yet submitted. Government portal registration only occurs after all 5 prior checks pass. This claim is pending caseworker action before PMJAY portal submission can proceed.`;
 
   const verdictColor = isRejected ? '#f43f5e' : isApproved ? '#10b981' : '#f59e0b';
   const verdictLabel = isRejected ? 'REJECTED' : isApproved ? 'AUTO-APPROVED' : 'FLAGGED FOR REVIEW';
 
+  const makeCard = (num, title, pass, passLabel, failLabel, passColor, why) => `
+    <div style="padding:12px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${passColor};">
+      <div style="font-weight:600; color:#94a3b8; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <span>${num}. ${title}</span>
+        <span style="font-size:11px; color:${passColor}; font-weight:700; letter-spacing:0.5px">${pass ? passLabel : failLabel}</span>
+      </div>
+      <div style="color:var(--text-primary); line-height:1.6; font-size:11.5px">${why}</div>
+    </div>`;
+
   return `
     <div class="detailed-explanation-panel" style="margin-top:16px; padding:16px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.12); border-radius:10px; text-align:left;">
-      <div style="font-size:13px; font-weight:700; color:${verdictColor}; margin-bottom:14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:10px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${verdictColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Step-by-Step Adjudication Explanation — Verdict: ${verdictLabel}
+      <div style="font-size:13px; font-weight:700; color:${verdictColor}; margin-bottom:14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${verdictColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Why this claim was <span style="text-decoration:underline; text-underline-offset:3px">${verdictLabel}</span> — Step-by-step reasoning
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${ocrPass ? '#10b981' : '#f59e0b'};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>1. OCR & Document Intelligence</span>
-            <span style="color:${ocrPass ? '#10b981' : '#f59e0b'}">${ocrPass ? '✓ Passed' : '⚠ Low'}</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${ocrDetail}</div>
-        </div>
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${icdPass ? '#10b981' : '#f59e0b'};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>2. ICD-10 / SNOMED Coding</span>
-            <span style="color:${icdPass ? '#10b981' : '#f59e0b'}">${icdPass ? '✓ Mapped' : '⚠ Review'}</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${icdDetail}</div>
-        </div>
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${eligPass ? '#10b981' : '#f43f5e'};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>3. Welfare Eligibility Check</span>
-            <span style="color:${eligPass ? '#10b981' : '#f43f5e'}">${eligPass ? '✓ Eligible' : '✗ Ineligible'}</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${eligDetail}</div>
-        </div>
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${!isDup ? '#10b981' : '#f43f5e'};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>4. Duplicate / Fraud Twin Check</span>
-            <span style="color:${!isDup ? '#10b981' : '#f43f5e'}">${!isDup ? '✓ Unique' : '⚠ Duplicate'}</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${dupDetail}</div>
-        </div>
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${fraudColor};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>5. Fraud Probability Guardrail</span>
-            <span style="color:${fraudColor}">${fraudLevel.toUpperCase()} RISK</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${fraudDetail}</div>
-        </div>
-
-        <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:3px solid ${portalColor};">
-          <div style="font-weight:600; color:#94a3b8; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>6. Government Portal (PMJAY)</span>
-            <span style="color:${portalColor}">${portalStatus.replace('PORTAL_', '').replace('_', ' ')}</span>
-          </div>
-          <div style="color:var(--text-primary); line-height:1.5">${portalDetail}</div>
-        </div>
-
+        ${makeCard('Step 1', 'OCR & Document Reading', ocrPass, '✓ ABOVE THRESHOLD', '⚠ BELOW THRESHOLD', ocrPass ? '#10b981' : '#f59e0b', ocrWhy)}
+        ${makeCard('Step 2', 'ICD-10 Clinical Coding', icdPass, '✓ ALL CODES ≥80%', icdCount === 0 ? '✗ NO CODES FOUND' : '⚠ LOW CONFIDENCE', icdPass ? '#10b981' : '#f59e0b', icdWhy)}
+        ${makeCard('Step 3', 'Welfare Eligibility', eligPass, '✓ ACTIVE COVERAGE', '✗ NOT ELIGIBLE', eligPass ? '#10b981' : '#f43f5e', eligWhy)}
+        ${makeCard('Step 4', 'Duplicate Detection', !isDup, '✓ UNIQUE CLAIM', '⚠ DUPLICATE FOUND', !isDup ? '#10b981' : '#f43f5e', dupWhy)}
+        ${makeCard('Step 5', 'Fraud Risk Guardrail', fraudScore <= 0.6, '✓ SCORE BELOW LIMIT', '✗ SCORE EXCEEDS LIMIT', fraudColor, fraudWhy)}
+        ${makeCard('Step 6', 'PMJAY Portal Submission', portal.submitted, '✓ REGISTERED', '⏳ PENDING', portalColor, portalWhy)}
       </div>
     </div>
   `;
@@ -634,6 +598,7 @@ function buildDetailedExplanationHtml(claim) {
 
 
   // Clinic Fingerprint Matched Badge
+
   if (claim.fingerprint_matched?.matched) {
     bodyHtml += `<div style="margin-top:8px; padding:6px 12px; background:rgba(99,102,241,0.15); border:1px solid var(--border); border-radius:6px; font-size:12px; color:var(--indigo-bright);">
       🧠 <strong>Matched from Clinic History:</strong> Pre-filled '${claim.fingerprint_matched.original}' → confirmed '${claim.fingerprint_matched.corrected}' (Used ${claim.fingerprint_matched.hit_count}x).
