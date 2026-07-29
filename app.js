@@ -1256,10 +1256,10 @@ function renderCharts(m) {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } } },
+      plugins: { legend: { labels: { color: '#334155', font: { family: 'Inter', size: 12 } } } },
       scales: {
-        x: { stacked: true, ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { stacked: true, ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+        x: { stacked: true, ticks: { color: '#475569' }, grid: { color: '#e2e8f0' } },
+        y: { stacked: true, ticks: { color: '#475569' }, grid: { color: '#e2e8f0' } },
       },
     },
   });
@@ -1274,11 +1274,11 @@ function renderCharts(m) {
       datasets: [{
         data: [m.approved || 0, m.flagged || 0, m.rejected || 0],
         backgroundColor: [
-          'rgba(16,185,129,0.85)',
-          'rgba(245,158,11,0.85)',
-          'rgba(244,63,94,0.85)',
+          'rgba(5,150,105,0.85)',
+          'rgba(217,119,6,0.85)',
+          'rgba(225,29,72,0.85)',
         ],
-        borderColor: '#0a1628',
+        borderColor: '#ffffff',
         borderWidth: 3,
         hoverBorderWidth: 5,
       }],
@@ -1286,7 +1286,7 @@ function renderCharts(m) {
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '65%',
       plugins: {
-        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 }, padding: 16 } },
+        legend: { position: 'bottom', labels: { color: '#334155', font: { family: 'Inter', size: 12 }, padding: 16 } },
       },
     },
   });
@@ -1303,7 +1303,7 @@ function renderCharts(m) {
         datasets: [{
           label: 'Avg Latency (ms)',
           data: Object.values(tMap),
-          backgroundColor: 'rgba(99,102,241,0.85)',
+          backgroundColor: 'rgba(79,70,229,0.85)',
           borderRadius: 4
         }]
       },
@@ -1312,7 +1312,7 @@ function renderCharts(m) {
         plugins: { legend: { display: false } },
         scales: {
           x: { ticks: { color: '#475569', font: { size: 10 } }, grid: { display: false } },
-          y: { ticks: { color: '#475569' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+          y: { ticks: { color: '#475569' }, grid: { color: '#e2e8f0' } }
         }
       }
     });
