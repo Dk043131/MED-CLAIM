@@ -184,26 +184,48 @@ def extract_stub(raw_ocr: str) -> ExtractedJSON:
         "cough", "cold", "breathlessness", "dyspnoea", "dyspnea", "wheezing", "asthma", "bronchitis", "pneumonia",
         # GI
         "vomiting", "nausea", "diarrhoea", "diarrhea", "loose stools", "constipation",
-        "abdominal pain", "stomach ache", "indigestion",
+        "abdominal pain", "stomach ache", "indigestion", "jaundice",
         # Musculoskeletal
-        "back pain", "joint pain", "body pain", "muscle pain", "fracture", "sprain", "injury",
+        "back pain", "joint pain", "body pain", "muscle pain", "fracture", "sprain", "injury", "gout",
         # Fatigue / weakness
         "fatigue", "weakness", "lethargy", "malaise",
         # Metabolic / endocrine
         "hypoglycemia", "hypoglycaemia", "diabetes", "low blood sugar", "low rbs",
-        "hypertension", "high blood pressure",
+        "hypertension", "high blood pressure", "prediabetes",
+        "hypothyroidism", "hyperthyroidism", "thyroid disorder",
+        # Blood disorders (CBC parameters)
+        "anaemia", "anemia", "low hemoglobin", "hemoglobin low", "hb low",
+        "iron deficiency anemia", "megaloblastic anemia", "b12 deficiency", "folate deficiency",
+        "leukocytosis", "leukopenia", "high wbc", "low wbc", "neutrophilia", "lymphocytosis",
+        "thrombocytopenia", "low platelets", "thrombocytosis", "high platelets",
+        "bleeding", "wound",
+        # Lipid profile
+        "dyslipidemia", "hyperlipidemia", "high cholesterol", "hypercholesterolemia",
+        "high triglycerides", "hypertriglyceridemia", "low hdl", "high ldl",
+        # Liver function (LFT)
+        "elevated sgpt", "elevated sgot", "elevated alt", "elevated ast",
+        "raised bilirubin", "liver function abnormal",
+        # Kidney function (KFT / RFT)
+        "elevated creatinine", "high creatinine", "elevated urea",
+        "ckd", "chronic kidney disease", "renal impairment",
+        # Vitamins / minerals
+        "vitamin d deficiency", "vitamin d low", "low vitamin d",
+        "calcium deficiency", "low calcium", "iron deficiency",
+        # Uric acid / gout
+        "high uric acid", "hyperuricemia",
+        # Infection / inflammation markers
+        "elevated crp", "high esr", "abnormal blood count",
+        "elevated hba1c", "high hba1c",
         # Psychiatric / behavioral
         "restlessness", "agitation", "anxiety", "nervousness", "irritability",
         # Cardiovascular
         "chest pain", "palpitations", "bradycardia", "tachycardia",
         # Skin / allergy
         "rash", "allergy", "itching", "urticaria",
-        # Infectious
-        "malaria", "typhoid", "dengue", "jaundice", "covid", "infection",
+        # Infectious disease
+        "malaria", "typhoid", "dengue", "covid", "infection",
         # Urological
         "urinary", "uti", "burning micturition", "stone",
-        # Blood
-        "anaemia", "anemia", "bleeding", "wound",
         # Dehydration
         "dehydration",
     ]

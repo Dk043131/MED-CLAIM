@@ -34,46 +34,125 @@ CODING_MODEL = "gemini-3.1-flash-lite"
 # Maps common Indian clinical abbreviations/synonyms → preferred ICD-10 search terms
 # PANDA = Prescriber Anti-Nausea Drug Algorithm + extended Indian clinical terms
 _PANDA_SYNONYMS: dict[str, tuple[str, str, float]] = {
-    # Hypoglycemia family
-    "hypoglycemia":         ("E16.2", "Hypoglycemia unspecified", 0.95),
-    "hypoglycaemia":        ("E16.2", "Hypoglycemia unspecified", 0.95),
-    "low blood sugar":      ("E16.2", "Hypoglycemia unspecified", 0.93),
-    "low rbs":              ("E16.2", "Hypoglycemia unspecified", 0.93),
-    "drug-induced hypoglycemia": ("E16.0", "Drug-induced hypoglycemia without coma", 0.95),
-    "insulin hypoglycemia": ("E16.0", "Drug-induced hypoglycemia without coma", 0.94),
-    # Nausea/Vomiting (PANDA core)
-    "nausea":               ("R11.0", "Nausea", 0.97),
+    # ── Blood Report / CBC Parameters ────────────────────────────────────────
+    # Hemoglobin / Anemia
+    "low hemoglobin":           ("D64.9",  "Anemia unspecified", 0.96),
+    "anaemia":                  ("D64.9",  "Anemia unspecified", 0.96),
+    "anemia":                   ("D64.9",  "Anemia unspecified", 0.96),
+    "hemoglobin low":           ("D64.9",  "Anemia unspecified", 0.95),
+    "hb low":                   ("D64.9",  "Anemia unspecified", 0.94),
+    "iron deficiency anemia":   ("D50.9",  "Iron deficiency anaemia unspecified", 0.97),
+    "megaloblastic anemia":     ("D53.1",  "Other megaloblastic anaemias", 0.95),
+    "b12 deficiency":           ("E53.8",  "Vitamin B12 deficiency", 0.96),
+    "folate deficiency":        ("E53.8",  "Folate deficiency", 0.94),
+    # WBC / Leukocytes
+    "leukocytosis":             ("D72.829","Leukocytosis unspecified", 0.95),
+    "leukopenia":               ("D72.819","Leukopenia unspecified", 0.95),
+    "neutrophilia":             ("D72.829","Leukocytosis unspecified", 0.92),
+    "lymphocytosis":            ("D72.820","Lymphocytosis symptomatic", 0.92),
+    "high wbc":                 ("D72.829","Leukocytosis unspecified", 0.93),
+    "low wbc":                  ("D72.819","Leukopenia unspecified", 0.93),
+    # Platelets
+    "thrombocytopenia":         ("D69.6",  "Thrombocytopenia unspecified", 0.97),
+    "low platelets":            ("D69.6",  "Thrombocytopenia unspecified", 0.95),
+    "thrombocytosis":           ("D75.1",  "Secondary polycythaemia", 0.93),
+    "high platelets":           ("D75.1",  "Secondary polycythaemia", 0.91),
+    # Lipid Profile
+    "dyslipidemia":             ("E78.5",  "Hyperlipidemia unspecified", 0.97),
+    "hyperlipidemia":           ("E78.5",  "Hyperlipidemia unspecified", 0.97),
+    "high cholesterol":         ("E78.0",  "Pure hypercholesterolaemia", 0.96),
+    "hypercholesterolemia":     ("E78.0",  "Pure hypercholesterolaemia", 0.97),
+    "high triglycerides":       ("E78.1",  "Pure hypertriglyceridaemia", 0.95),
+    "hypertriglyceridemia":     ("E78.1",  "Pure hypertriglyceridaemia", 0.95),
+    "low hdl":                  ("E78.6",  "Lipoprotein deficiency", 0.93),
+    "high ldl":                 ("E78.0",  "Pure hypercholesterolaemia", 0.92),
+    # Liver Function Tests (LFT)
+    "elevated sgpt":            ("K76.9",  "Liver disease unspecified", 0.94),
+    "elevated sgot":            ("K76.9",  "Liver disease unspecified", 0.94),
+    "elevated alt":             ("K76.9",  "Liver disease unspecified", 0.94),
+    "elevated ast":             ("K76.9",  "Liver disease unspecified", 0.93),
+    "raised bilirubin":         ("R17",    "Unspecified jaundice", 0.95),
+    "jaundice":                 ("R17",    "Unspecified jaundice", 0.95),
+    "liver function abnormal":  ("K76.9",  "Liver disease unspecified", 0.93),
+    # Kidney Function Tests (KFT / RFT)
+    "elevated creatinine":      ("N19",    "Unspecified kidney failure", 0.95),
+    "high creatinine":          ("N19",    "Unspecified kidney failure", 0.94),
+    "elevated urea":            ("N19",    "Unspecified kidney failure", 0.92),
+    "ckd":                      ("N18.9",  "Chronic kidney disease unspecified", 0.97),
+    "chronic kidney disease":   ("N18.9",  "Chronic kidney disease unspecified", 0.97),
+    "renal impairment":         ("N28.9",  "Disorder of kidney unspecified", 0.94),
+    # Blood Sugar / Diabetes
+    "diabetes":                 ("E11.9",  "Type 2 diabetes mellitus without complications", 0.97),
+    "type 2 diabetes":          ("E11.9",  "Type 2 diabetes mellitus without complications", 0.97),
+    "type 1 diabetes":          ("E10.9",  "Type 1 diabetes mellitus without complications", 0.97),
+    "prediabetes":              ("R73.09", "Prediabetes", 0.95),
+    "impaired fasting glucose": ("R73.01", "Impaired fasting glucose", 0.95),
+    "high fasting glucose":     ("R73.01", "Impaired fasting glucose", 0.93),
+    "elevated hba1c":           ("E11.9",  "Type 2 diabetes mellitus without complications", 0.95),
+    "high hba1c":               ("E11.9",  "Type 2 diabetes mellitus without complications", 0.94),
+    # Thyroid
+    "hypothyroidism":           ("E03.9",  "Hypothyroidism unspecified", 0.97),
+    "hyperthyroidism":          ("E05.90", "Hyperthyroidism unspecified", 0.97),
+    "low tsh":                  ("E05.90", "Hyperthyroidism unspecified", 0.93),
+    "high tsh":                 ("E03.9",  "Hypothyroidism unspecified", 0.93),
+    "thyroid disorder":         ("E07.9",  "Disorder of thyroid unspecified", 0.92),
+    # Vitamins / Minerals
+    "vitamin d deficiency":     ("E55.9",  "Vitamin D deficiency unspecified", 0.97),
+    "vitamin d low":            ("E55.9",  "Vitamin D deficiency unspecified", 0.95),
+    "low vitamin d":            ("E55.9",  "Vitamin D deficiency unspecified", 0.95),
+    "calcium deficiency":       ("E83.51", "Hypocalcemia", 0.95),
+    "low calcium":              ("E83.51", "Hypocalcemia", 0.93),
+    "iron deficiency":          ("E61.1",  "Iron deficiency", 0.96),
+    # Uric Acid / Gout
+    "high uric acid":           ("M10.9",  "Gout unspecified", 0.94),
+    "hyperuricemia":            ("M10.0",  "Idiopathic gout unspecified", 0.95),
+    "gout":                     ("M10.9",  "Gout unspecified", 0.97),
+    # Infection markers
+    "elevated crp":             ("R79.89", "Other specified abnormal findings of blood chemistry", 0.93),
+    "high esr":                 ("R70.0",  "Elevated erythrocyte sedimentation rate", 0.94),
+    "abnormal blood count":     ("R79.9",  "Abnormal finding of blood chemistry unspecified", 0.90),
+    # ── Hypoglycemia family ───────────────────────────────────────────────────
+    "hypoglycemia":             ("E16.2", "Hypoglycemia unspecified", 0.95),
+    "hypoglycaemia":            ("E16.2", "Hypoglycemia unspecified", 0.95),
+    "low blood sugar":          ("E16.2", "Hypoglycemia unspecified", 0.93),
+    "low rbs":                  ("E16.2", "Hypoglycemia unspecified", 0.93),
+    "drug-induced hypoglycemia":("E16.0", "Drug-induced hypoglycemia without coma", 0.95),
+    "insulin hypoglycemia":     ("E16.0", "Drug-induced hypoglycemia without coma", 0.94),
+    # ── Nausea/Vomiting ───────────────────────────────────────────────────────
+    "nausea":               ("R11.0",  "Nausea", 0.97),
     "vomiting":             ("R11.10", "Vomiting unspecified", 0.97),
-    "nausea and vomiting":  ("R11.2", "Nausea with vomiting unspecified", 0.97),
-    "nausea with vomiting": ("R11.2", "Nausea with vomiting unspecified", 0.97),
+    "nausea and vomiting":  ("R11.2",  "Nausea with vomiting unspecified", 0.97),
+    "nausea with vomiting": ("R11.2",  "Nausea with vomiting unspecified", 0.97),
     "emesis":               ("R11.10", "Vomiting unspecified", 0.93),
-    # Giddiness/Dizziness
+    # ── Giddiness/Dizziness ───────────────────────────────────────────────────
     "giddiness":            ("R42", "Dizziness and giddiness", 0.97),
     "dizziness":            ("R42", "Dizziness and giddiness", 0.97),
     "vertigo":              ("R42", "Dizziness and giddiness", 0.92),
     "lightheadedness":      ("R42", "Dizziness and giddiness", 0.90),
-    # Restlessness/Agitation
+    # ── Restlessness ─────────────────────────────────────────────────────────
     "restlessness":         ("R45.1", "Restlessness and agitation", 0.97),
     "agitation":            ("R45.1", "Restlessness and agitation", 0.95),
     "nervousness":          ("R45.0", "Nervousness and restlessness", 0.90),
-    # Syncope/Collapse
+    # ── Syncope ──────────────────────────────────────────────────────────────
     "syncope":              ("R55", "Syncope and collapse", 0.95),
     "fainting":             ("R55", "Syncope and collapse", 0.92),
     "collapse":             ("R55", "Syncope and collapse", 0.90),
-    # General symptoms
-    "weakness":             ("R53.1", "Weakness", 0.95),
+    # ── General symptoms ─────────────────────────────────────────────────────
+    "weakness":             ("R53.1",  "Weakness", 0.95),
     "fatigue":              ("R53.83", "Other fatigue", 0.93),
-    "fever":                ("R50.9", "Fever unspecified", 0.97),
-    "headache":             ("R51", "Headache", 0.97),
-    "chest pain":           ("R07.9", "Chest pain unspecified", 0.95),
-    "breathlessness":       ("R06.0", "Dyspnoea", 0.95),
-    "dyspnoea":             ("R06.0", "Dyspnoea", 0.97),
-    "dyspnea":              ("R06.0", "Dyspnoea", 0.97),
-    "cough":                ("R05", "Cough", 0.97),
-    "bradycardia":          ("R00.1", "Bradycardia unspecified", 0.95),
-    "tachycardia":          ("R00.0", "Tachycardia unspecified", 0.95),
-    # Dehydration/Fluid
-    "dehydration":          ("E86.0", "Dehydration", 0.95),
+    "fever":                ("R50.9",  "Fever unspecified", 0.97),
+    "headache":             ("R51",    "Headache", 0.97),
+    "chest pain":           ("R07.9",  "Chest pain unspecified", 0.95),
+    "breathlessness":       ("R06.0",  "Dyspnoea", 0.95),
+    "dyspnoea":             ("R06.0",  "Dyspnoea", 0.97),
+    "dyspnea":              ("R06.0",  "Dyspnoea", 0.97),
+    "cough":                ("R05",    "Cough", 0.97),
+    "bradycardia":          ("R00.1",  "Bradycardia unspecified", 0.95),
+    "tachycardia":          ("R00.0",  "Tachycardia unspecified", 0.95),
+    "dehydration":          ("E86.0",  "Dehydration", 0.95),
+    # ── Hypertension ─────────────────────────────────────────────────────────
+    "hypertension":         ("I10",   "Essential (primary) hypertension", 0.97),
+    "high blood pressure":  ("I10",   "Essential (primary) hypertension", 0.96),
 }
 
 # ── Load ICD-10 DataFrame (module-level singleton) ───────────────────────────

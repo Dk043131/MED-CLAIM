@@ -20,11 +20,27 @@ from app.config import USE_OCR_STUB, USE_GEMINI, SAMPLE_BILLS_DIR, GEMINI_API_KE
 
 def ocr_bill_stub(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
     """
-    Returns (raw_ocr_text, confidence_score) from a pre-saved stub .txt file.
-    Chooses stub text based on filename hints; falls back to a generic clean bill.
+    Returns (raw_ocr_text, confidence_score).
+    Priority:
+      1. If the uploaded file is readable text (txt/csv/plain), decode it directly — most accurate.
+      2. If image (png/jpg/jpeg), try to find a matching stub by filename hint.
+      3. Final fallback: generic clean bill text.
     """
     name_lower = filename.lower()
 
+    # ── Priority 1: Try to decode the actual bytes as plain text ─────────────
+    # This handles .txt, .csv, and any text-mode uploads (blood reports etc.)
+    is_image = any(name_lower.endswith(ext) for ext in (".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".webp", ".gif"))
+    if not is_image:
+        try:
+            decoded = file_bytes.decode("utf-8").strip()
+            if decoded and len(decoded) > 20:
+                print(f"[OCR Stub] Decoded uploaded file as UTF-8 text ({len(decoded)} chars)")
+                return decoded, 94.0
+        except Exception:
+            pass
+
+    # ── Priority 2: Choose a stub file based on filename hints ────────────────
     if "ambiguous" in name_lower or "illegible" in name_lower:
         stub_file = "ambiguous_bill.txt"
         confidence = 48.0
@@ -50,6 +66,7 @@ def ocr_bill_stub(file_bytes: bytes, filename: str = "") -> tuple[str, float]:
             return f.read(), confidence
 
     return _minimal_bill_text(), 92.0
+
 
 
 def _minimal_bill_text() -> str:
