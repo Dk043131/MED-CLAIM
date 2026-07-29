@@ -1,8 +1,17 @@
 {
   "version": 2,
   "name": "med-claim-frontend",
+  "framework": null,
+  "buildCommand": null,
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/$1" }
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }
