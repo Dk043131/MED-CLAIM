@@ -11,8 +11,11 @@
 <body>
 <div id="app">
 
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <!-- ═══════════════════════════════ SIDEBAR ════════════════════════════════ -->
-  <aside class="sidebar" role="navigation" aria-label="Main navigation">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-logo">
       <div class="logo-mark">
         <div class="logo-icon">
@@ -23,36 +26,37 @@
           <div class="logo-sub">AI Claims Automation</div>
         </div>
       </div>
+      <button class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close menu">&times;</button>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-section-label">Claims Processing</div>
-      <a class="nav-item active" id="nav-submit" role="button" tabindex="0" aria-current="page">
+      <div class="nav-section-label" data-i18n="nav.claims_processing">Claims Processing</div>
+      <a class="nav-item active" id="nav-submit" role="button" tabindex="0" aria-current="page" data-i18n="nav.submit_claim">
         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Submit Claim
       </a>
       <a class="nav-item" id="nav-hitl" role="button" tabindex="0">
-        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> HITL Review Queue
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span data-i18n="nav.hitl_queue">HITL Review Queue</span>
         <span class="nav-badge" id="hitl-badge">—</span>
       </a>
       <a class="nav-item" id="nav-preauth" role="button" tabindex="0">
-        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Pre-Authorization
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> <span data-i18n="nav.preauth">Pre-Authorization</span>
         <span class="nav-badge" id="preauth-badge">2</span>
       </a>
       <a class="nav-item" id="nav-pmjay" role="button" tabindex="0">
-        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span> PM-JAY Ayushman Portal
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span> <span data-i18n="nav.pmjay_portal">PM-JAY Ayushman Portal</span>
       </a>
 
-      <div class="nav-section-label">Analytics</div>
+      <div class="nav-section-label" data-i18n="nav.analytics">Analytics</div>
 
       <a class="nav-item" id="nav-dashboard" role="button" tabindex="0">
-        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Observability
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span data-i18n="nav.observability">Observability</span>
       </a>
     </nav>
 
     <div class="sidebar-footer">
       <div class="server-status">
         <div class="status-dot" id="server-dot"></div>
-        <span id="server-status-text">FastAPI Offline</span>
+        <span id="server-status-text" data-i18n="nav.fastapi_offline">FastAPI Offline</span>
       </div>
     </div>
   </aside>
@@ -62,13 +66,36 @@
 
     <!-- Top bar (dynamic per screen) -->
     <header class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">Submit Claim</div>
-        <div class="topbar-sub" id="topbar-sub">Upload a hospital bill to begin automated processing</div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="hamburger-btn" id="mobile-hamburger-btn" aria-label="Toggle Navigation Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <div class="topbar-title" id="topbar-title" data-i18n="topbar.title_submit">Submit Claim</div>
+          <div class="topbar-sub" id="topbar-sub" data-i18n="topbar.sub_submit">Upload a hospital bill to begin automated processing</div>
+        </div>
       </div>
       <div class="topbar-actions" id="topbar-actions">
-        <button class="btn btn-ghost" id="btn-refresh" title="Refresh data">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Refresh
+        <!-- Language Selector -->
+        <div class="lang-selector-wrapper">
+          <select id="language-selector" class="lang-select" aria-label="Select Language">
+            <option value="en">🌐 English</option>
+            <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+            <option value="bn">🇮🇳 বাংলা (Bengali)</option>
+            <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+            <option value="mr">🇮🇳 मराठी (Marathi)</option>
+            <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+            <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+            <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+            <option value="ml">🇮🇳 മലയാളം (Malayalam)</option>
+            <option value="pa">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+          </select>
+        </div>
+
+        <button class="btn btn-ghost" id="btn-refresh" data-i18n-title="topbar.refresh" title="Refresh data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> <span data-i18n="topbar.refresh">Refresh</span>
         </button>
         <!-- Logged-in user profile widget -->
         <div class="user-profile-badge" id="user-profile-badge">
@@ -77,7 +104,7 @@
             <div class="user-name" id="user-name">Dr. Rajesh Varma</div>
             <div class="user-role" id="user-role">Senior Adjudicator</div>
           </div>
-          <button class="btn btn-ghost btn-sm" id="btn-logout" title="Sign Out" aria-label="Sign Out">
+          <button class="btn btn-ghost btn-sm" id="btn-logout" data-i18n-title="topbar.signout" title="Sign Out" aria-label="Sign Out">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -91,7 +118,7 @@
 
         <div class="card" style="margin-bottom:20px">
           <div class="card-title">
-            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Upload Hospital Bill
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> <span data-i18n="submit.card_title">Upload Hospital Bill</span>
           </div>
 
           <!-- Drop zone -->
@@ -100,8 +127,8 @@
             <div class="upload-icon">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3-3 3 3"/></svg>
             </div>
-            <h3>Drop your hospital bill here</h3>
-            <p>Supports scanned documents, handwritten bills, and photographs</p>
+            <h3 data-i18n="submit.drop_title">Drop your hospital bill here</h3>
+            <p data-i18n="submit.drop_desc">Supports scanned documents, handwritten bills, and photographs</p>
             <div class="upload-formats">
               <span class="format-tag">JPG</span>
               <span class="format-tag">PNG</span>
@@ -120,10 +147,10 @@
               </div>
               <div style="margin-left:auto; display:flex; gap:10px;">
                 <button class="btn btn-primary" id="btn-submit" aria-label="Submit claim for processing">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Process Claim
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="submit.btn_process">Process Claim</span>
                 </button>
                 <button class="btn btn-ghost" id="btn-clear" aria-label="Clear selected file">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> <span data-i18n="submit.btn_clear">Clear</span>
                 </button>
               </div>
             </div>
@@ -148,7 +175,7 @@
         <!-- Pipeline tracker -->
         <div class="card" id="pipeline-card">
           <div class="card-title">
-            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Processing Pipeline
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> <span data-i18n="submit.pipeline_title">Processing Pipeline</span>
           </div>
 
           <div class="pipeline-tracker" id="pipeline-tracker">
@@ -157,28 +184,28 @@
 
             <div class="pipeline-step" id="step-SUBMITTED" data-step="0">
               <div class="step-dot"><span class="step-num">1</span></div>
-              <div class="step-label">Submitted</div>
-              <div class="step-sublabel">Awaiting</div>
+              <div class="step-label" data-i18n="submit.step_submitted">Submitted</div>
+              <div class="step-sublabel" data-i18n="submit.step_awaiting">Awaiting</div>
             </div>
             <div class="pipeline-step" id="step-OCR" data-step="1">
               <div class="step-dot"><span class="step-num">2</span></div>
-              <div class="step-label">OCR / IDP</div>
-              <div class="step-sublabel">Awaiting</div>
+              <div class="step-label" data-i18n="submit.step_ocr">OCR / IDP</div>
+              <div class="step-sublabel" data-i18n="submit.step_awaiting">Awaiting</div>
             </div>
             <div class="pipeline-step" id="step-CODING" data-step="2">
               <div class="step-dot"><span class="step-num">3</span></div>
-              <div class="step-label">ICD Coding</div>
-              <div class="step-sublabel">Awaiting</div>
+              <div class="step-label" data-i18n="submit.step_coding">ICD Coding</div>
+              <div class="step-sublabel" data-i18n="submit.step_awaiting">Awaiting</div>
             </div>
             <div class="pipeline-step" id="step-ELIGIBILITY" data-step="3">
               <div class="step-dot"><span class="step-num">4</span></div>
-              <div class="step-label">Eligibility</div>
-              <div class="step-sublabel">Awaiting</div>
+              <div class="step-label" data-i18n="submit.step_eligibility">Eligibility</div>
+              <div class="step-sublabel" data-i18n="submit.step_awaiting">Awaiting</div>
             </div>
             <div class="pipeline-step" id="step-DECISION" data-step="4">
               <div class="step-dot"><span class="step-num">5</span></div>
-              <div class="step-label">Decision</div>
-              <div class="step-sublabel">Awaiting</div>
+              <div class="step-label" data-i18n="submit.step_decision">Decision</div>
+              <div class="step-sublabel" data-i18n="submit.step_awaiting">Awaiting</div>
             </div>
           </div>
 
@@ -198,22 +225,22 @@
         <!-- Quick demo bills -->
         <div class="card" style="margin-top:20px">
           <div class="card-title">
-            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Quick Demo Bills
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> <span data-i18n="submit.quick_demo_title">Quick Demo Bills</span>
           </div>
-          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
+          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px" data-i18n="submit.quick_demo_desc">
             Use pre-loaded sample bills to demonstrate the pipeline during the pitch.
           </p>
           <div style="display:flex; gap:12px; flex-wrap:wrap">
-            <button class="btn btn-ghost" id="btn-demo-clean" aria-label="Load clean demo bill">
+            <button class="btn btn-ghost" id="btn-demo-clean" aria-label="Load clean demo bill" data-i18n="submit.demo_clean">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg> Clean Hospital Bill (Auto-Approve)
             </button>
-            <button class="btn btn-ghost" id="btn-demo-blood" aria-label="Load Blood Test Report">
+            <button class="btn btn-ghost" id="btn-demo-blood" aria-label="Load Blood Test Report" data-i18n="submit.demo_blood">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> Blood Test Report (Auto-Approve)
             </button>
-            <button class="btn btn-ghost" id="btn-demo-prescription" aria-label="Load Doctor Prescription">
+            <button class="btn btn-ghost" id="btn-demo-prescription" aria-label="Load Doctor Prescription" data-i18n="submit.demo_prescription">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Doctor Prescription (Auto-Approve)
             </button>
-            <button class="btn btn-ghost" id="btn-demo-messy" aria-label="Load messy demo bill">
+            <button class="btn btn-ghost" id="btn-demo-messy" aria-label="Load messy demo bill" data-i18n="submit.demo_messy">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Messy Handwritten (Flag for HITL)
             </button>
           </div>
@@ -226,43 +253,45 @@
         <div class="card">
           <div class="queue-header">
             <div class="card-title" style="margin:0">
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Flagged Claims — Caseworker Review
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span data-i18n="hitl.card_title">Flagged Claims — Caseworker Review</span>
             </div>
             <div class="queue-count" id="queue-count-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> <span id="queue-count-num">—</span> claims need review
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> <span id="queue-count-num">—</span> <span data-i18n="hitl.claims_need_review">claims need review</span>
             </div>
           </div>
-          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px">
+          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px" data-i18n="hitl.desc">
             Claims were automatically flagged due to low OCR confidence, ambiguous ICD coding, or missing data. Expand each row to review the original document and extracted data, then approve or reject.
           </p>
 
           <div id="hitl-loading" style="text-align:center; padding:40px; color:var(--text-muted)">
             <div class="spinner" style="margin:0 auto 12px"></div>
-            Loading flagged claims…
+            <span data-i18n="hitl.loading">Loading flagged claims…</span>
           </div>
 
           <div id="hitl-empty" class="empty-state" style="display:none">
             <div class="empty-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
-            <h3>Queue is clear</h3>
-            <p>No claims require caseworker review right now.</p>
+            <h3 data-i18n="hitl.empty_title">Queue is clear</h3>
+            <p data-i18n="hitl.empty_desc">No claims require caseworker review right now.</p>
           </div>
 
-          <table class="claims-table" id="hitl-table" style="display:none" aria-label="Flagged claims list">
-            <thead>
-              <tr>
-                <th style="width:28px"></th>
-                <th>Claim ID</th>
-                <th>Patient</th>
-                <th>Submitted</th>
-                <th>Confidence</th>
-                <th>Top Flag</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="hitl-tbody"></tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="claims-table" id="hitl-table" style="display:none" aria-label="Flagged claims list">
+              <thead>
+                <tr>
+                  <th style="width:28px"></th>
+                  <th data-i18n="hitl.th_id">Claim ID</th>
+                  <th data-i18n="hitl.th_patient">Patient</th>
+                  <th data-i18n="hitl.th_submitted">Submitted</th>
+                  <th data-i18n="hitl.th_confidence">Confidence</th>
+                  <th data-i18n="hitl.th_top_flag">Top Flag</th>
+                  <th data-i18n="hitl.th_actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="hitl-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -272,32 +301,34 @@
           <div class="queue-header" style="justify-content:space-between">
             <div>
               <div class="card-title" style="margin:0">
-                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Pre-Authorization Workflow (Prior Approval)
+                <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> <span data-i18n="preauth.card_title">Pre-Authorization Workflow (Prior Approval)</span>
               </div>
-              <p style="font-size:13px; color:var(--text-secondary); margin:6px 0 0 0">
+              <p style="font-size:13px; color:var(--text-secondary); margin:6px 0 0 0" data-i18n="preauth.desc">
                 Hospital requests for elective or emergency procedure approval prior to treatment.
               </p>
             </div>
             <button class="btn btn-primary" id="btn-new-preauth">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Request
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="preauth.btn_new">New Request</span>
             </button>
           </div>
 
-          <table class="claims-table" id="preauth-table" style="margin-top:20px" aria-label="Pre-authorization requests">
-            <thead>
-              <tr>
-                <th>Pre-Auth ID</th>
-                <th>Patient</th>
-                <th>Hospital</th>
-                <th>Procedure</th>
-                <th>Est. Cost</th>
-                <th>Urgency</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="preauth-tbody"></tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="claims-table" id="preauth-table" style="margin-top:20px" aria-label="Pre-authorization requests">
+              <thead>
+                <tr>
+                  <th data-i18n="preauth.th_id">Pre-Auth ID</th>
+                  <th data-i18n="preauth.th_patient">Patient</th>
+                  <th data-i18n="preauth.th_hospital">Hospital</th>
+                  <th data-i18n="preauth.th_procedure">Procedure</th>
+                  <th data-i18n="preauth.th_cost">Est. Cost</th>
+                  <th data-i18n="preauth.th_urgency">Urgency</th>
+                  <th data-i18n="preauth.th_status">Status</th>
+                  <th data-i18n="preauth.th_actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="preauth-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -311,8 +342,8 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <div class="surge-info">
-            <div class="surge-title">Surge Mode — High Volume Simulation</div>
-            <div class="surge-desc">Inject 50 synthetic claims to demonstrate the system handling a regional health crisis spike.</div>
+            <div class="surge-title" data-i18n="dash.surge_title">Surge Mode — High Volume Simulation</div>
+            <div class="surge-desc" data-i18n="dash.surge_desc">Inject 50 synthetic claims to demonstrate the system handling a regional health crisis spike.</div>
             <div class="surge-progress" id="surge-progress-wrap">
               <div class="surge-progress-track">
                 <div class="surge-progress-fill" id="surge-progress-fill"></div>
@@ -321,44 +352,44 @@
             </div>
           </div>
           <button class="btn btn-surge" id="btn-surge" aria-label="Trigger surge mode simulation">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> SURGE MODE
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="dash.btn_surge">SURGE MODE</span>
           </button>
         </div>
 
         <!-- Metric cards -->
         <div class="metrics-grid">
           <div class="metric-card green headline">
-            <div class="metric-label">Auto-Adjudication Rate</div>
+            <div class="metric-label" data-i18n="dash.metric_autorate">Auto-Adjudication Rate</div>
             <div class="metric-value" id="metric-autorate">—<span class="metric-unit">%</span></div>
-            <div class="metric-delta delta-up" id="metric-autorate-delta">Claims processed without human review</div>
+            <div class="metric-delta delta-up" id="metric-autorate-delta" data-i18n="dash.metric_autorate_sub">Claims processed without human review</div>
           </div>
           <div class="metric-card indigo">
-            <div class="metric-label">Total Claims</div>
+            <div class="metric-label" data-i18n="dash.metric_total">Total Claims</div>
             <div class="metric-value" id="metric-total">—</div>
-            <div class="metric-delta" id="metric-total-delta" style="color:var(--text-muted)">All time</div>
+            <div class="metric-delta" id="metric-total-delta" style="color:var(--text-muted)" data-i18n="dash.metric_total_sub">All time</div>
           </div>
           <div class="metric-card amber">
-            <div class="metric-label">Pending Review</div>
+            <div class="metric-label" data-i18n="dash.metric_pending">Pending Review</div>
             <div class="metric-value" id="metric-flagged">—</div>
-            <div class="metric-delta" style="color:var(--text-muted)">Caseworker queue</div>
+            <div class="metric-delta" style="color:var(--text-muted)" data-i18n="dash.metric_pending_sub">Caseworker queue</div>
           </div>
           <div class="metric-card rose">
-            <div class="metric-label">Rejected</div>
+            <div class="metric-label" data-i18n="dash.metric_rejected">Rejected</div>
             <div class="metric-value" id="metric-rejected">—</div>
-            <div class="metric-delta" style="color:var(--text-muted)">Non-eligible claims</div>
+            <div class="metric-delta" style="color:var(--text-muted)" data-i18n="dash.metric_rejected_sub">Non-eligible claims</div>
           </div>
           <div class="metric-card blue">
-            <div class="metric-label">Avg Confidence</div>
+            <div class="metric-label" data-i18n="dash.metric_confidence">Avg Confidence</div>
             <div class="metric-value" id="metric-confidence">—</div>
-            <div class="metric-delta" style="color:var(--text-muted)">OCR + coding score</div>
+            <div class="metric-delta" style="color:var(--text-muted)" data-i18n="dash.metric_confidence_sub">OCR + coding score</div>
           </div>
           <div class="metric-card green">
-            <div class="metric-label">Est. Cost Saved</div>
+            <div class="metric-label" data-i18n="dash.metric_savings">Est. Cost Saved</div>
             <div class="metric-value" id="metric-savings">—</div>
             <div class="metric-delta delta-up" style="color:var(--green)">₹1,450/claim automated</div>
           </div>
           <div class="metric-card indigo">
-            <div class="metric-label">Staff Time Saved</div>
+            <div class="metric-label" data-i18n="dash.metric_hours">Staff Time Saved</div>
             <div class="metric-value" id="metric-hours">—</div>
             <div class="metric-delta delta-up" style="color:var(--indigo-bright)">~14 days faster per claim</div>
           </div>
@@ -368,19 +399,19 @@
         <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
           <div class="card">
             <div class="card-title">
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Daily Claim Volume (7 days)
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span data-i18n="dash.chart_volume">Daily Claim Volume (7 days)</span>
             </div>
             <div class="chart-wrap"><canvas id="chart-volume" aria-label="Daily claim volume bar chart" role="img"></canvas></div>
           </div>
           <div class="card">
             <div class="card-title">
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg></span> Status Distribution
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg></span> <span data-i18n="dash.chart_status">Status Distribution</span>
             </div>
             <div class="chart-wrap"><canvas id="chart-status" aria-label="Claim status distribution pie chart" role="img"></canvas></div>
           </div>
           <div class="card">
             <div class="card-title">
-              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Stage Latency Breakdown (ms)
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> <span data-i18n="dash.chart_timing">Stage Latency Breakdown (ms)</span>
             </div>
             <div class="chart-wrap"><canvas id="chart-timing" aria-label="Stage timing latency chart" role="img"></canvas></div>
           </div>
@@ -390,17 +421,23 @@
         <!-- Recent claims table -->
         <div class="card">
           <div class="card-title">
-            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Recent Claims
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> <span data-i18n="dash.recent_title">Recent Claims</span>
           </div>
-          <table class="recent-table" id="recent-table" aria-label="Recent claims list">
-            <thead>
-              <tr>
-                <th>Claim ID</th><th>Patient</th><th>Hospital</th>
-                <th>ICD Codes</th><th>Confidence</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="recent-tbody"></tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="recent-table" id="recent-table" aria-label="Recent claims list">
+              <thead>
+                <tr>
+                  <th data-i18n="hitl.th_id">Claim ID</th>
+                  <th data-i18n="hitl.th_patient">Patient</th>
+                  <th data-i18n="preauth.th_hospital">Hospital</th>
+                  <th data-i18n="dash.th_icd">ICD Codes</th>
+                  <th data-i18n="hitl.th_confidence">Confidence</th>
+                  <th data-i18n="preauth.th_status">Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -409,14 +446,14 @@
         
         <!-- Header Banner -->
         <div class="card pmjay-hero-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); color: white; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
-          <div style="display:flex; justify-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
             <div>
-              <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; font-weight:600; padding:4px 10px; border-radius:20px; font-size:12px;">GOVERNMENT OF INDIA • NHA</span>
-              <h2 style="font-size:22px; margin:8px 0 4px 0; color:#ffffff;">Ayushman Bharat (PM-JAY) Eligibility & Enrollment Portal</h2>
-              <p style="margin:0; opacity:0.9; font-size:13.5px;">Cashless health coverage up to ₹5,00,000/year per family across 1,929 procedure packages and 27 specialties.</p>
+              <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; font-weight:600; padding:4px 10px; border-radius:20px; font-size:12px;" data-i18n="pmjay.banner_govt">GOVERNMENT OF INDIA • NHA</span>
+              <h2 style="font-size:22px; margin:8px 0 4px 0; color:#ffffff;" data-i18n="pmjay.banner_title">Ayushman Bharat (PM-JAY) Eligibility & Enrollment Portal</h2>
+              <p style="margin:0; opacity:0.9; font-size:13.5px;" data-i18n="pmjay.banner_desc">Cashless health coverage up to ₹5,00,000/year per family across 1,929 procedure packages and 27 specialties.</p>
             </div>
             <div style="text-align:right;">
-              <span style="font-size:12px; opacity:0.8;">Helpline (24/7)</span>
+              <span style="font-size:12px; opacity:0.8;" data-i18n="pmjay.helpline">Helpline (24/7)</span>
               <div style="font-size:20px; font-weight:700; font-family:monospace;">14555 / 1800-111-565</div>
             </div>
           </div>
@@ -431,16 +468,16 @@
             <div class="card">
               <div class="card-title">
                 <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
-                Instant Eligibility Checker
+                <span data-i18n="pmjay.checker_title">Instant Eligibility Checker</span>
               </div>
               <form id="pmjay-check-form" style="margin-top:16px;">
                 <div class="form-group">
-                  <label for="pmjay-patient-name">Patient Name *</label>
+                  <label for="pmjay-patient-name" data-i18n="pmjay.lbl_name">Patient Name *</label>
                   <input type="text" id="pmjay-patient-name" required placeholder="e.g. Amit Verma, Sunita Devi, Ramesh Patel" class="input" />
                 </div>
                 <div class="grid grid-2" style="gap:12px;">
                   <div class="form-group">
-                    <label for="pmjay-state">State *</label>
+                    <label for="pmjay-state" data-i18n="pmjay.lbl_state">State *</label>
                     <select id="pmjay-state" class="input">
                       <option value="Karnataka">Karnataka</option>
                       <option value="Tamil Nadu">Tamil Nadu</option>
@@ -452,21 +489,21 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="pmjay-age">Age</label>
+                    <label for="pmjay-age" data-i18n="pmjay.lbl_age">Age</label>
                     <input type="number" id="pmjay-age" placeholder="e.g. 45 (70+ for auto-eligibility)" class="input" />
                   </div>
                 </div>
                 <div class="grid grid-2" style="gap:12px;">
                   <div class="form-group">
-                    <label for="pmjay-aadhaar-input">Aadhaar / Ration Card No.</label>
+                    <label for="pmjay-aadhaar-input" data-i18n="pmjay.lbl_aadhaar">Aadhaar / Ration Card No.</label>
                     <input type="text" id="pmjay-aadhaar-input" placeholder="XXXX-XXXX-1007 or RC-..." class="input" />
                   </div>
                   <div class="form-group">
-                    <label for="pmjay-hospital-input">Hospital Name</label>
+                    <label for="pmjay-hospital-input" data-i18n="pmjay.lbl_hospital">Hospital Name</label>
                     <input type="text" id="pmjay-hospital-input" placeholder="e.g. City General Hospital" class="input" />
                   </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;" data-i18n="pmjay.btn_verify">
                   Verify 3-Gate PM-JAY Eligibility
                 </button>
               </form>
@@ -479,11 +516,11 @@
             <div class="card">
               <div class="card-title">
                 <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-                PM-JAY Empannelled Hospital Lookup
+                <span data-i18n="pmjay.hosp_title">PM-JAY Empannelled Hospital Lookup</span>
               </div>
               <div style="display:flex; gap:8px; margin-top:12px;">
                 <input type="text" id="hosp-search-input" placeholder="Search hospital name (e.g. Apollo, AIIMS, Fortis)..." class="input" style="flex:1;" />
-                <button class="btn btn-secondary" id="btn-search-hosp">Search</button>
+                <button class="btn btn-secondary" id="btn-search-hosp" data-i18n="pmjay.btn_search">Search</button>
               </div>
               <div id="hosp-search-results" style="margin-top:12px; max-height:220px; overflow-y:auto;"></div>
             </div>
@@ -497,26 +534,26 @@
             <div class="card">
               <div class="card-title">
                 <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-                Online Aadhaar KYC & Card Issuance
+                <span data-i18n="pmjay.kyc_title">Online Aadhaar KYC & Card Issuance</span>
               </div>
 
               <div id="enrollment-stepper" style="display:flex; justify-content:space-between; margin:16px 0; padding-bottom:12px; border-bottom:1px solid #e2e8f0;">
-                <div class="step active" id="step-1-lbl" style="font-weight:600; font-size:12px; color:#0284c7;">1. Enter Aadhaar</div>
-                <div class="step" id="step-2-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;">2. Verify OTP</div>
-                <div class="step" id="step-3-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;">3. Ayushman Card</div>
+                <div class="step active" id="step-1-lbl" style="font-weight:600; font-size:12px; color:#0284c7;" data-i18n="pmjay.step1">1. Enter Aadhaar</div>
+                <div class="step" id="step-2-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;" data-i18n="pmjay.step2">2. Verify OTP</div>
+                <div class="step" id="step-3-lbl" style="font-weight:600; font-size:12px; color:#94a3b8;" data-i18n="pmjay.step3">3. Ayushman Card</div>
               </div>
 
               <!-- Step 1 Form -->
               <div id="enroll-step-1">
                 <div class="form-group">
-                  <label for="enroll-aadhaar">Aadhaar Number (12 Digits) *</label>
+                  <label for="enroll-aadhaar" data-i18n="pmjay.lbl_aadhaar_12">Aadhaar Number (12 Digits) *</label>
                   <input type="text" id="enroll-aadhaar" placeholder="999932123456 (Verhoeff Checksum Validated)" class="input" />
                 </div>
                 <div class="form-group">
-                  <label for="enroll-mobile">Mobile Number *</label>
+                  <label for="enroll-mobile" data-i18n="pmjay.lbl_mobile">Mobile Number *</label>
                   <input type="text" id="enroll-mobile" placeholder="9876543210" class="input" />
                 </div>
-                <button class="btn btn-primary btn-full" id="btn-send-otp">Dispatch Aadhaar OTP</button>
+                <button class="btn btn-primary btn-full" id="btn-send-otp" data-i18n="pmjay.btn_send_otp">Dispatch Aadhaar OTP</button>
               </div>
 
               <!-- Step 2 Form (Hidden initially) -->
@@ -525,17 +562,17 @@
                   OTP dispatched to your registered mobile. Valid for 10 minutes.
                 </div>
                 <div class="form-group">
-                  <label for="enroll-otp">Enter 4-Digit OTP *</label>
+                  <label for="enroll-otp" data-i18n="pmjay.lbl_otp">Enter 4-Digit OTP *</label>
                   <input type="text" id="enroll-otp" placeholder="Enter OTP" class="input" style="font-size:18px; letter-spacing:4px; text-align:center;" />
                 </div>
                 <div style="margin-bottom:16px;">
                   <label style="font-size:12px; display:flex; align-items:center; gap:8px;">
-                    <input type="checkbox" id="enroll-consent" checked /> I consent to share Aadhaar KYC details for PM-JAY e-card generation.
+                    <input type="checkbox" id="enroll-consent" checked /> <span data-i18n="pmjay.consent">I consent to share Aadhaar KYC details for PM-JAY e-card generation.</span>
                   </label>
                 </div>
                 <div style="display:flex; gap:8px;">
-                  <button class="btn btn-ghost" id="btn-back-step1" style="flex:1;">Back</button>
-                  <button class="btn btn-primary" id="btn-verify-otp" style="flex:2;">Verify & Generate Card</button>
+                  <button class="btn btn-ghost" id="btn-back-step1" style="flex:1;" data-i18n="pmjay.btn_back">Back</button>
+                  <button class="btn btn-primary" id="btn-verify-otp" style="flex:2;" data-i18n="pmjay.btn_verify_card">Verify & Generate Card</button>
                 </div>
               </div>
 
@@ -544,10 +581,10 @@
                 <div id="ayushman-card-container" style="background: linear-gradient(135deg, #15803d 0%, #047857 100%); color:white; border-radius:12px; padding:20px; position:relative; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);">
                   <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:8px;">
                     <div>
-                      <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">National Health Authority</div>
-                      <div style="font-size:16px; font-weight:700;">AYUSHMAN CARD</div>
+                      <div style="font-size:10px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;" data-i18n="pmjay.card_nha">National Health Authority</div>
+                      <div style="font-size:16px; font-weight:700;" data-i18n="pmjay.card_title">AYUSHMAN CARD</div>
                     </div>
-                    <div style="background:#f59e0b; color:#78350f; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;">
+                    <div style="background:#f59e0b; color:#78350f; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;" data-i18n="pmjay.card_badge">
                       PM-JAY GOLD
                     </div>
                   </div>
@@ -562,8 +599,8 @@
                     </div>
                   </div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.9; border-top:1px solid rgba(255,255,255,0.2); padding-top:8px;">
-                    <div>Annual Coverage: <strong>₹5,00,000</strong></div>
-                    <div>Scheme: <strong id="card-scheme-lbl">PMJAY</strong></div>
+                    <div><span data-i18n="pmjay.card_annual">Annual Coverage:</span> <strong>₹5,00,000</strong></div>
+                    <div><span data-i18n="pmjay.card_scheme">Scheme:</span> <strong id="card-scheme-lbl">PMJAY</strong></div>
                   </div>
                 </div>
 
@@ -578,11 +615,11 @@
             <div class="card">
               <div class="card-title">
                 <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-                Family ₹5 Lakh Annual Cap Tracker
+                <span data-i18n="pmjay.tracker_title">Family ₹5 Lakh Annual Cap Tracker</span>
               </div>
               <div style="display:flex; gap:8px; margin-top:12px;">
                 <input type="text" id="cap-family-id" placeholder="Enter Family ID (e.g. FAM-1001, FAM-1040)..." class="input" style="flex:1;" />
-                <button class="btn btn-secondary" id="btn-check-cap">Check Utilization</button>
+                <button class="btn btn-secondary" id="btn-check-cap" data-i18n="pmjay.btn_check_cap">Check Utilization</button>
               </div>
               <div id="cap-tracker-result" style="margin-top:16px;"></div>
             </div>
@@ -607,7 +644,7 @@
           <div class="auth-brand-sub" id="lm-patient-name">Patient Name</div>
         </div>
       </div>
-      <button class="btn btn-secondary" id="btn-close-lifecycle" style="padding:6px 12px">Close</button>
+      <button class="btn btn-secondary" id="btn-close-lifecycle" style="padding:6px 12px" data-i18n="modal.close">Close</button>
     </div>
 
     <!-- Fraud Risk Badge Box -->
@@ -633,17 +670,19 @@
     <!-- SNOMED-CT & ICD-10 Clinical Coding Table -->
     <div style="margin-top:16px">
       <div style="font-weight:600; font-size:13px; color:var(--text-primary); margin-bottom:8px">SNOMED-CT & ICD-10 Clinical Coding Mapping</div>
-      <table class="claims-table" style="font-size:12px">
-        <thead>
-          <tr>
-            <th>Symptom / Dx</th>
-            <th>ICD-10 Code</th>
-            <th>SNOMED-CT Code</th>
-            <th>SNOMED Description</th>
-          </tr>
-        </thead>
-        <tbody id="lm-snomed-tbody"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="claims-table" style="font-size:12px">
+          <thead>
+            <tr>
+              <th>Symptom / Dx</th>
+              <th>ICD-10 Code</th>
+              <th>SNOMED-CT Code</th>
+              <th>SNOMED Description</th>
+            </tr>
+          </thead>
+          <tbody id="lm-snomed-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Lifecycle Timeline Stepper -->
@@ -660,33 +699,33 @@
     <div class="auth-modal-header" style="justify-content:space-between">
       <div class="auth-brand">
         <div>
-          <div class="auth-brand-title">New Pre-Authorization Request</div>
-          <div class="auth-brand-sub">Submit elective/emergency prior approval request</div>
+          <div class="auth-brand-title" data-i18n="modal.preauth_title">New Pre-Authorization Request</div>
+          <div class="auth-brand-sub" data-i18n="modal.preauth_sub">Submit elective/emergency prior approval request</div>
         </div>
       </div>
-      <button class="btn btn-secondary" id="btn-close-preauth" style="padding:6px 12px">Close</button>
+      <button class="btn btn-secondary" id="btn-close-preauth" style="padding:6px 12px" data-i18n="modal.close">Close</button>
     </div>
 
     <form id="form-new-preauth" class="auth-form" style="margin-top:16px;">
       <div class="form-group">
-        <label>Patient Name</label>
+        <label data-i18n="hitl.th_patient">Patient Name</label>
         <input type="text" id="pa-patient-name" required placeholder="e.g. Ramesh Kumar" class="auth-select" style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary);" />
       </div>
       <div class="form-group">
-        <label>Hospital Name</label>
+        <label data-i18n="preauth.th_hospital">Hospital Name</label>
         <input type="text" id="pa-hospital-name" required placeholder="e.g. Adichunchanagiri Institute" class="auth-select" style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary);" />
       </div>
       <div class="form-group">
-        <label>Procedure Name</label>
+        <label data-i18n="modal.lbl_proc_name">Procedure Name</label>
         <input type="text" id="pa-procedure-name" required placeholder="e.g. Laparoscopic Cholecystectomy" class="auth-select" style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary);" />
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
         <div class="form-group">
-          <label>Estimated Cost (INR)</label>
+          <label data-i18n="modal.lbl_est_cost">Estimated Cost (INR)</label>
           <input type="number" id="pa-est-cost" required placeholder="25000" class="auth-select" style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary);" />
         </div>
         <div class="form-group">
-          <label>Urgency Level</label>
+          <label data-i18n="modal.lbl_urgency">Urgency Level</label>
           <select id="pa-urgency" class="auth-select" style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary);">
             <option value="routine">Routine</option>
             <option value="urgent">Urgent</option>
@@ -695,11 +734,11 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Clinical Justification</label>
+        <label data-i18n="modal.lbl_justification">Clinical Justification</label>
         <textarea id="pa-justification" rows="2" required placeholder="Clinical reason for procedure..." style="width:100%; padding:8px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-primary); font-size:13px;"></textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;" data-i18n="modal.btn_submit_preauth">
         Submit Pre-Authorization
       </button>
     </form>
@@ -716,22 +755,22 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/></svg>
         </div>
         <div>
-          <div class="auth-brand-title">MED-CLAIM</div>
-          <div class="auth-brand-sub">Healthcare Adjudication Platform</div>
+          <div class="auth-brand-title" data-i18n="modal.auth_title">MED-CLAIM</div>
+          <div class="auth-brand-sub" data-i18n="modal.auth_sub">Healthcare Adjudication Platform</div>
         </div>
       </div>
     </div>
 
     <!-- Auth Tabs -->
     <div class="auth-tabs">
-      <button class="auth-tab active" id="auth-tab-login" type="button">Sign In</button>
-      <button class="auth-tab" id="auth-tab-register" type="button">Create Account</button>
+      <button class="auth-tab active" id="auth-tab-login" type="button" data-i18n="modal.tab_login">Sign In</button>
+      <button class="auth-tab" id="auth-tab-register" type="button" data-i18n="modal.tab_register">Create Account</button>
     </div>
 
     <!-- Login Form -->
     <form id="form-login" class="auth-form">
       <div class="form-group">
-        <label for="login-email">Email Address</label>
+        <label for="login-email" data-i18n="modal.lbl_email">Email Address</label>
         <div class="input-with-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <input type="email" id="login-email" required placeholder="name@medclaim.gov.in" value="admin@medclaim.gov.in" />
@@ -739,7 +778,7 @@
       </div>
 
       <div class="form-group">
-        <label for="login-password">Password</label>
+        <label for="login-password" data-i18n="modal.lbl_password">Password</label>
         <div class="input-with-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <input type="password" id="login-password" required placeholder="••••••••••••" value="AdminPass123!" />
@@ -747,7 +786,7 @@
       </div>
 
       <!-- Quick Demo Login Pills -->
-      <div class="demo-pills-label">⚡ 1-Click Pitch Demo Login:</div>
+      <div class="demo-pills-label" data-i18n="modal.demo_login_head">⚡ 1-Click Pitch Demo Login:</div>
       <div class="demo-pills-grid">
         <button type="button" class="demo-pill" id="pill-admin">
           <span class="pill-role">Admin</span>
@@ -764,14 +803,14 @@
       </div>
 
       <button type="submit" class="btn btn-primary btn-full" id="btn-login-submit" style="margin-top:16px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In to Portal
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> <span data-i18n="modal.btn_login">Sign In to Portal</span>
       </button>
     </form>
 
     <!-- Register Form -->
     <form id="form-register" class="auth-form" style="display:none;">
       <div class="form-group">
-        <label for="reg-fullname">Full Name</label>
+        <label for="reg-fullname" data-i18n="modal.lbl_fullname">Full Name</label>
         <div class="input-with-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <input type="text" id="reg-fullname" required placeholder="Dr. Priya Mehta" />
@@ -779,7 +818,7 @@
       </div>
 
       <div class="form-group">
-        <label for="reg-email">Email Address</label>
+        <label for="reg-email" data-i18n="modal.lbl_email">Email Address</label>
         <div class="input-with-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <input type="email" id="reg-email" required placeholder="priya@citygeneral.in" />
@@ -787,7 +826,7 @@
       </div>
 
       <div class="form-group">
-        <label for="reg-password">Password</label>
+        <label for="reg-password" data-i18n="modal.lbl_password">Password</label>
         <div class="input-with-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <input type="password" id="reg-password" required placeholder="Minimum 8 characters" />
@@ -795,7 +834,7 @@
       </div>
 
       <div class="form-group">
-        <label for="reg-role">User Role</label>
+        <label for="reg-role" data-i18n="modal.lbl_role">User Role</label>
         <select id="reg-role" class="auth-select">
           <option value="HITL Caseworker">HITL Caseworker</option>
           <option value="Senior Adjudicator">Senior Adjudicator</option>
@@ -805,7 +844,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary btn-full" id="btn-register-submit" style="margin-top:16px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Register Account
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> <span data-i18n="modal.btn_register">Register Account</span>
       </button>
     </form>
   </div>
@@ -814,6 +853,7 @@
 <!-- Toast container -->
 <div id="toast-container" role="alert" aria-live="polite"></div>
 
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

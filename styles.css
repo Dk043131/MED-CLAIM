@@ -1387,3 +1387,213 @@ select.input option {
   background: #ffffff !important;
   color: #0f172a !important;
 }
+
+/* ── Language Selector ───────────────────────────────────────── */
+.lang-selector-wrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.lang-select {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--fast);
+}
+
+.lang-select:hover, .lang-select:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.lang-select option {
+  background: var(--surface-1, #1e293b);
+  color: var(--text-primary, #f8fafc);
+  padding: 6px;
+}
+
+/* ── Mobile Hamburger & Navigation Drawer ────────────────────── */
+.hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.hamburger-btn:hover {
+  background: var(--surface-2);
+}
+
+.sidebar-close-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.sidebar-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Table Responsive Container ───────────────────────────────── */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* ── Mobile & Tablet Layout Optimizations ─────────────────────── */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 240px; }
+  .topbar { padding: 12px 16px; }
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; }
+  .sidebar-close-btn { display: block; margin-left: auto; }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -280px !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 999 !important;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar.open {
+    left: 0 !important;
+  }
+
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  #app {
+    flex-direction: column;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .user-profile-badge {
+    margin-left: 0;
+    padding: 2px 8px;
+  }
+  .user-role { display: none; }
+
+  .content-area {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .pipeline-tracker {
+    gap: 8px;
+    padding: 16px 8px;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .pipeline-step {
+    min-width: 70px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pmjay-hero-banner {
+    padding: 16px !important;
+  }
+
+  .pmjay-hero-banner h2 {
+    font-size: 18px !important;
+  }
+
+  .auth-modal-card {
+    width: 95% !important;
+    padding: 16px !important;
+  }
+
+  /* Minimum touch targets for mobile accessibility */
+  .btn, .nav-item, .lang-select, .input, select.input {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar-sub {
+    display: none;
+  }
+
+  .topbar-title {
+    font-size: 16px;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+

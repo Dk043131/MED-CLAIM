@@ -269,15 +269,19 @@ function animateNumber(el, target, duration = 800, suffix = '') {
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 const screens = {
-  submit:    { el: 'screen-submit',    title: 'Submit Claim',          sub: 'Upload a hospital bill to begin automated processing' },
-  hitl:      { el: 'screen-hitl',      title: 'HITL Review Queue',     sub: 'Review flagged claims before they are submitted to the insurer' },
-  preauth:   { el: 'screen-preauth',   title: 'Pre-Authorization Workflow', sub: 'Hospital requests for elective or emergency procedure prior approval' },
-  pmjay:     { el: 'screen-pmjay',     title: 'Ayushman Bharat (PM-JAY) Portal', sub: 'Instant 3-gate eligibility check, Aadhaar KYC, hospital empanelment, and ₹5L family cap tracking' },
-  dashboard: { el: 'screen-dashboard', title: 'Observability Dashboard', sub: 'Live metrics for the claims processing pipeline' },
+  submit:    { el: 'screen-submit',    titleKey: 'topbar.title_submit',    subKey: 'topbar.sub_submit' },
+  hitl:      { el: 'screen-hitl',      titleKey: 'topbar.title_hitl',      subKey: 'topbar.sub_hitl' },
+  preauth:   { el: 'screen-preauth',   titleKey: 'topbar.title_preauth',   subKey: 'topbar.sub_preauth' },
+  pmjay:     { el: 'screen-pmjay',     titleKey: 'topbar.title_pmjay',     subKey: 'topbar.sub_pmjay' },
+  dashboard: { el: 'screen-dashboard', titleKey: 'topbar.title_dashboard', subKey: 'topbar.sub_dashboard' },
 };
 
 function navigate(screenId) {
-  if (state.currentScreen === screenId) return;
+  if (state.currentScreen === screenId) {
+    // Still close mobile sidebar if open
+    closeMobileSidebar();
+    return;
+  }
 
   // Hide current
   const cur = screens[state.currentScreen];
@@ -291,13 +295,27 @@ function navigate(screenId) {
   const next = screens[screenId];
   $(next.el).classList.add('active');
   $('nav-' + screenId)?.classList.add('active');
-  $('topbar-title').textContent = next.title;
-  $('topbar-sub').textContent = next.sub;
+
+  // Set topbar title and subtitle with i18n translation
+  if (typeof i18n !== 'undefined') {
+    $('topbar-title').textContent = i18n.t(next.titleKey);
+    $('topbar-sub').textContent = i18n.t(next.subKey);
+  }
+
+  // Auto close mobile menu drawer
+  closeMobileSidebar();
 
   // Load data
   if (screenId === 'hitl')      loadHITLQueue();
   if (screenId === 'preauth')   loadPreAuthQueue();
   if (screenId === 'dashboard') loadDashboard();
+}
+
+function closeMobileSidebar() {
+  const sidebar = $('sidebar');
+  const overlay = $('sidebar-overlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('active');
 }
 
 // Wire nav clicks
@@ -2259,9 +2277,52 @@ function initPMJAYHandlers() {
 }
 
 
+function initI18nAndMobileUI() {
+  const langSelect = $('language-selector');
+  if (langSelect && typeof i18n !== 'undefined') {
+    langSelect.value = i18n.currentLang;
+    langSelect.addEventListener('change', (e) => {
+      i18n.setLanguage(e.target.value);
+    });
+  }
+
+  // Mobile menu drawer listeners
+  const menuBtn = $('mobile-hamburger-btn');
+  const closeBtn = $('sidebar-close-btn');
+  const overlay = $('sidebar-overlay');
+  const sidebar = $('sidebar');
+
+  if (menuBtn && sidebar && overlay) {
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+  }
+
+  if (closeBtn && sidebar && overlay) {
+    closeBtn.addEventListener('click', closeMobileSidebar);
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', closeMobileSidebar);
+  }
+
+  // Listen for language changes to update dynamic header texts
+  window.addEventListener('languageChanged', () => {
+    const curScreen = screens[state.currentScreen];
+    if (curScreen && $('topbar-title') && $('topbar-sub')) {
+      $('topbar-title').textContent = i18n.t(curScreen.titleKey);
+      $('topbar-sub').textContent = i18n.t(curScreen.subKey);
+    }
+  });
+}
+
 // ─── Initialise ───────────────────────────────────────────────────────────────
 async function init() {
   await checkServerHealth();
+
+  // Initialize Multilingual & Mobile Drawer
+  initI18nAndMobileUI();
 
   // Initialize authentication event listeners and session check
   initAuthSystem();
