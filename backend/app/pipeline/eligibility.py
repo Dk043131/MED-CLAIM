@@ -80,6 +80,25 @@ def check_eligibility(patient_name: str, age: int) -> Eligibility:
         matched = df[age_mask]
 
     if matched.empty:
+        # Family Record Cross-Match Assistant
+        # Search by surname / family cluster proxy
+        parts = norm_name.split()
+        if len(parts) > 1:
+            surname = parts[-1]
+            family_matches = df[df["patient_name"].str.lower().str.contains(r"\b" + re.escape(surname) + r"\b", regex=True)]
+            if not family_matches.empty:
+                fam_row = family_matches.iloc[0]
+                fam_name = str(fam_row.get("patient_name", ""))
+                fam_id = str(fam_row.get("patient_id", ""))
+                fam_cov = str(fam_row.get("existing_coverage", "PMJAY Gold"))
+                return Eligibility(
+                    eligible=False,
+                    patient_id=fam_id,
+                    income_bracket=str(fam_row.get("income_bracket", "")),
+                    existing_coverage=fam_cov,
+                    reason=f"Family match found: Patient not found individually, but possible family enrollment found under relative '{fam_name}' ({fam_cov}). Verify and attach family policy."
+                )
+
         return Eligibility(
             eligible=False,
             patient_id="UNKNOWN",

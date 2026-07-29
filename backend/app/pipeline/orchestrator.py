@@ -1,33 +1,30 @@
 """
-pipeline/orchestrator.py — Stage 5: Claim Orchestrator
+pipeline/orchestrator.py — Stage 5: Claim Orchestrator & Differentiator Engine
 
-process_claim() wires together Stages 1–4:
-  Stage 1: OCR           → raw_ocr, ocr_confidence
-  Stage 2: Structure     → extracted_json
-  Stage 3: ICD-10 codes  → coding_result
-  Stage 4: Eligibility   → eligibility
-
-Routing logic (deterministic, auditable):
-  route = "human_review" if ANY of these conditions is true:
-    A. OCR confidence < OCR_CONFIDENCE_THRESHOLD    (illegible bill)
-    B. Any ICD-10 confidence < CONFIDENCE_THRESHOLD  (ambiguous coding)
-    C. eligibility.eligible == False                  (not covered)
-
-  Otherwise route = "auto_approve"
-
-Status mirrors route:
-  auto_approve  → status = "approved"
-  human_review  → status = "pending_review"
+Wires together Stages 1–4 + Differentiator Features:
+  Stage 1: OCR                    → raw_ocr, ocr_confidence
+  Stage 2: Structure & Fingerprint → extracted_json, fingerprint_matched
+  Stage 2.5: Completeness Check   → completeness (bounces missing signature/date)
+  Stage 3: ICD-10 Harmonization   → coding_result
+  Stage 4: Eligibility Check      → eligibility (with family cross-match)
+  Stage 4.5: Claim Twins Check    → is_duplicate
+  Stage 5: Plain Translation      → plain_reason
+  Stage 6: Time Saved Receipt     → time_saved_receipt
 """
 from __future__ import annotations
 import time
 import uuid
+from typing import List
 from app.config import OCR_CONFIDENCE_THRESHOLD
-from app.models import ClaimRecord
+from app.models import ClaimRecord, FingerprintMatch
 from app.pipeline.ocr import ocr_bill
 from app.pipeline.clean_ocr import structure_ocr
+from app.pipeline.fingerprint import check_clinic_fingerprint
+from app.pipeline.completeness import check_completeness
 from app.pipeline.harmonizer import harmonize_codes, needs_review
 from app.pipeline.eligibility import check_eligibility
+from app.pipeline.duplicates import check_duplicate_claims
+from app.pipeline.translator import translate_rejection_reasons
 
 
 def _generate_claim_id() -> str:
@@ -36,58 +33,103 @@ def _generate_claim_id() -> str:
     return f"CLM-{short}"
 
 
+def _detect_clinic_id(raw_ocr: str, filename: str) -> str:
+    """Detects clinic ID from bill text or filename for fingerprint lookup."""
+    lower_text = (raw_ocr + " " + filename).lower()
+    if "menon" in lower_text:
+        return "CLINIC-MENON"
+    if "city general" in lower_text or "city" in lower_text:
+        return "CLINIC-CITY-GENERAL"
+    if "apollo" in lower_text:
+        return "CLINIC-APOLLO"
+    return "CLINIC-DEFAULT"
+
+
 def process_claim(file_bytes: bytes, filename: str = "") -> ClaimRecord:
     """
-    Main pipeline entry point.
-
-    Args:
-        file_bytes: Raw bytes of the uploaded bill image/PDF.
-        filename:   Original filename (used by OCR stub to select test case).
-
-    Returns:
-        A fully populated ClaimRecord ready to be persisted and returned via API.
+    Main pipeline entry point with all 6 differentiator features integrated.
     """
     t0 = time.perf_counter()
 
     # ── Stage 1: OCR ─────────────────────────────────────────────────────────
     raw_ocr, ocr_confidence = ocr_bill(file_bytes, filename)
-    print(f"[Pipeline] Stage 1 OCR done ({ocr_confidence:.1f}% confidence) — {time.perf_counter()-t0:.2f}s")
+    clinic_id = _detect_clinic_id(raw_ocr, filename)
+    print(f"[Pipeline] Stage 1 OCR done ({ocr_confidence:.1f}% confidence) | Clinic: {clinic_id}")
 
-    # ── Stage 2: Structure OCR text ───────────────────────────────────────────
+    # ── Stage 2: Structure OCR & Clinic Fingerprint Check ──────────────────────
     extracted = structure_ocr(raw_ocr)
-    print(f"[Pipeline] Stage 2 Structure done — {time.perf_counter()-t0:.2f}s")
+    extracted.clinic_id = clinic_id
 
-    # ── Stage 3: ICD-10 harmonization ─────────────────────────────────────────
+    # Check clinic fingerprint memory cache for doctor_name
+    fingerprint_hit: FingerprintMatch | None = None
+    if extracted.doctor_name:
+        fp_match = check_clinic_fingerprint(clinic_id, extracted.doctor_name, "doctor_name")
+        if fp_match:
+            fingerprint_hit = FingerprintMatch(
+                matched=True,
+                field="doctor_name",
+                original=extracted.doctor_name,
+                corrected=fp_match["corrected_value"],
+                hit_count=fp_match["hit_count"]
+            )
+            extracted.doctor_name = fp_match["corrected_value"]
+            ocr_confidence = max(ocr_confidence, 92.0)  # Boost confidence on fingerprint match
+
+    print(f"[Pipeline] Stage 2 Structure done | Fingerprint matched: {fingerprint_hit.matched if fingerprint_hit else False}")
+
+    # ── Stage 2.5: Completeness Checklist ────────────────────────────────────
+    completeness = check_completeness(extracted, raw_ocr, ocr_confidence)
+    print(f"[Pipeline] Stage 2.5 Completeness check | Complete: {completeness.complete}")
+
+    # ── Stage 3: ICD-10 Harmonization ─────────────────────────────────────────
     coding_result = harmonize_codes(extracted.symptoms)
-    print(f"[Pipeline] Stage 3 Harmonize done — {time.perf_counter()-t0:.2f}s")
+    print(f"[Pipeline] Stage 3 Harmonize done")
 
-    # ── Stage 4: Eligibility check ────────────────────────────────────────────
+    # ── Stage 4: Eligibility Check (with Family Fallback) ─────────────────────
     eligibility = check_eligibility(extracted.patient_name, extracted.age)
-    print(f"[Pipeline] Stage 4 Eligibility done — {time.perf_counter()-t0:.2f}s")
+    print(f"[Pipeline] Stage 4 Eligibility done | Reason: {eligibility.reason}")
 
-    # ── Routing Logic ─────────────────────────────────────────────────────────
-    reason_a = ocr_confidence < OCR_CONFIDENCE_THRESHOLD
-    reason_b = needs_review(coding_result)
-    reason_c = not eligibility.eligible
+    # ── Stage 4.5: Claim Twins (Duplicate Check) ──────────────────────────────
+    twin_check = check_duplicate_claims(extracted.patient_name, extracted.symptoms)
+    is_duplicate = twin_check["is_duplicate"]
+    twin_claim_ids = twin_check["twin_claim_ids"]
+    print(f"[Pipeline] Stage 4.5 Duplicate check | Duplicate: {is_duplicate}")
 
-    if reason_a or reason_b or reason_c:
-        route = "human_review"
-        status = "pending_review"
-        reasons = []
-        if reason_a:
-            reasons.append(f"Low OCR confidence ({ocr_confidence:.1f}% < {OCR_CONFIDENCE_THRESHOLD}%)")
-        if reason_b:
-            reasons.append("One or more ICD-10 codes have low confidence")
-        if reason_c:
-            reasons.append(f"Ineligible: {eligibility.reason}")
-        print(f"[Pipeline] Route → human_review | Reasons: {'; '.join(reasons)}")
+    # ── Stage 5: Routing & Verdict Logic ──────────────────────────────────────
+    reasons: List[str] = []
+
+    # Check incomplete documentation bounce
+    if not completeness.complete:
+        route = "incomplete_documentation"
+        status = "incomplete"
+        reasons.append(f"Missing required fields: {', '.join(completeness.missing_fields)}")
     else:
-        route = "auto_approve"
-        status = "approved"
-        print(f"[Pipeline] Route → auto_approve")
+        reason_ocr = ocr_confidence < OCR_CONFIDENCE_THRESHOLD
+        reason_icd = needs_review(coding_result)
+        reason_elig = not eligibility.eligible
+        reason_dup = is_duplicate
 
+        if reason_ocr or reason_icd or reason_elig or reason_dup:
+            route = "human_review"
+            status = "pending_review"
+            if reason_ocr:
+                reasons.append(f"Low OCR confidence ({ocr_confidence:.1f}% < {OCR_CONFIDENCE_THRESHOLD}%)")
+            if reason_icd:
+                reasons.append("One or more ICD-10 codes have low confidence")
+            if reason_elig:
+                reasons.append(eligibility.reason)
+            if reason_dup:
+                reasons.append(twin_check["reason"])
+        else:
+            route = "auto_approve"
+            status = "approved"
+
+    # Stage 6: Plain language translation & Time Saved Receipt
+    plain_reason = translate_rejection_reasons(reasons) if route != "auto_approve" else "Claim auto-adjudicated successfully with high confidence."
     total_time = time.perf_counter() - t0
-    print(f"[Pipeline] Total processing time: {total_time:.2f}s")
+    time_saved_receipt = f"Processed in {total_time:.2f}s. Manually, this typically takes 12–15 days."
+
+    print(f"[Pipeline] Route → {route} | Total time: {total_time:.2f}s")
 
     return ClaimRecord(
         claim_id=_generate_claim_id(),
@@ -97,4 +139,11 @@ def process_claim(file_bytes: bytes, filename: str = "") -> ClaimRecord:
         eligibility=eligibility,
         route=route,
         status=status,
+        completeness=completeness,
+        fingerprint_matched=fingerprint_hit,
+        is_duplicate=is_duplicate,
+        twin_claim_ids=twin_claim_ids,
+        plain_reason=plain_reason,
+        processing_seconds=round(total_time, 2),
+        time_saved_receipt=time_saved_receipt,
     )

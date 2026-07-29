@@ -161,6 +161,10 @@ def review_queue():
     return storage.get_review_queue()
 
 
+from app.models import ClaimRecord, DashboardMetrics, ApproveResponse, ApproveRequest
+from app.pipeline.fingerprint import save_correction_to_fingerprint
+
+
 # ── Contract Endpoint 4: Approve a claim ─────────────────────────────────────
 
 @app.post(
@@ -169,17 +173,31 @@ def review_queue():
     summary="Approve a pending claim",
     tags=["Claims"],
 )
-def approve_claim(claim_id: str):
+def approve_claim(claim_id: str, payload: Optional[ApproveRequest] = None):
     """
     Sets the status of a pending claim to 'approved'.
-
-    Typically triggered by a human reviewer after verifying the claim details.
-    Returns { claim_id, status: 'approved' }.
+    If caseworker corrections are provided in payload, feeds them into clinic_fingerprints memory cache!
     """
-    updated = storage.approve_claim(claim_id)
-    if updated is None:
+    existing_claim = storage.get_claim(claim_id)
+    if existing_claim is None:
         raise HTTPException(status_code=404, detail=f"Claim '{claim_id}' not found.")
-    return ApproveResponse(claim_id=updated.claim_id, status="approved")
+
+    fingerprint_updated = False
+    if payload and payload.corrections:
+        clinic_id = payload.clinic_id or existing_claim.extracted_json.clinic_id or "CLINIC-DEFAULT"
+        for field_type, corrected_val in payload.corrections.items():
+            original_val = getattr(existing_claim.extracted_json, field_type, "") or existing_claim.raw_ocr
+            if original_val and corrected_val:
+                saved = save_correction_to_fingerprint(clinic_id, str(original_val), str(corrected_val), field_type)
+                if saved:
+                    fingerprint_updated = True
+
+    updated = storage.approve_claim(claim_id)
+    return ApproveResponse(
+        claim_id=claim_id,
+        status="approved",
+        fingerprint_updated=fingerprint_updated
+    )
 
 
 # ── Contract Endpoint 5: Dashboard metrics ────────────────────────────────────

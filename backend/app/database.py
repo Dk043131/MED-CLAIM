@@ -6,7 +6,7 @@ dependency-light for a hackathon / demo context.
 import json
 from sqlalchemy import (
     create_engine, MetaData, Table, Column,
-    String, Text, DateTime, func
+    String, Text, DateTime, Integer, func
 )
 from sqlalchemy.pool import StaticPool
 from app.config import DATABASE_URL
@@ -31,6 +31,19 @@ claims_table = Table(
     Column("route",          String(20),  nullable=False),
     Column("status",         String(20),  nullable=False),
     Column("created_at",     DateTime,    server_default=func.now()),
+)
+
+# ── Clinic Fingerprints Table ────────────────────────────────────────────────
+clinic_fingerprints_table = Table(
+    "clinic_fingerprints",
+    metadata,
+    Column("id",                Integer,     primary_key=True, autoincrement=True),
+    Column("clinic_id",         String(64),  nullable=False, index=True),
+    Column("field_type",        String(32),  nullable=False),
+    Column("raw_ocr_snippet",   Text,        nullable=False),
+    Column("corrected_value",   Text,        nullable=False),
+    Column("hit_count",         Integer,     server_default="1"),
+    Column("created_at",        DateTime,    server_default=func.now()),
 )
 
 
