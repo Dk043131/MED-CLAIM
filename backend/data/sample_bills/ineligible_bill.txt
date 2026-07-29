@@ -1,0 +1,35 @@
+SUNRISE HEALTH CLINIC
+45 Park Street, Chennai - 600001
+Ph: 044-23456789
+
+OUTPATIENT RECEIPT
+====================
+Patient Name: Fatima Shaikh
+Age: 52   Sex: F
+Date: 20/06/2024
+Patient ID: PAT-2015
+
+Doctor: Dr. Ramesh Kumar (MBBS, MS - Orthopaedics)
+
+Presenting Complaints:
+Knee joint pain (bilateral), Lower back pain, Morning stiffness
+
+Diagnosis:
+Osteoarthritis of knee joint, Lumbar spondylosis
+
+Prescription / Bill of Charges:
+-----------------------------------------
+Consultation Fee                   : Rs. 800
+Diclofenac 50mg x 10 Tablets       : Rs. 60
+Calcium + Vit D3 x 30 Tablets      : Rs. 180
+Physiotherapy Session x 2          : Rs. 600
+X-Ray Knee AP View (bilateral)     : Rs. 400
+-----------------------------------------
+Total Amount                       : Rs. 2040
+-----------------------------------------
+
+Insurance: PMJAY Coverage
+Coverage Status: EXPIRED (expired 2022-03-15)
+Claim Rejected: Coverage lapsed before date of treatment.
+
+Note: Patient advised to renew insurance coverage.

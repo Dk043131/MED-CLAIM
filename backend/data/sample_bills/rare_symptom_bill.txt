@@ -1,0 +1,35 @@
+AIIMS OUTPATIENT DEPARTMENT
+New Delhi - 110029
+Ph: 011-26588500
+
+OUTPATIENT RECEIPT
+====================
+Patient Name: Suresh Patel
+Age: 61   Sex: M
+Date: 22/06/2024
+Patient ID: PAT-3042
+
+Doctor: Dr. Ananya Krishnan (MBBS, DM - Neurology)
+
+Presenting Complaints:
+Progressive memory loss, personality changes, spatial disorientation, aphasia
+
+Diagnosis:
+Suspected early-onset frontotemporal dementia vs Lewy body dementia
+(Differential diagnosis pending - requires neuropsychological evaluation and MRI)
+
+Rare/complex neurodegenerative condition - ICD-10 coding ambiguous
+
+Prescription / Bill of Charges:
+-----------------------------------------
+Consultation Fee (Specialist)      : Rs. 1200
+MRI Brain with contrast            : Rs. 5500
+Neuropsychological assessment      : Rs. 3000
+PET Scan referral                  : Rs. 12000
+Rivastigmine 3mg x 30 capsules     : Rs. 420
+-----------------------------------------
+Total Amount                       : Rs. 22120
+-----------------------------------------
+
+Note: Diagnosis uncertain - requires multidisciplinary team review.
+Clinical coding: Multiple overlapping ICD-10 candidates - human coder review required.

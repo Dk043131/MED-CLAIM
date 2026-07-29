@@ -1,0 +1,164 @@
+code,description,category
+A09,Infectious gastroenteritis and colitis,Infectious diseases
+A15,Respiratory tuberculosis,Infectious diseases
+A90,Dengue fever,Infectious diseases
+A91,Dengue haemorrhagic fever,Infectious diseases
+A01.0,Typhoid fever,Infectious diseases
+A01.1,Paratyphoid fever A,Infectious diseases
+A06.0,Acute amoebic dysentery,Infectious diseases
+B34.9,Viral infection unspecified,Infectious diseases
+B54,Unspecified malaria,Infectious diseases
+B50.0,Plasmodium falciparum malaria with cerebral complications,Infectious diseases
+B15.9,Hepatitis A without hepatic coma,Infectious diseases
+B16.9,Acute hepatitis B without delta agent,Infectious diseases
+B19.9,Unspecified viral hepatitis without hepatic coma,Infectious diseases
+J00,Acute nasopharyngitis (common cold),Respiratory
+J01.9,Acute sinusitis unspecified,Respiratory
+J02.9,Acute pharyngitis unspecified,Respiratory
+J03.9,Acute tonsillitis unspecified,Respiratory
+J04.0,Acute laryngitis,Respiratory
+J06.9,Acute upper respiratory infection unspecified,Respiratory
+J10.0,Influenza with pneumonia due to identified seasonal influenza virus,Respiratory
+J11.0,Influenza with pneumonia virus not identified,Respiratory
+J18.9,Pneumonia unspecified,Respiratory
+J20.9,Acute bronchitis unspecified,Respiratory
+J21.9,Acute bronchiolitis unspecified,Respiratory
+J22,Unspecified acute lower respiratory infection,Respiratory
+J30.0,Vasomotor rhinitis,Respiratory
+J30.1,Allergic rhinitis due to pollen,Respiratory
+J40,Bronchitis not specified as acute or chronic,Respiratory
+J41.0,Simple chronic bronchitis,Respiratory
+J42,Unspecified chronic bronchitis,Respiratory
+J43.9,Emphysema unspecified,Respiratory
+J44.0,COPD with acute lower respiratory infection,Respiratory
+J44.1,COPD with acute exacerbation,Respiratory
+J45.9,Asthma unspecified,Respiratory
+J46,Status asthmaticus,Respiratory
+J18.0,Bronchopneumonia unspecified organism,Respiratory
+R05,Cough,Respiratory symptoms
+R06.0,Dyspnoea,Respiratory symptoms
+R06.00,Dyspnea unspecified,Respiratory symptoms
+R06.2,Wheezing,Respiratory symptoms
+R09.02,Hypoxemia,Respiratory symptoms
+I10,Essential (primary) hypertension,Cardiovascular
+I11.9,Hypertensive heart disease without heart failure,Cardiovascular
+I20.9,Angina pectoris unspecified,Cardiovascular
+I21.9,Acute myocardial infarction unspecified,Cardiovascular
+I21.0,ST elevation MI of anterior wall,Cardiovascular
+I21.1,ST elevation MI of inferior wall,Cardiovascular
+I25.10,Atherosclerotic heart disease unspecified,Cardiovascular
+I25.9,Chronic ischaemic heart disease unspecified,Cardiovascular
+I42.0,Dilated cardiomyopathy,Cardiovascular
+I48.0,Paroxysmal atrial fibrillation,Cardiovascular
+I48.91,Unspecified atrial fibrillation,Cardiovascular
+I50.9,Heart failure unspecified,Cardiovascular
+I63.9,Cerebral infarction unspecified,Cardiovascular
+I64,Stroke not specified as haemorrhage or infarction,Cardiovascular
+I65.2,Occlusion and stenosis of carotid artery,Cardiovascular
+R00.0,Tachycardia unspecified,Cardiovascular symptoms
+R00.1,Bradycardia unspecified,Cardiovascular symptoms
+R07.9,Chest pain unspecified,Cardiovascular symptoms
+R55,Syncope and collapse,Cardiovascular symptoms
+E10.9,Type 1 diabetes mellitus without complications,Endocrine
+E11.9,Type 2 diabetes mellitus without complications,Endocrine
+E11.65,Type 2 diabetes mellitus with hyperglycemia,Endocrine
+E11.40,Type 2 diabetes mellitus with diabetic neuropathy unspecified,Endocrine
+E11.319,Type 2 diabetes mellitus with unspecified diabetic retinopathy,Endocrine
+E13.9,Other specified diabetes mellitus without complications,Endocrine
+E03.9,Hypothyroidism unspecified,Endocrine
+E05.90,Thyrotoxicosis unspecified without thyrotoxic crisis,Endocrine
+E04.9,Nontoxic goitre unspecified,Endocrine
+E66.9,Obesity unspecified,Endocrine
+E55.9,Vitamin D deficiency unspecified,Endocrine
+E50.9,Vitamin A deficiency unspecified,Endocrine
+E61.1,Iron deficiency,Endocrine
+K21.0,GERD with oesophagitis,Gastrointestinal
+K21.9,GERD without oesophagitis,Gastrointestinal
+K25.9,Gastric ulcer unspecified,Gastrointestinal
+K26.9,Duodenal ulcer unspecified,Gastrointestinal
+K29.70,Gastritis unspecified without bleeding,Gastrointestinal
+K35.80,Acute appendicitis without abscess,Gastrointestinal
+K37,Unspecified appendicitis,Gastrointestinal
+K40.90,Unilateral inguinal hernia without obstruction or gangrene,Gastrointestinal
+K57.30,Diverticulosis of large intestine without perforation or abscess without bleeding,Gastrointestinal
+K70.30,Alcoholic cirrhosis of liver without ascites,Gastrointestinal
+K74.60,Unspecified cirrhosis of liver,Gastrointestinal
+K80.20,Calculus of gallbladder without cholecystitis without obstruction,Gastrointestinal
+K92.1,Melaena,Gastrointestinal
+R10.9,Unspecified abdominal pain,Gastrointestinal symptoms
+R11.0,Nausea,Gastrointestinal symptoms
+R11.10,Vomiting unspecified,Gastrointestinal symptoms
+R11.2,Nausea with vomiting unspecified,Gastrointestinal symptoms
+R19.7,Diarrhoea unspecified,Gastrointestinal symptoms
+R14.0,Abdominal distension (gaseous),Gastrointestinal symptoms
+M05.9,Rheumatoid arthritis with rheumatoid factor unspecified,Musculoskeletal
+M10.9,Gout unspecified,Musculoskeletal
+M15.9,Polyosteoarthritis unspecified,Musculoskeletal
+M16.9,Osteoarthritis of hip unspecified,Musculoskeletal
+M17.9,Osteoarthritis of knee unspecified,Musculoskeletal
+M47.816,Spondylosis without myelopathy cervical region,Musculoskeletal
+M47.816,Lumbar spondylosis,Musculoskeletal
+M54.5,Low back pain,Musculoskeletal
+M54.2,Cervicalgia,Musculoskeletal
+M79.3,Panniculitis unspecified,Musculoskeletal
+M25.511,Pain in right shoulder,Musculoskeletal
+M25.512,Pain in left shoulder,Musculoskeletal
+M25.561,Pain in right knee,Musculoskeletal
+M25.562,Pain in left knee,Musculoskeletal
+M79.621,Pain in right upper arm,Musculoskeletal
+S62.001,Fracture of navicular of right wrist,Injury
+S72.001,Fracture of unspecified part of neck of right femur,Injury
+S82.001,Fracture of right patella,Injury
+T14.9,Injury unspecified,Injury
+S09.90,Unspecified injury of head,Injury
+S29.9,Unspecified injury of thorax,Injury
+N10,Acute pyelonephritis,Genitourinary
+N18.9,Chronic kidney disease unspecified,Genitourinary
+N20.0,Calculus of kidney,Genitourinary
+N20.1,Calculus of ureter,Genitourinary
+N30.00,Acute cystitis without haematuria,Genitourinary
+N39.0,Urinary tract infection site not specified,Genitourinary
+N40.0,Benign prostatic hyperplasia without lower urinary tract symptoms,Genitourinary
+N41.0,Acute prostatitis,Genitourinary
+R30.0,Dysuria,Genitourinary symptoms
+R35.0,Frequency of micturition,Genitourinary symptoms
+G40.909,Epilepsy unspecified,Neurological
+G43.909,Migraine unspecified,Neurological
+G43.1,Migraine with aura,Neurological
+G45.9,Transient cerebral ischaemic attack unspecified,Neurological
+G47.00,Insomnia unspecified,Neurological
+G47.33,Obstructive sleep apnea,Neurological
+G62.9,Polyneuropathy unspecified,Neurological
+G93.40,Encephalopathy unspecified,Neurological
+G30.9,Alzheimer's disease unspecified,Neurological
+G20,Parkinson's disease,Neurological
+F02.80,Dementia in other diseases classified elsewhere without behavioral disturbance,Neurological
+F03.90,Unspecified dementia without behavioral disturbance,Neurological
+R51,Headache,Neurological symptoms
+R42,Dizziness and giddiness,Neurological symptoms
+R55,Syncope and collapse,Neurological symptoms
+R20.0,Anaesthesia of skin,Neurological symptoms
+L20.9,Atopic dermatitis unspecified,Dermatological
+L23.9,Allergic contact dermatitis unspecified,Dermatological
+L29.9,Pruritus unspecified,Dermatological
+L30.9,Dermatitis unspecified,Dermatological
+L40.0,Psoriasis vulgaris,Dermatological
+L50.0,Allergic urticaria,Dermatological
+L50.9,Urticaria unspecified,Dermatological
+B35.1,Tinea unguium,Dermatological
+B35.3,Tinea pedis,Dermatological
+R21,Rash and other nonspecific skin eruption,Dermatological symptoms
+D50.9,Iron deficiency anaemia unspecified,Haematological
+D64.9,Anaemia unspecified,Haematological
+D69.6,Thrombocytopenia unspecified,Haematological
+R71.0,Precipitous drop in haematocrit,Haematological symptoms
+R50.9,Fever unspecified,General symptoms
+R53.83,Other fatigue,General symptoms
+R53.1,Weakness,General symptoms
+R63.0,Anorexia,General symptoms
+R60.0,Localised oedema,General symptoms
+R68.89,Other specified general symptoms and signs,General symptoms
+Z00.0,Encounter for general examination without complaint,Administrative
+Z00.00,Encounter for general adult medical examination without abnormal findings,Administrative
+Z13.88,Encounter for screening for disorder due to exposure to contaminants,Administrative
+Z51.11,Encounter for antineoplastic chemotherapy,Administrative

@@ -1,0 +1,32 @@
+CITY GENERAL HOSPITAL
+123, MG Road, Bengaluru - 560001
+Ph: 080-22334455
+
+OUTPATIENT RECEIPT
+====================
+Patient Name: Rahul Sharma
+Age: 34   Sex: M
+Date: 15/06/2024
+Patient ID: PAT-1001
+
+Doctor: Dr. Priya Mehta (MBBS, MD - General Medicine)
+
+Presenting Complaints:
+Fever, Headache, Mild Cough
+
+Diagnosis:
+Acute Viral Fever with Upper Respiratory Infection
+
+Prescription / Bill of Charges:
+-----------------------------------------
+Consultation Fee                 : Rs. 500
+Paracetamol 500mg x 10 Tablets   : Rs. 80
+Cetirizine 10mg x 5 Tablets      : Rs. 30
+Cough Syrup 100ml                : Rs. 90
+Blood CBC Test                   : Rs. 250
+-----------------------------------------
+Total Amount                     : Rs. 950
+-----------------------------------------
+
+[DUPLICATE SUBMISSION - Previously processed as CLM-1001]
+[System Flag: This bill has already been submitted and approved on 16/06/2024]

@@ -1,0 +1,33 @@
+FORTIS HOSPITAL
+Bannerghatta Road, Bengaluru - 560076
+Ph: 080-66214444
+
+INPATIENT BILLING SUMMARY
+==========================
+Patient Name: Meena Iyer
+Age: 45   Sex: F
+Date: 10/06/2024
+Patient ID: PAT-4087
+Admission: 08/06/2024   Discharge: 12/06/2024
+
+Doctor: Dr. Sanjay Malhotra (MBBS, MCh - Cardiac Surgery)
+
+Diagnosis: Acute Myocardial Infarction (Heart Attack)
+Procedure: Coronary Angioplasty with Stent Placement
+
+Bill of Charges:
+-----------------------------------------
+ICU Charges (4 days @ Rs. 12000/day)  : Rs. 48000
+Cardiac Catheterization Lab            : Rs. 85000
+Coronary Stent (drug-eluting)          : Rs. 120000
+Anaesthesia Charges                    : Rs. 25000
+Operation Theatre Charges              : Rs. 35000
+Medicines & Consumables                : Rs. 28000
+Investigations (ECG, Echo, Blood)      : Rs. 12000
+Nursing Charges                        : Rs. 8000
+-----------------------------------------
+Total Amount                           : Rs. 361000
+-----------------------------------------
+
+High-value claim: Requires mandatory senior adjudicator review per SOP.
+Insurance Pre-authorization Reference: PRA-2024-44892

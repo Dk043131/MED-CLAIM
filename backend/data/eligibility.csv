@@ -1,0 +1,51 @@
+patient_id,patient_name,age,income_bracket,existing_coverage,coverage_expiry_date,eligible,reason
+PAT-1001,Rahul Sharma,34,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1002,Priya Singh,28,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
+PAT-1003,Amit Verma,45,5-8 LPA,ESIC Standard,2026-11-30,True,Active coverage
+PAT-1004,Sunita Devi,60,Below 2.5 LPA,PMJAY Gold,2026-08-15,True,Active coverage
+PAT-1005,Rajesh Kumar,38,2.5-5 LPA,PMJAY Silver,2025-01-01,False,Coverage expired
+PAT-1006,Meena Iyer,45,8-12 LPA,Ayushman Plus,2027-03-31,True,Active coverage
+PAT-1007,Suresh Patel,61,5-8 LPA,PMJAY Silver,2026-10-31,True,Active coverage
+PAT-1008,Anita Joshi,33,2.5-5 LPA,ESIC Standard,2026-07-31,True,Active coverage
+PAT-1009,Deepak Nair,50,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1010,Kavitha Rao,42,5-8 LPA,PMJAY Silver,2024-06-30,False,Coverage expired
+PAT-1011,Vijay Menon,55,8-12 LPA,Ayushman Plus,2027-01-15,True,Active coverage
+PAT-1012,Lakshmi Pillai,67,Below 2.5 LPA,PMJAY Gold,2026-11-30,True,Senior citizen coverage active
+PAT-1013,Arjun Reddy,29,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
+PAT-1014,Fatima Shaikh,52,Below 2.5 LPA,PMJAY Gold,2022-03-15,False,Coverage expired 2022
+PAT-1015,Ravi Shankar,48,5-8 LPA,ESIC Standard,2026-12-31,True,Active coverage
+PAT-1016,Pooja Agarwal,26,2.5-5 LPA,PMJAY Silver,2026-10-31,True,Active coverage
+PAT-1017,Suresh Iyer,44,8-12 LPA,Ayushman Plus,2027-02-28,True,Active coverage
+PAT-1018,Geeta Kumari,58,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1019,Mohan Das,71,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Senior citizen coverage active
+PAT-1020,Nisha Gupta,35,2.5-5 LPA,PMJAY Silver,2026-07-31,True,Active coverage
+PAT-1021,Ramesh Yadav,40,Below 2.5 LPA,PMJAY Gold,2025-12-31,False,Coverage expired
+PAT-1022,Sita Devi,63,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Senior citizen active
+PAT-1023,Kiran Bhat,31,5-8 LPA,ESIC Standard,2026-09-30,True,Active coverage
+PAT-1024,Anand Swamy,47,2.5-5 LPA,PMJAY Silver,2026-11-30,True,Active coverage
+PAT-1025,Devika Nair,39,8-12 LPA,Ayushman Plus,2027-04-30,True,Active coverage
+PAT-1026,Harish Chandra,56,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1027,Parvati Devi,64,Below 2.5 LPA,PMJAY Gold,2023-06-30,False,Coverage expired 2023
+PAT-1028,Santosh Kumar,37,2.5-5 LPA,PMJAY Silver,2026-10-31,True,Active coverage
+PAT-1029,Usha Rani,49,5-8 LPA,ESIC Standard,2026-12-31,True,Active coverage
+PAT-1030,Balachandran M,52,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Active coverage
+PAT-1031,Chitra Suresh,43,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
+PAT-1032,Dinesh Patil,36,5-8 LPA,PMJAY Silver,2026-11-30,True,Active coverage
+PAT-1033,Esha Sharma,22,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1034,Firoz Khan,41,2.5-5 LPA,ESIC Standard,2026-10-31,True,Active coverage
+PAT-1035,Gopalan R,68,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Senior citizen active
+PAT-1036,Hema Malini,54,8-12 LPA,Ayushman Plus,2027-01-31,True,Active coverage
+PAT-1037,Indira Pillai,46,Below 2.5 LPA,PMJAY Gold,2025-06-30,False,Coverage expired
+PAT-1038,Jagdish Prasad,59,Below 2.5 LPA,PMJAY Gold,2026-12-31,True,Active coverage
+PAT-1039,Kamala Devi,72,Below 2.5 LPA,PMJAY Gold,2026-07-31,True,Senior citizen active
+PAT-1040,Lokesh Kumar,33,2.5-5 LPA,PMJAY Silver,2026-09-30,True,Active coverage
+PAT-1041,Mangala P,57,5-8 LPA,ESIC Standard,2026-11-30,True,Active coverage
+PAT-1042,Naveen Raj,27,2.5-5 LPA,PMJAY Silver,2026-12-31,True,Active coverage
+PAT-1043,Omkar Singh,44,Below 2.5 LPA,PMJAY Gold,2026-08-31,True,Active coverage
+PAT-1044,Padma Lakshmi,61,Below 2.5 LPA,PMJAY Gold,2026-10-31,True,Senior citizen active
+PAT-1045,Qureshi Aziz,38,2.5-5 LPA,ESIC Standard,2026-09-30,True,Active coverage
+PAT-1046,Revathi Devi,50,Below 2.5 LPA,PMJAY Gold,2024-12-31,False,Coverage expired 2024
+PAT-1047,Srinivas Rao,48,5-8 LPA,PMJAY Silver,2027-02-28,True,Active coverage
+PAT-1048,Thenmozhi K,35,2.5-5 LPA,PMJAY Silver,2026-11-30,True,Active coverage
+PAT-1049,Uday Kumar,42,8-12 LPA,Ayushman Plus,2027-03-31,True,Active coverage
+PAT-1050,Vasudha Singh,30,2.5-5 LPA,PMJAY Silver,2026-12-31,True,Active coverage
