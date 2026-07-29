@@ -1,17 +1,7 @@
 {
   "version": 2,
   "name": "med-claim-frontend",
-  "framework": null,
-  "buildCommand": null,
-  "cleanUrls": true,
-  "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true
 }
