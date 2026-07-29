@@ -52,8 +52,13 @@ function toast(message, type = 'info', duration = 3500) {
   if (!container) return;
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
-  el.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+  const icons = {
+    success: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    error: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+    info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+    warning: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+  };
+  el.innerHTML = `<span>${icons[type] || icons.info}</span><span>${message}</span>`;
   container.appendChild(el);
   setTimeout(() => {
     el.classList.add('toast-exit');
@@ -398,7 +403,7 @@ function activateStep(stageIndex, finalStatus) {
     if (!prev) continue;
     prev.className = 'pipeline-step done';
     const dot = prev.querySelector('.step-dot');
-    dot.innerHTML = '✓';
+    dot.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     prev.querySelector('.step-sublabel').textContent = 'Complete';
   }
 
@@ -406,11 +411,11 @@ function activateStep(stageIndex, finalStatus) {
   const isLast = stageIndex === STAGES.length - 1;
   if (isLast && finalStatus === 'FLAGGED') {
     el.className = 'pipeline-step flagged';
-    el.querySelector('.step-dot').innerHTML = '⚑';
+    el.querySelector('.step-dot').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`;
     el.querySelector('.step-sublabel').textContent = 'Flagged';
   } else if (isLast) {
     el.className = 'pipeline-step done';
-    el.querySelector('.step-dot').innerHTML = '✓';
+    el.querySelector('.step-dot').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
     el.querySelector('.step-sublabel').textContent = 'Approved';
   } else {
     el.className = 'pipeline-step active';
@@ -431,7 +436,9 @@ function showResult(claim) {
   const isApproved = claim.status === 'APPROVED';
 
   rc.className = 'result-card show ' + (isApproved ? 'approved' : 'flagged');
-  $('result-icon').textContent  = isApproved ? '✅' : '⚑';
+  $('result-icon').innerHTML  = isApproved
+    ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
+    : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`;
   $('result-title').textContent = isApproved ? 'Auto-Approved' : 'Flagged for Caseworker Review';
   $('result-id').textContent    = claim.id;
   $('result-body').textContent  = isApproved
@@ -507,7 +514,7 @@ async function submitClaim(filename, fileType, base64Data) {
 
     const isApproved = claimResult.status === 'APPROVED';
     toast(
-      isApproved ? `Claim ${claimResult.id} auto-approved ✅` : `Claim flagged for review — added to HITL queue ⚑`,
+      isApproved ? `Claim ${claimResult.id} auto-approved` : `Claim flagged for review — added to HITL queue`,
       isApproved ? 'success' : 'warning',
       4000
     );
@@ -516,10 +523,10 @@ async function submitClaim(filename, fileType, base64Data) {
     refreshHITLBadge();
 
   } catch (err) {
-    toast('Failed to submit claim. Is the mock server running? (python server.py)', 'error');
+    toast('Failed to submit claim. Is the backend server running?', 'error');
     console.error(err);
   } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> Process Claim'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Process Claim'; }
   }
 }
 
@@ -581,7 +588,7 @@ function renderHITLTable(claims) {
     tr.setAttribute('role', 'button');
     tr.setAttribute('tabindex', '0');
     tr.innerHTML = `
-      <td><span class="expand-icon">▼</span></td>
+      <td><span class="expand-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></td>
       <td><code style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--indigo-bright)">${claim.id}</code></td>
       <td style="font-weight:500">${claim.patient_name}</td>
       <td style="color:var(--text-secondary); font-size:13px">${formatDate(claim.submitted_at)}</td>
@@ -595,7 +602,9 @@ function renderHITLTable(claims) {
       </td>
       <td><span class="flag-badge" title="${topFlag}">${topFlag}</span></td>
       <td>
-        <button class="btn btn-success" id="approve-btn-${claim.id}" aria-label="Approve claim ${claim.id}">✓ Approve</button>
+        <button class="btn btn-success" id="approve-btn-${claim.id}" aria-label="Approve claim ${claim.id}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Approve
+        </button>
       </td>`;
 
     // Detail row
@@ -605,19 +614,19 @@ function renderHITLTable(claims) {
     detailTr.innerHTML = `<td colspan="7">
       <div class="claim-detail-inner">
         <div class="detail-panel">
-          <div class="detail-panel-title">📷 Original Document</div>
+          <div class="detail-panel-title">Original Document</div>
           <img class="bill-image" src="${claim.image_url || '/assets/mock_bill_messy.png'}" alt="Original bill for ${claim.patient_name}" />
           <div class="flags-section">
-            <div class="detail-panel-title" style="margin-top:12px">⚑ Flag Reasons</div>
+            <div class="detail-panel-title" style="margin-top:12px">Flag Reasons</div>
             ${(claim.flags || []).map(f =>
-              `<div class="flag-reason-item"><span class="icon">⚑</span>${f}</div>`
+              `<div class="flag-reason-item"><span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>${f}</div>`
             ).join('')}
           </div>
         </div>
         <div class="detail-panel">
-          <div class="detail-panel-title">📋 Extracted JSON</div>
+          <div class="detail-panel-title">Extracted JSON</div>
           <div class="json-viewer">${syntaxHighlightJSON(claim.extracted_json || {})}</div>
-          <div class="detail-panel-title" style="margin-top:12px">🧬 ICD-10 Candidates</div>
+          <div class="detail-panel-title" style="margin-top:12px">ICD-10 Candidates</div>
           <div class="icd-chips" style="margin-top:4px">
             ${(claim.icd_codes || []).map(icd =>
               `<div class="icd-chip">
@@ -627,7 +636,7 @@ function renderHITLTable(claims) {
               </div>`
             ).join('')}
           </div>
-          <div class="detail-panel-title" style="margin-top:12px">📜 Audit Trail</div>
+          <div class="detail-panel-title" style="margin-top:12px">Audit Trail</div>
           <div class="audit-mini">
             ${(claim.audit_log || []).map(entry =>
               `<div class="audit-entry">
@@ -637,7 +646,9 @@ function renderHITLTable(claims) {
             ).join('')}
           </div>
           <div class="detail-actions" style="margin-top:16px">
-            <button class="btn btn-success" id="approve-detail-btn-${claim.id}" aria-label="Approve claim ${claim.id} from detail view">✓ Approve Claim</button>
+            <button class="btn btn-success" id="approve-detail-btn-${claim.id}" aria-label="Approve claim ${claim.id} from detail view">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Approve Claim
+            </button>
             <span style="font-size:12px; color:var(--text-muted)">Action logged with timestamp</span>
           </div>
         </div>

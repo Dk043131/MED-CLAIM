@@ -15,7 +15,9 @@
   <aside class="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-logo">
       <div class="logo-mark">
-        <div class="logo-icon">🏥</div>
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/></svg>
+        </div>
         <div>
           <div class="logo-text">MED-CLAIM</div>
           <div class="logo-sub">AI Claims Automation</div>
@@ -26,28 +28,28 @@
     <nav class="sidebar-nav">
       <div class="nav-section-label">Claims Processing</div>
       <a class="nav-item active" id="nav-submit" role="button" tabindex="0" aria-current="page">
-        <span class="nav-icon">📤</span> Submit Claim
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Submit Claim
       </a>
       <a class="nav-item" id="nav-hitl" role="button" tabindex="0">
-        <span class="nav-icon">🔍</span> HITL Review Queue
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> HITL Review Queue
         <span class="nav-badge" id="hitl-badge">—</span>
       </a>
 
       <div class="nav-section-label">Analytics</div>
       <a class="nav-item" id="nav-dashboard" role="button" tabindex="0">
-        <span class="nav-icon">📊</span> Observability
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Observability
       </a>
 
       <div class="nav-section-label">Demo</div>
       <a class="nav-item" id="nav-pitch" role="button" tabindex="0">
-        <span class="nav-icon">🎯</span> Pitch Prep
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg></span> Pitch Prep
       </a>
     </nav>
 
     <div class="sidebar-footer">
       <div class="server-status">
         <div class="status-dot" id="server-dot"></div>
-        <span id="server-status-text">Mock server</span>
+        <span id="server-status-text">FastAPI Offline</span>
       </div>
     </div>
   </aside>
@@ -62,7 +64,9 @@
         <div class="topbar-sub" id="topbar-sub">Upload a hospital bill to begin automated processing</div>
       </div>
       <div class="topbar-actions" id="topbar-actions">
-        <button class="btn btn-ghost" id="btn-refresh" title="Refresh data">↻ Refresh</button>
+        <button class="btn btn-ghost" id="btn-refresh" title="Refresh data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Refresh
+        </button>
       </div>
     </header>
 
@@ -72,12 +76,16 @@
       <section id="screen-submit" class="screen active" aria-label="Submit Claim">
 
         <div class="card" style="margin-bottom:20px">
-          <div class="card-title"><span class="icon">📤</span> Upload Hospital Bill</div>
+          <div class="card-title">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Upload Hospital Bill
+          </div>
 
           <!-- Drop zone -->
           <div class="upload-zone" id="upload-zone" role="button" aria-label="Drop zone for bill upload" tabindex="0">
             <input type="file" id="file-input" accept="image/*,.pdf" aria-label="Choose file to upload" />
-            <div class="upload-icon">📋</div>
+            <div class="upload-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m9 15 3-3 3 3"/></svg>
+            </div>
             <h3>Drop your hospital bill here</h3>
             <p>Supports scanned documents, handwritten bills, and photographs</p>
             <div class="upload-formats">
@@ -98,9 +106,11 @@
               </div>
               <div style="margin-left:auto; display:flex; gap:10px;">
                 <button class="btn btn-primary" id="btn-submit" aria-label="Submit claim for processing">
-                  <span>🚀</span> Process Claim
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Process Claim
                 </button>
-                <button class="btn btn-ghost" id="btn-clear" aria-label="Clear selected file">✕ Clear</button>
+                <button class="btn btn-ghost" id="btn-clear" aria-label="Clear selected file">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+                </button>
               </div>
             </div>
           </div>
@@ -108,7 +118,9 @@
 
         <!-- Pipeline tracker -->
         <div class="card" id="pipeline-card">
-          <div class="card-title"><span class="icon">⚡</span> Processing Pipeline</div>
+          <div class="card-title">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Processing Pipeline
+          </div>
 
           <div class="pipeline-tracker" id="pipeline-tracker">
             <!-- Progress fill line -->
@@ -156,16 +168,18 @@
 
         <!-- Quick demo bills -->
         <div class="card" style="margin-top:20px">
-          <div class="card-title"><span class="icon">🎬</span> Quick Demo Bills</div>
+          <div class="card-title">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Quick Demo Bills
+          </div>
           <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px">
             Use pre-loaded sample bills to demonstrate the pipeline during the pitch.
           </p>
           <div style="display:flex; gap:12px; flex-wrap:wrap">
             <button class="btn btn-ghost" id="btn-demo-clean" aria-label="Load clean demo bill">
-              📄 Clean Bill (Auto-Approve)
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg> Clean Bill (Auto-Approve)
             </button>
             <button class="btn btn-ghost" id="btn-demo-messy" aria-label="Load messy demo bill">
-              📝 Messy Handwritten (Flag for HITL)
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Messy Handwritten (Flag for HITL)
             </button>
           </div>
         </div>
@@ -176,9 +190,11 @@
       <section id="screen-hitl" class="screen" aria-label="HITL Review Queue">
         <div class="card">
           <div class="queue-header">
-            <div class="card-title" style="margin:0"><span class="icon">🔍</span> Flagged Claims — Caseworker Review</div>
+            <div class="card-title" style="margin:0">
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Flagged Claims — Caseworker Review
+            </div>
             <div class="queue-count" id="queue-count-label">
-              ⚑ <span id="queue-count-num">—</span> claims need review
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> <span id="queue-count-num">—</span> claims need review
             </div>
           </div>
           <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px">
@@ -191,7 +207,9 @@
           </div>
 
           <div id="hitl-empty" class="empty-state" style="display:none">
-            <div class="empty-icon">✅</div>
+            <div class="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
             <h3>Queue is clear</h3>
             <p>No claims require caseworker review right now.</p>
           </div>
@@ -218,7 +236,9 @@
 
         <!-- Surge mode panel -->
         <div class="surge-panel">
-          <div class="surge-icon">⚡</div>
+          <div class="surge-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
           <div class="surge-info">
             <div class="surge-title">Surge Mode — High Volume Simulation</div>
             <div class="surge-desc">Inject 50 synthetic claims to demonstrate the system handling a regional health crisis spike.</div>
@@ -230,34 +250,34 @@
             </div>
           </div>
           <button class="btn btn-surge" id="btn-surge" aria-label="Trigger surge mode simulation">
-            ⚡ SURGE MODE
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> SURGE MODE
           </button>
         </div>
 
         <!-- Metric cards -->
         <div class="metrics-grid">
           <div class="metric-card green headline">
-            <div class="metric-label">🤖 Auto-Adjudication Rate</div>
+            <div class="metric-label">Auto-Adjudication Rate</div>
             <div class="metric-value" id="metric-autorate">—<span class="metric-unit">%</span></div>
             <div class="metric-delta delta-up" id="metric-autorate-delta">Claims processed without human review</div>
           </div>
           <div class="metric-card indigo">
-            <div class="metric-label">📋 Total Claims</div>
+            <div class="metric-label">Total Claims</div>
             <div class="metric-value" id="metric-total">—</div>
             <div class="metric-delta" id="metric-total-delta" style="color:var(--text-muted)">All time</div>
           </div>
           <div class="metric-card amber">
-            <div class="metric-label">⚑ Pending Review</div>
+            <div class="metric-label">Pending Review</div>
             <div class="metric-value" id="metric-flagged">—</div>
             <div class="metric-delta" style="color:var(--text-muted)">Caseworker queue</div>
           </div>
           <div class="metric-card rose">
-            <div class="metric-label">❌ Rejected</div>
+            <div class="metric-label">Rejected</div>
             <div class="metric-value" id="metric-rejected">—</div>
             <div class="metric-delta" style="color:var(--text-muted)">Non-eligible claims</div>
           </div>
           <div class="metric-card blue">
-            <div class="metric-label">🎯 Avg Confidence</div>
+            <div class="metric-label">Avg Confidence</div>
             <div class="metric-value" id="metric-confidence">—</div>
             <div class="metric-delta" style="color:var(--text-muted)">OCR + coding score</div>
           </div>
@@ -266,18 +286,24 @@
         <!-- Charts -->
         <div class="charts-grid">
           <div class="card">
-            <div class="card-title"><span class="icon">📈</span> Daily Claim Volume (7 days)</div>
+            <div class="card-title">
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Daily Claim Volume (7 days)
+            </div>
             <div class="chart-wrap"><canvas id="chart-volume" aria-label="Daily claim volume bar chart" role="img"></canvas></div>
           </div>
           <div class="card">
-            <div class="card-title"><span class="icon">🥧</span> Status Distribution</div>
+            <div class="card-title">
+              <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg></span> Status Distribution
+            </div>
             <div class="chart-wrap"><canvas id="chart-status" aria-label="Claim status distribution pie chart" role="img"></canvas></div>
           </div>
         </div>
 
         <!-- Recent claims table -->
         <div class="card">
-          <div class="card-title"><span class="icon">🕐</span> Recent Claims</div>
+          <div class="card-title">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Recent Claims
+          </div>
           <table class="recent-table" id="recent-table" aria-label="Recent claims list">
             <thead>
               <tr>
@@ -300,23 +326,23 @@
             <p>Follow this exact sequence during the judging panel. Rehearse at least twice with a stopwatch.</p>
             <ol class="checklist" style="padding-left:0; counter-reset:step; list-style:none; margin-top:12px">
               <li class="check-item" style="counter-increment:step">
-                <span class="check-icon">①</span>
+                <span class="check-icon">1</span>
                 <span><strong style="color:var(--text-primary)">Hook (15s):</strong> "A coding error on one line of a hospital bill can push a family into debt." Open MED-CLAIM dashboard.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">②</span>
+                <span class="check-icon">2</span>
                 <span><strong style="color:var(--text-primary)">Clean bill (20s):</strong> Upload clean bill → watch all 5 stages turn green → Auto-Approved verdict.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">③</span>
+                <span class="check-icon">3</span>
                 <span><strong style="color:var(--text-primary)">Messy bill (20s):</strong> Upload handwritten bill → watch OCR struggle → Flagged verdict → switch to HITL queue.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">④</span>
+                <span class="check-icon">4</span>
                 <span><strong style="color:var(--text-primary)">HITL review (15s):</strong> Expand flagged claim, show image + extracted JSON side-by-side, click Approve.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">⑤</span>
+                <span class="check-icon">5</span>
                 <span><strong style="color:var(--text-primary)">Surge Mode (15s):</strong> Switch to dashboard → click SURGE MODE → watch charts climb live. Close on 90%+ auto-rate.</span>
               </li>
             </ol>
@@ -327,11 +353,11 @@
             <h3>Pre-Demo Checks</h3>
             <p>Must all pass before Day 2 PM. Run in browser on the deployed URL, not localhost.</p>
             <ul class="checklist" style="margin-top:12px">
-              <li class="check-item"><span class="check-icon">✓</span><span>Upload flow shows all 5 state transitions (not just a spinner)</span></li>
-              <li class="check-item"><span class="check-icon">✓</span><span>Flagged claim in HITL queue shows original image + flag reason clearly</span></li>
-              <li class="check-item"><span class="check-icon">✓</span><span>Approving a claim removes it from the queue immediately</span></li>
-              <li class="check-item"><span class="check-icon">✓</span><span>Dashboard auto-adjudication rate updates after approval</span></li>
-              <li class="check-item"><span class="check-icon">✓</span><span>Surge mode shows live chart animation (4–6 second climb)</span></li>
+              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Upload flow shows all 5 state transitions (not just a spinner)</span></li>
+              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Flagged claim in HITL queue shows original image + flag reason clearly</span></li>
+              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Approving a claim removes it from the queue immediately</span></li>
+              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Dashboard auto-adjudication rate updates after approval</span></li>
+              <li class="check-item"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Surge mode shows live chart animation (4–6 second climb)</span></li>
               <li class="check-item"><span class="check-icon pending">○</span><span>Demo runs end-to-end on deployed URL (not localhost)</span></li>
               <li class="check-item"><span class="check-icon pending">○</span><span>Backup demo video recorded in advance</span></li>
             </ul>
@@ -342,15 +368,15 @@
             <h3>Likely Judge Questions</h3>
             <ul class="checklist" style="margin-top:12px">
               <li class="check-item">
-                <span class="check-icon">💬</span>
+                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                 <span><strong style="color:var(--text-primary)">Why only 3 screens?</strong> Scope discipline. Each screen maps to one real-world user (patient/submitter, caseworker, manager). More screens = more surface area to break in demo.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">💬</span>
+                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                 <span><strong style="color:var(--text-primary)">How does HITL help a caseworker?</strong> Original image + extracted JSON side-by-side eliminates paper-hunting. One-click approve with audit trail. Average review time &lt;30 seconds.</span>
               </li>
               <li class="check-item">
-                <span class="check-icon">💬</span>
+                <span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                 <span><strong style="color:var(--text-primary)">How is auto-adjudication rate calculated?</strong> Approved claims ÷ total claims. Recomputed live on every state change. 90%+ means 9 in 10 claims need zero human time.</span>
               </li>
             </ul>
