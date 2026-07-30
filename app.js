@@ -775,6 +775,57 @@ function buildHumanVerificationPanelHtml(claim) {
   `;
 }
 
+// ── Real-Time Central Claims Store & Real-Time Sync Engine ────────────────────
+function saveAndSyncClaim(claim) {
+  if (!claim || !claim.id) return;
+
+  let allClaims = JSON.parse(localStorage.getItem('med_claims_store') || '[]');
+  const existingIdx = allClaims.findIndex(c => c.id === claim.id);
+  if (existingIdx >= 0) {
+    allClaims[existingIdx] = claim;
+  } else {
+    allClaims.unshift(claim);
+  }
+  try {
+    localStorage.setItem('med_claims_store', JSON.stringify(allClaims));
+  } catch (e) {
+    console.warn('localStorage save warning:', e);
+  }
+  state.allClaims = allClaims;
+
+  // Sync HITL Review Queue
+  const pendingUserClaims = allClaims.filter(c => 
+    c.status === 'FLAGGED' || 
+    c.status === 'PENDING_HUMAN_VERIFICATION' || 
+    c.pending_human_verification === true
+  );
+
+  const existingMockHitl = typeof mockHITLQueue !== 'undefined' ? mockHITLQueue : [];
+  state.hitlClaims = [...pendingUserClaims, ...existingMockHitl.filter(m => !pendingUserClaims.some(u => u.id === m.id))];
+
+  // Update HITL badges in real time
+  updateHITLBadge(state.hitlClaims.length);
+
+  // Sync Pre-Authorization Queue
+  const userPreAuths = allClaims.filter(c => c.type === 'preauth' || c.preauth_id);
+  const existingMockPreAuth = typeof mockPreAuthDB !== 'undefined' ? mockPreAuthDB : [];
+  state.preAuthDB = [...userPreAuths, ...existingMockPreAuth.filter(m => !userPreAuths.some(u => u.preauth_id === m.preauth_id))];
+
+  const preauthBadge = $('preauth-badge');
+  if (preauthBadge) {
+    const pendingCount = state.preAuthDB.filter(r => r.status === 'pending' || r.status === 'PENDING').length;
+    preauthBadge.textContent = pendingCount > 0 ? pendingCount : (state.preAuthDB.length || '✓');
+  }
+
+  // Re-render active screens in real-time
+  if (state.currentScreen === 'hitl') {
+    renderHITLTable(state.hitlClaims);
+  }
+  if (state.currentScreen === 'preauth') {
+    renderPreAuthQueue(state.preAuthDB);
+  }
+}
+
 function handleHumanApprove(claimId) {
   const chkWords = $('chk-verify-words');
   const chkCodes = $('chk-verify-codes');
@@ -798,6 +849,7 @@ function handleHumanApprove(claimId) {
       portal_status: 'PORTAL_ACCEPTED'
     };
 
+    saveAndSyncClaim(state.currentClaim);
     showResult(state.currentClaim);
     toast(`✓ Claim ${claimId} verified by human auditor and approved! Registered with PM-JAY Portal.`, 'success', 5000);
   }
@@ -809,11 +861,7 @@ function handleHumanFlag(claimId) {
     state.currentClaim.human_verified = false;
     state.currentClaim.pending_human_verification = false;
 
-    if (!state.hitlClaims.some(c => c.id === claimId)) {
-      state.hitlClaims.unshift(state.currentClaim);
-      refreshHITLBadge();
-    }
-
+    saveAndSyncClaim(state.currentClaim);
     showResult(state.currentClaim);
     toast(`Claim ${claimId} flagged by human auditor — escalated to HITL Caseworker Queue.`, 'warning', 5000);
   }
@@ -1187,6 +1235,7 @@ async function submitClaim(filename, fileType, base64Data) {
     }
 
     state.currentClaim = claimResult;
+    saveAndSyncClaim(claimResult);
 
     // Animate final DECISION step
     activateStep(STAGES.length - 1, claimResult.status);
@@ -1206,14 +1255,6 @@ async function submitClaim(filename, fileType, base64Data) {
       claimResult.status === 'FLAGGED' ? 'warning' : 'info',
       5000
     );
-
-    // Update HITL badge if flagged
-    if (claimResult.status === 'FLAGGED') {
-      if (!state.hitlClaims.some(c => c.id === claimResult.id)) {
-        state.hitlClaims.unshift(claimResult);
-        refreshHITLBadge();
-      }
-    }
 
   } catch (err) {
     showSSEProgress(false);
@@ -1391,17 +1432,21 @@ async function loadHITLQueue() {
   $('hitl-empty').style.display   = 'none';
   $('hitl-table').style.display   = 'none';
 
+  const allClaims = JSON.parse(localStorage.getItem('med_claims_store') || '[]');
+  const userPending = allClaims.filter(c => c.status === 'FLAGGED' || c.status === 'PENDING_HUMAN_VERIFICATION' || c.pending_human_verification);
+  const fallbackMock = typeof mockHITLQueue !== 'undefined' ? mockHITLQueue : [];
+
   try {
     const data = await apiFetch('/claims/review-queue');
-    state.hitlClaims = data.claims || [];
-    renderHITLTable(state.hitlClaims);
-    updateHITLBadge(state.hitlClaims.length);
+    const apiClaims = data.claims || [];
+    state.hitlClaims = [...userPending, ...apiClaims.filter(a => !userPending.some(u => u.id === a.id))];
   } catch (err) {
-    console.warn('Backend fetch failed for review queue, rendering fallback queue:', err);
-    state.hitlClaims = mockHITLQueue;
-    renderHITLTable(state.hitlClaims);
-    updateHITLBadge(state.hitlClaims.length);
+    console.warn('Backend fetch failed for review queue, rendering synchronized fallback queue:', err);
+    state.hitlClaims = [...userPending, ...fallbackMock.filter(m => !userPending.some(u => u.id === m.id))];
   }
+
+  renderHITLTable(state.hitlClaims);
+  updateHITLBadge(state.hitlClaims.length);
 }
 
 function updateHITLBadge(count) {
@@ -1412,10 +1457,9 @@ function updateHITLBadge(count) {
 }
 
 async function refreshHITLBadge() {
-  try {
-    const data = await apiFetch('/claims/review-queue');
-    updateHITLBadge((data.claims || []).length);
-  } catch (_) {}
+  const allClaims = JSON.parse(localStorage.getItem('med_claims_store') || '[]');
+  const userPending = allClaims.filter(c => c.status === 'FLAGGED' || c.status === 'PENDING_HUMAN_VERIFICATION' || c.pending_human_verification);
+  updateHITLBadge(userPending.length > 0 ? userPending.length : (state.hitlClaims ? state.hitlClaims.length : 2));
 }
 
 function renderHITLTable(claims) {
