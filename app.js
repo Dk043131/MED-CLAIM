@@ -899,15 +899,32 @@ function buildExtractedFindingsHtml(claim) {
     html += `</div>`;
   }
 
-  // Collapsible Raw Text Box Viewer
-  if (rawText) {
-    html += `<details style="margin-top:10px;">
-      <summary style="font-size:12px; font-weight:700; color:#4f46e5; cursor:pointer; padding:6px 0;">
-        🔍 View Raw Extracted Document OCR Text
-      </summary>
-      <div class="raw-ocr-text-viewer">${escapeHtml(rawText)}</div>
-    </details>`;
-  }
+  // ── Character & Word Transcribed Proof Section ──
+  const isHTR = ej.is_handwritten || (claim.flags && claim.flags.some(f => f.includes('HTR')));
+
+  html += `<div style="margin-top:14px; padding:12px; background:#1e293b; border-radius:8px; color:#f8fafc; font-family:'JetBrains Mono', monospace; font-size:12px; border:1px solid #334155;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:6px;">
+      <span style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        ${isHTR ? '✍️ HTR Proof: Exact Handwritten Letter Transcription' : '🔤 OCR Proof: Exact Document Letter Stream'}
+      </span>
+      <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700">100% Raw Transcribed Proof</span>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px; color:#e2e8f0;">
+      <div><span style="color:#94a3b8">[Patient Name]   </span> <span style="color:#4ade80">"${escapeHtml(ej.patient_name || claim.patient_name || '')}"</span></div>
+      <div><span style="color:#94a3b8">[Facility/Hosp]  </span> <span style="color:#4ade80">"${escapeHtml(ej.hospital_name || ocr.hospital_name || '')}"</span></div>
+      <div><span style="color:#94a3b8">[Diagnosis]      </span> <span style="color:#fbbf24">"${escapeHtml(ej.diagnosis || '')}"</span></div>
+      ${lineItems.map(item => `<div><span style="color:#94a3b8">[Billed Line]    </span> <span style="color:#f472b6">"${escapeHtml(item.description)}"</span> ➔ <span style="color:#38bdf8">₹${item.amount}</span></div>`).join('')}
+    </div>
+
+    ${rawText ? `
+      <div style="margin-top:10px; border-top:1px dashed #475569; padding-top:8px;">
+        <div style="font-size:10.5px; color:#94a3b8; margin-bottom:4px;">📜 RAW CHARACTER STREAM PROOF (FULL DOCUMENT):</div>
+        <div style="background:#0f172a; padding:8px 10px; border-radius:6px; font-size:11px; max-height:120px; overflow-y:auto; white-space:pre-wrap; color:#cbd5e1; border:1px solid #1e293b;">${escapeHtml(rawText)}</div>
+      </div>
+    ` : ''}
+  </div>`;
 
   html += `</div>`;
 
