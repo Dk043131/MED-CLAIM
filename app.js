@@ -539,6 +539,63 @@ function promptGeminiKey() {
 }
 window.promptGeminiKey = promptGeminiKey; // expose globally for onclick
 
+async function triggerGeminiExtractFromReport(claimId) {
+  if (!state.selectedFile) {
+    toast('No document file selected in session', 'warning');
+    return;
+  }
+  
+  let key = getGeminiKey();
+  if (!key) {
+    key = prompt('Enter your Google Gemini API Key (get free key at https://aistudio.google.com/app/apikey):\n\nGemini 2.0 Flash will read your uploaded bill image and auto-fill all fields.');
+    if (key && key.trim()) {
+      setGeminiKey(key.trim());
+    } else {
+      return;
+    }
+  }
+
+  toast('🤖 Gemini 2.0 Flash reading document image...', 'info');
+
+  try {
+    const extracted = await callGeminiVision(state.selectedFile);
+    if (extracted) {
+      const pInput = document.getElementById(`manual-patient-name-${claimId}`);
+      const hInput = document.getElementById(`manual-hospital-name-${claimId}`);
+      const dInput = document.getElementById(`manual-diagnosis-${claimId}`);
+      const tInput = document.getElementById(`manual-total-${claimId}`);
+      const lInput = document.getElementById(`manual-lineitems-${claimId}`);
+      const iInput = document.getElementById(`manual-icd-${claimId}`);
+
+      if (pInput && extracted.patient_name) { pInput.value = extracted.patient_name; pInput.style.borderColor = '#10b981'; }
+      if (hInput && extracted.hospital_name) { hInput.value = extracted.hospital_name; hInput.style.borderColor = '#10b981'; }
+      if (dInput && extracted.diagnosis) { dInput.value = extracted.diagnosis; dInput.style.borderColor = '#10b981'; }
+      if (tInput && extracted.total_amount) { tInput.value = extracted.total_amount; tInput.style.borderColor = '#10b981'; }
+
+      if (lInput && extracted.line_items && extracted.line_items.length > 0) {
+        lInput.value = extracted.line_items.map(item => `${item.description} — ${item.amount}`).join('\n');
+        lInput.style.borderColor = '#10b981';
+      }
+      if (iInput && extracted.icd_codes && extracted.icd_codes.length > 0) {
+        iInput.value = extracted.icd_codes.join(', ');
+        iInput.style.borderColor = '#10b981';
+      }
+
+      state.geminiExtracted = extracted;
+      if (state.currentClaim) {
+        state.currentClaim.patient_name = extracted.patient_name || state.currentClaim.patient_name;
+        state.currentClaim.extracted_json = { ...state.currentClaim.extracted_json, ...extracted };
+      }
+
+      toast(`✓ Gemini 2.0 Flash auto-filled fields! Patient: "${extracted.patient_name || 'Extracted'}"`, 'success', 5000);
+    }
+  } catch (err) {
+    console.error('Gemini extraction error:', err);
+    toast(`⚠ Gemini AI: ${err.message}`, 'error', 6000);
+  }
+}
+window.triggerGeminiExtractFromReport = triggerGeminiExtractFromReport;
+
 function setSelectedFile(file) {
   if (!file) return;
   state.selectedFile = file;
@@ -799,12 +856,23 @@ function buildExtractedFindingsHtml(claim) {
       <div class="exact-text-header" style="background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3);">
         <div style="display:flex; align-items:center; gap:8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-          <span style="color:#92400e; font-weight:700">📋 Manual Data Entry — Read the document image above and fill in below</span>
+          <span style="color:#92400e; font-weight:700">📋 Document Extracted Details & Human Verification</span>
         </div>
-        <span style="font-size:11px; background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:4px; font-weight:700">⚡ Backend OCR Offline</span>
+        <span style="font-size:11px; background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:4px; font-weight:700">⚡ Human Verification Mode</span>
       </div>
-      <div style="font-size:12px; color:#78350f; margin:8px 0 14px 0; padding:8px 12px; background:#fffbeb; border-radius:6px; border:1px solid #fde68a;">
-        The document image is shown above. Please read it and type the exact values from the report into the fields below. All fields will be saved when you click <strong>Human Approved</strong>.
+
+      <div style="margin-bottom:14px; padding:12px 16px; background:linear-gradient(135deg, rgba(79,70,229,0.08), rgba(6,182,212,0.08)); border:1.5px solid #4f46e5; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:13px; color:#1e1b4b; font-weight:800; display:flex; align-items:center; gap:6px;">
+            🤖 <span>Auto-Fill Document Details with Gemini 2.0 Flash AI</span>
+          </div>
+          <div style="font-size:11.5px; color:#475569; margin-top:2px;">
+            Click the button to automatically read and extract Patient Name, Hospital, Diagnosis, and Amounts directly from your uploaded image.
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="triggerGeminiExtractFromReport('${claim.id}')" style="background:#4f46e5 !important; color:#ffffff !important; font-weight:700 !important; padding:8px 16px !important; border-radius:8px !important; border:none !important; cursor:pointer !important; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(79,70,229,0.3);">
+          ⚡ Auto-Fill Fields with Gemini AI
+        </button>
       </div>
 
       <div id="manual-entry-form-${claim.id}" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
