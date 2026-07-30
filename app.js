@@ -457,45 +457,15 @@ $('btn-clear').addEventListener('click', () => {
   resetPipeline();
 });
 
-// Demo shortcut buttons
-$('btn-demo-clean').addEventListener('click', async () => {
-  await runDemoSubmission('mock_bill_clean.png', 'image/png', 'clean_bill.txt');
-});
-$('btn-demo-messy').addEventListener('click', async () => {
-  await runDemoSubmission('mock_bill_messy.png', 'image/png', 'ambiguous_bill.txt');
-});
+// Demo shortcut buttons — removed (app is for real bills only)
 const bloodBtn = $('btn-demo-blood');
-if (bloodBtn) bloodBtn.addEventListener('click', async () => {
-  await runDemoSubmission('blood_report.png', 'image/png', 'blood_report.txt');
-});
 const rxBtn = $('btn-demo-prescription');
-if (rxBtn) rxBtn.addEventListener('click', async () => {
-  await runDemoSubmission('prescription.png', 'image/png', 'prescription.txt');
+const demoCleanBtn = $('btn-demo-clean');
+const demoMessyBtn = $('btn-demo-messy');
+// All demo buttons are disabled — upload a real bill instead
+[bloodBtn, rxBtn, demoCleanBtn, demoMessyBtn].forEach(btn => {
+  if (btn) { btn.disabled = true; btn.title = 'Demo mode removed — upload a real hospital bill'; btn.style.opacity = '0.4'; }
 });
-
-async function runDemoSubmission(filename, fileType, fallbackTxtFile = 'clean_bill.txt') {
-  uploadPreview.style.display = 'block';
-  $('preview-name').textContent = filename;
-  $('preview-size').textContent = 'Demo file';
-  $('preview-thumb').src = '/assets/' + filename;
-  resetPipeline();
-
-  try {
-    // Try to fetch image asset as blob to build a real File object for FastAPI
-    const res = await fetch('/assets/' + filename);
-    if (res.ok) {
-      const blob = await res.blob();
-      state.selectedFile = new File([blob], filename, { type: fileType });
-    } else {
-      // Fallback text bill
-      state.selectedFile = new File(["Rahul Sharma\nFever, Headache, Cough\nRs. 950"], fallbackTxtFile, { type: "text/plain" });
-    }
-  } catch (_) {
-    state.selectedFile = new File(["Rahul Sharma\nFever, Headache, Cough\nRs. 950"], fallbackTxtFile, { type: "text/plain" });
-  }
-
-  await submitClaim(filename, fileType, '');
-}
 
 // ── Submit button ──
 $('btn-submit').addEventListener('click', async () => {
@@ -997,205 +967,241 @@ function buildDetailedExplanationHtml(claim) {
 }
 
 async function parseAndCalculateClaim(file) {
+  if (!file) throw new Error('No file selected');
+
+  const filename = file.name;
+  const isImage = file.type.startsWith('image/');
+  const isPDF   = file.type === 'application/pdf';
+  const isText  = file.type === 'text/plain' || filename.endsWith('.txt') || filename.endsWith('.json') || filename.endsWith('.csv');
+  const claimId = 'CLM-' + Math.floor(1000 + Math.random() * 9000);
+  const now = new Date().toISOString();
+
+  // ── Step 1: Try REAL Backend OCR API for image/PDF ────────────────────────
+  // For image or PDF: always hit the real backend. Only fall through to text parse for .txt/.csv
+  if ((isImage || isPDF) && !USE_MOCK) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const token = state.authToken;
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+      const res = await fetch(`${API_BASE}/claims/upload`, {
+        method: 'POST',
+        body: formData,
+        headers,
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (res.ok) {
+        const data = await res.json();
+        // Backend returned real data — adapt it to our claim shape
+        const adapted = adaptClaim(data);
+        adapted.submitted_at = adapted.submitted_at || now;
+        adapted.created_at   = adapted.created_at   || now;
+        adapted.filename      = filename;
+        adapted.image_url     = URL.createObjectURL(file);
+        adapted.pending_human_verification = true;
+        adapted.status = 'PENDING_HUMAN_VERIFICATION';
+        if (!adapted.flags || adapted.flags.length === 0) {
+          adapted.flags = ['Pending human text & ICD-10 verification'];
+        }
+        return adapted;
+      }
+    } catch (backendErr) {
+      if (backendErr.name !== 'AbortError') {
+        console.warn('Backend OCR failed, running local text parse:', backendErr.message);
+      }
+    }
+  }
+
+  // ── Step 2: Text-only parse for .txt / .csv / .json files ─────────────────
   let fileText = '';
-  let filename = file ? file.name : 'uploaded_report.pdf';
-
-  if (file) {
-    if (file.type === 'text/plain' || filename.endsWith('.txt') || filename.endsWith('.csv') || filename.endsWith('.json') || filename.endsWith('.md')) {
-      try {
-        fileText = await file.text();
-      } catch (_) {}
-    }
+  if (isText) {
+    try { fileText = await file.text(); } catch (_) {}
   }
 
-  const textLower = (filename + ' ' + fileText).toLowerCase();
+  // If image/PDF and backend failed → cannot extract real data from image in browser
+  if ((isImage || isPDF) && !fileText) {
+    // Return a claim with CLEARLY MARKED unextracted fields
+    const imageUrl = URL.createObjectURL(file);
+    return {
+      id: claimId,
+      filename,
+      patient_name: '⚠ Not Extracted — Backend Required',
+      hospital_name: '⚠ Not Extracted — Backend Required',
+      status: 'PENDING_HUMAN_VERIFICATION',
+      pending_human_verification: true,
+      human_verified: false,
+      confidence_score: 0,
+      submitted_at: now,
+      created_at: now,
+      image_url: imageUrl,
+      ocr_result: {
+        raw_text: '',
+        confidence: 0,
+        hospital_name: '',
+        patient_name: '',
+        line_items: [],
+        total_amount_inr: 0
+      },
+      extracted_json: {
+        patient_name: '',
+        hospital_name: '',
+        diagnosis: '',
+        line_items: [],
+        total: 0,
+        _extraction_status: 'FAILED — Backend offline. Connect backend at https://med-claim-backend.onrender.com for real OCR.'
+      },
+      coding_result: { coded_diagnoses: [] },
+      icd_codes: [],
+      eligibility_result: { eligible: null, scheme: '', patient_id: '', coverage_expiry_date: '' },
+      is_duplicate: false,
+      fraud_result: { fraud_score: null, risk_level: 'unknown', flags: [] },
+      portal_submission: { submitted: false, portal_ref: null, portal_status: 'PENDING_HUMAN_VERIFICATION' },
+      flags: [
+        '⚠ Image OCR requires backend connection — text could not be extracted in browser',
+        'Please connect to https://med-claim-backend.onrender.com or review document manually'
+      ],
+      audit_log: [
+        { stage: 'Stage 1 OCR', note: `⚠ Backend OCR failed for image "${filename}" — manual review required` },
+        { stage: 'Stage 6 Verdict', note: 'PENDING_HUMAN_VERIFICATION — awaiting manual caseworker entry' }
+      ]
+    };
+  }
 
-  // 1. EXTRACT PATIENT NAME
+  // ── Step 3: REAL text extraction from text files ──────────────────────────
+  const textLower = fileText.toLowerCase();
+
+  // Extract patient name from actual text content
   let patientName = '';
-  const nameMatch = fileText.match(/(?:Patient\s*Name|Patient|Name|Mr\.|Mrs\.|Ms\.)[:\s]+([A-Za-z\s]{3,30})/i);
-  if (nameMatch && nameMatch[1].trim().length > 2) {
-    patientName = nameMatch[1].trim();
-  } else {
-    const cleanName = filename.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z]/g, " ").trim();
-    if (cleanName.length >= 3 && !cleanName.toLowerCase().includes("mock") && !cleanName.toLowerCase().includes("bill") && !cleanName.toLowerCase().includes("photo") && !cleanName.toLowerCase().includes("doc")) {
-      patientName = cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    } else if (textLower.includes('blood') || textLower.includes('report')) {
-      patientName = 'Priya Nair';
-    } else if (textLower.includes('prescription')) {
-      patientName = 'Vikram Malhotra';
-    } else if (textLower.includes('messy') || textLower.includes('ambiguous')) {
-      patientName = 'Suresh Patel';
-    } else {
-      patientName = 'Rahul Sharma';
+  const namePatterns = [
+    /(?:Patient\s*Name|Patient|Name)[:\s]+([A-Za-z][A-Za-z\s]{2,28}?)(?:\n|,|\||$)/i,
+    /(?:Mr\.|Mrs\.|Ms\.|Dr\.)[\s]+([A-Za-z][A-Za-z\s]{2,25}?)(?:\n|,|\||$)/i,
+    /^Name[:\s]+(.+)$/im
+  ];
+  for (const pat of namePatterns) {
+    const m = fileText.match(pat);
+    if (m && m[1] && m[1].trim().length > 2) {
+      patientName = m[1].trim().replace(/[^A-Za-z\s.]/g, '').trim();
+      if (patientName.length >= 3) break;
     }
   }
 
-  // 2. EXTRACT FACILITY / HOSPITAL NAME
-  let hospitalName = 'City General Hospital';
-  const hospMatch = fileText.match(/(?:Hospital|Clinic|Medical Center|Institute|Lab)[:\s]+([A-Za-z0-9\s]{4,40})/i);
-  if (hospMatch) {
-    hospitalName = hospMatch[1].trim();
-  } else if (textLower.includes('apollo')) hospitalName = 'Apollo Super Speciality Hospital';
-  else if (textLower.includes('fortis')) hospitalName = 'Fortis Healthcare Institute';
-  else if (textLower.includes('aiims')) hospitalName = 'AIIMS New Delhi';
-  else if (textLower.includes('max')) hospitalName = 'Max Healthcare Center';
-  else if (textLower.includes('blood') || textLower.includes('lab')) hospitalName = 'Metropolis Diagnostic Laboratories';
-
-  // 3. EXTRACT DIAGNOSIS & ICD-10 & SNOMED CT MAPPING
-  let icdCodes = [];
-  let diagnosisText = 'General Medical Examination & Consultation';
-  let isFlagged = false;
-  let flagReasons = [];
-
-  if (textLower.includes('appendic') || textLower.includes('abdominal')) {
-    diagnosisText = 'Acute Appendicitis & Abdominal Pain';
-    icdCodes = [
-      { icd_code: 'K35.80', description: 'Unspecified acute appendicitis', confidence: 0.94 },
-      { icd_code: 'R10.9', description: 'Unspecified abdominal pain', confidence: 0.91 }
-    ];
-  } else if (textLower.includes('bronch') || textLower.includes('cough') || textLower.includes('fever')) {
-    diagnosisText = 'Acute Bronchitis & Upper Respiratory Infection';
-    icdCodes = [
-      { icd_code: 'J20.9', description: 'Acute bronchitis, unspecified', confidence: 0.96 },
-      { icd_code: 'R50.9', description: 'Fever, unspecified', confidence: 0.95 }
-    ];
-  } else if (textLower.includes('blood') || textLower.includes('typhoid') || textLower.includes('report')) {
-    diagnosisText = 'Enteric Fever (Typhoid) & Diagnostic Hematology Panel';
-    icdCodes = [
-      { icd_code: 'A01.00', description: 'Typhoid fever, unspecified', confidence: 0.95 },
-      { icd_code: 'Z01.7', description: 'Encounter for laboratory examination', confidence: 0.92 }
-    ];
-  } else if (textLower.includes('prescription') || textLower.includes('pharmacy')) {
-    diagnosisText = 'Acute Gastroesophageal Reflux & Gastritis';
-    icdCodes = [
-      { icd_code: 'K21.9', description: 'Gastro-esophageal reflux disease without esophagitis', confidence: 0.97 },
-      { icd_code: 'K29.70', description: 'Gastritis, unspecified, without bleeding', confidence: 0.93 }
-    ];
-  } else if (textLower.includes('diabet') || textLower.includes('sugar')) {
-    diagnosisText = 'Type 2 Diabetes Mellitus with Hyperglycemia';
-    icdCodes = [
-      { icd_code: 'E11.9', description: 'Type 2 diabetes mellitus without complications', confidence: 0.97 }
-    ];
-  } else if (textLower.includes('fracture') || textLower.includes('trauma')) {
-    diagnosisText = 'Closed Fracture of Lower Limb';
-    icdCodes = [
-      { icd_code: 'S82.90', description: 'Unspecified fracture of lower leg', confidence: 0.93 }
-    ];
-  } else if (textLower.includes('dengue')) {
-    diagnosisText = 'Dengue Fever with Thrombocytopenia';
-    icdCodes = [
-      { icd_code: 'A90', description: 'Dengue fever [classical dengue]', confidence: 0.96 }
-    ];
-  } else if (textLower.includes('messy') || textLower.includes('ambiguous') || textLower.includes('handwritten')) {
-    diagnosisText = 'Handwritten Notes — Suspected Gastrointestinal Illness';
-    icdCodes = [
-      { icd_code: 'K52.9', description: 'Noninfective gastroenteritis, unspecified', confidence: 0.64 }
-    ];
-    isFlagged = true;
-    flagReasons.push('Low OCR confidence score (64%) on handwritten document');
-    flagReasons.push('Ambiguous ICD-10 diagnostic mapping requiring clinician verification');
-  } else {
-    diagnosisText = 'Acute Medical Condition & Clinical Evaluation';
-    icdCodes = [
-      { icd_code: 'Z00.00', description: 'General adult medical examination', confidence: 0.92 }
-    ];
+  // Extract hospital name from actual text content
+  let hospitalName = '';
+  const hospPatterns = [
+    /^([A-Z][A-Za-z0-9\s&.,'-]{5,50}(?:Hospital|Clinic|Medical|Institute|Centre|Center|Lab|Health|Care).*?)$/im,
+    /(?:Hospital|Clinic|Medical Centre)[:\s]+([A-Za-z0-9\s&.,'-]{4,50})/i
+  ];
+  for (const pat of hospPatterns) {
+    const m = fileText.match(pat);
+    if (m && m[1] && m[1].trim().length > 4) {
+      hospitalName = m[1].trim();
+      break;
+    }
   }
 
-  // 4. REAL DYNAMIC BILL & CALCULATIONS
-  let lineItems = [];
+  // Extract diagnosis from text
+  let diagnosisText = '';
+  const diagPatterns = [
+    /(?:Diagnosis|Dx|Complaint|Clinical\s*Condition)[:\s]+(.+?)(?:\n|$)/i,
+    /(?:diagnosed\s*with|impression)[:\s]+(.+?)(?:\n|$)/i
+  ];
+  for (const pat of diagPatterns) {
+    const m = fileText.match(pat);
+    if (m && m[1] && m[1].trim().length > 3) {
+      diagnosisText = m[1].trim();
+      break;
+    }
+  }
+
+  // Extract ICD-10 codes if present in text
+  const icdMatches = [...fileText.matchAll(/\b([A-Z]\d{2}(?:\.\d{1,4})?[A-Z]?)\b/g)];
+  const icdCodes = icdMatches
+    .filter(m => /^[A-Z]\d{2}/.test(m[1]))
+    .slice(0, 5)
+    .map(m => ({ code: m[1], description: 'Extracted from document', confidence: 0.85 }));
+
+  // Extract REAL monetary amounts
+  const moneyPatterns = [
+    ...fileText.matchAll(/(?:Rs\.|INR|₹)\s*([\d,]+(?:\.\d{2})?)/gi),
+    ...fileText.matchAll(/([\d,]+(?:\.\d{2})?)\s*(?:Rs\.|INR|₹)/gi)
+  ];
+  const lineItems = [];
   let totalAmount = 0;
 
-  const moneyMatches = [...fileText.matchAll(/(?:Rs\.|INR|\₹)\s*([\d,]+(?:\.\d{2})?)/gi)];
-  if (moneyMatches.length > 0) {
-    moneyMatches.forEach((m, idx) => {
+  // Extract itemized charges with their labels
+  const itemPatterns = [...fileText.matchAll(/^(.{5,50}?)\s{2,}(?:Rs\.|INR|₹)?\s*([\d,]+(?:\.\d{2})?)$/gim)];
+  itemPatterns.forEach(m => {
+    const desc = m[1].trim();
+    const amt = parseFloat(m[2].replace(/,/g, ''));
+    if (desc.length > 3 && !isNaN(amt) && amt > 0 && amt < 500000) {
+      lineItems.push({ description: desc, amount: amt });
+      totalAmount += amt;
+    }
+  });
+
+  // Fallback: just extract all amounts
+  if (lineItems.length === 0) {
+    const amounts = [...fileText.matchAll(/(?:Rs\.|INR|₹)\s*([\d,]+(?:\.\d{2})?)/gi)];
+    amounts.forEach((m, i) => {
       const amt = parseFloat(m[1].replace(/,/g, ''));
       if (amt > 0 && amt < 500000) {
-        lineItems.push({ description: `Medical Charge Item ${idx + 1}`, amount: amt });
+        lineItems.push({ description: `Charge Item ${i + 1}`, amount: amt });
         totalAmount += amt;
       }
     });
   }
 
-  if (lineItems.length === 0) {
-    if (textLower.includes('blood') || textLower.includes('lab') || textLower.includes('report')) {
-      lineItems = [
-        { description: 'Complete Blood Count (CBC) & ESR', amount: 850 },
-        { description: 'Widal Test & Typhoid Serology', amount: 1200 },
-        { description: 'Liver Function Test (LFT)', amount: 1450 },
-        { description: 'Consultation & Lab Processing Fee', amount: 500 }
-      ];
-    } else if (textLower.includes('prescription')) {
-      lineItems = [
-        { description: 'Physician Consultation Fee', amount: 800 },
-        { description: 'Pantoprazole 40mg (14 Tabs)', amount: 280 },
-        { description: 'Amoxicillin 500mg (10 Caps)', amount: 450 },
-        { description: 'Multi-Vitamin & Mineral Syrup', amount: 320 }
-      ];
-    } else if (textLower.includes('appendic') || textLower.includes('fracture')) {
-      lineItems = [
-        { description: 'Surgical & Operating Theater Charges', amount: 24000 },
-        { description: 'Anesthesia & Surgical Consumables', amount: 8500 },
-        { description: 'Inpatient Room & Nursing Care (2 Days)', amount: 6000 },
-        { description: 'Post-operative Pharmacy & Medication', amount: 3200 }
-      ];
-    } else if (isFlagged) {
-      lineItems = [
-        { description: 'Consultation Fee', amount: 600 },
-        { description: 'Diagnostic USG Scan', amount: 1800 },
-        { description: 'Emergency Nursing Charges', amount: 1200 }
-      ];
-    } else {
-      lineItems = [
-        { description: 'Hospital Admission & Bed Charges', amount: 6500 },
-        { description: 'Specialist Physician Consultation', amount: 2500 },
-        { description: 'Diagnostic Imaging & Radiology', amount: 3200 },
-        { description: 'Pharmacy & Medical Consumables', amount: 2300 }
-      ];
-    }
-    totalAmount = lineItems.reduce((sum, item) => sum + item.amount, 0);
+  // Look for explicit total
+  const totalMatch = fileText.match(/(?:Total|Grand Total|Net Amount|Amount Due)[:\s]+(?:Rs\.|INR|₹)?\s*([\d,]+(?:\.\d{2})?)/i);
+  if (totalMatch) {
+    const t = parseFloat(totalMatch[1].replace(/,/g, ''));
+    if (t > 0) totalAmount = t;
   }
 
-  // 5. REAL PM-JAY SCHEME CALCULATIONS
+  // If still no real data extracted from text file, be honest
+  if (!patientName && !hospitalName && lineItems.length === 0) {
+    patientName = '';
+    hospitalName = '';
+  }
+
+  // PM-JAY cap calculation only if we have a real amount
   const pmjayApprovedCap = 500000;
-  const simulatedPreviousUtilization = Math.floor(Math.random() * 60000) + 12000;
-  const remainingFamilyCap = pmjayApprovedCap - simulatedPreviousUtilization - totalAmount;
-  const pmjayCoveredAmount = Math.min(totalAmount, Math.max(0, pmjayApprovedCap - simulatedPreviousUtilization));
-  const patientOutofPocketCoPay = totalAmount - pmjayCoveredAmount;
+  const prevUtil = totalAmount > 0 ? Math.floor(Math.random() * 60000) + 12000 : 0;
+  const pmjayCovered = totalAmount > 0 ? Math.min(totalAmount, Math.max(0, pmjayApprovedCap - prevUtil)) : 0;
+  const capRemaining = Math.max(0, pmjayApprovedCap - prevUtil - totalAmount);
 
-  // 6. FRAUD SCORE & VERDICT COMPUTATION
-  let fraudScore = 0.06;
-  let fraudRiskLevel = 'low';
-  let fraudFlags = [];
-
-  if (isFlagged) {
-    fraudScore = 0.68;
-    fraudRiskLevel = 'high';
-    fraudFlags = flagReasons;
-  } else if (totalAmount > 150000) {
-    fraudScore = 0.42;
-    fraudRiskLevel = 'medium';
-    fraudFlags.push(`High billing amount (₹${totalAmount.toLocaleString('en-IN')}) requires secondary auditing`);
+  // Fraud score — only meaningful if we have real amount data
+  let fraudScore = null;
+  let fraudRisk = 'unknown';
+  if (totalAmount > 0) {
+    fraudScore = totalAmount > 150000 ? 0.42 : 0.06;
+    fraudRisk = fraudScore > 0.3 ? 'medium' : 'low';
   }
 
-  const finalStatus = isFlagged ? 'FLAGGED' : 'PENDING_HUMAN_VERIFICATION';
-  const finalRoute = isFlagged ? 'hitl_review' : 'human_verification';
-  const confidenceScore = isFlagged ? 0.64 : 0.96;
+  const hasRealData = !!(patientName || hospitalName || lineItems.length > 0);
+  const confScore = hasRealData ? 0.82 : 0.3;
 
   return {
-    id: 'CLM-' + Math.floor(1000 + Math.random() * 9000),
-    patient_name: patientName,
-    filename: filename,
-    status: finalStatus,
-    pending_human_verification: !isFlagged,
+    id: claimId,
+    filename,
+    patient_name: patientName || '',
+    hospital_name: hospitalName || '',
+    status: 'PENDING_HUMAN_VERIFICATION',
+    pending_human_verification: true,
     human_verified: false,
-    route: finalRoute,
-    confidence_score: confidenceScore,
-    created_at: new Date().toISOString(),
-    submitted_at: new Date().toISOString(),
-    image_url: (file && file.type && file.type.startsWith('image/')) ? URL.createObjectURL(file) : '/assets/mock_bill_clean.png',
+    confidence_score: confScore,
+    submitted_at: now,
+    created_at: now,
+    image_url: '/assets/mock_bill_clean.png',
     ocr_result: {
-      raw_text: fileText || `Hospital Discharge Summary & Medical Bill\nPatient: ${patientName}\nHospital: ${hospitalName}\nDiagnosis: ${diagnosisText}\nTotal Billed: ₹${totalAmount.toLocaleString('en-IN')}`,
-      confidence: confidenceScore,
+      raw_text: fileText,
+      confidence: confScore,
       hospital_name: hospitalName,
       patient_name: patientName,
       line_items: lineItems,
@@ -1209,43 +1215,40 @@ async function parseAndCalculateClaim(file) {
       total: totalAmount
     },
     coding_result: {
-      coded_diagnoses: icdCodes
+      coded_diagnoses: icdCodes.map(c => ({ icd_code: c.code, description: c.description, confidence: c.confidence }))
     },
+    icd_codes: icdCodes,
     eligibility_result: {
-      eligible: true,
-      scheme: 'PMJAY Ayushman Gold',
-      patient_id: 'PAT-' + Math.floor(1000 + Math.random() * 9000),
-      coverage_expiry_date: '2026-12-31',
+      eligible: totalAmount > 0 ? true : null,
+      scheme: totalAmount > 0 ? 'PMJAY Ayushman Gold' : '',
+      patient_id: totalAmount > 0 ? 'PAT-' + Math.floor(1000 + Math.random() * 9000) : '',
+      coverage_expiry_date: totalAmount > 0 ? '2026-12-31' : '',
       annual_cap_inr: pmjayApprovedCap,
-      previous_utilized_inr: simulatedPreviousUtilization,
-      claim_covered_inr: pmjayCoveredAmount,
-      family_cap_remaining_inr: Math.max(0, remainingFamilyCap),
-      patient_copay_inr: patientOutofPocketCoPay
+      previous_utilized_inr: prevUtil,
+      claim_covered_inr: pmjayCovered,
+      family_cap_remaining_inr: capRemaining,
+      patient_copay_inr: Math.max(0, totalAmount - pmjayCovered)
     },
     is_duplicate: false,
     fraud_result: {
       fraud_score: fraudScore,
-      risk_level: fraudRiskLevel,
-      flags: fraudFlags
+      risk_level: fraudRisk,
+      flags: []
     },
     portal_submission: {
       submitted: false,
       portal_ref: null,
       portal_status: 'PENDING_HUMAN_VERIFICATION'
     },
+    flags: hasRealData
+      ? [`Pending human text & ICD-10 verification for ${patientName || 'patient'}`]
+      : ['⚠ Could not extract text from document — please verify manually'],
     audit_log: [
-      { stage: 'Stage 1 OCR', note: `OCR confidence ${Math.round(confidenceScore * 100)}% — Patient: ${patientName}, Hospital: ${hospitalName}` },
-      { stage: 'Stage 2 Extraction', note: `Extracted ${lineItems.length} line items. Total: ₹${totalAmount.toLocaleString('en-IN')}` },
-      { stage: 'Stage 3 ICD-10 Coding', note: icdCodes.length > 0 ? `Mapped: ${icdCodes.map(c => c.icd_code).join(', ')}` : 'No ICD codes mapped' },
-      { stage: 'Stage 4 Eligibility', note: `PM-JAY Ayushman Gold — Active through 2026-12-31. Covered: ₹${pmjayCoveredAmount.toLocaleString('en-IN')}` },
-      { stage: 'Stage 5 Fraud', note: `Fraud score ${fraudScore.toFixed(2)} (${fraudRiskLevel.toUpperCase()})` },
-      { stage: 'Stage 6 Verdict', note: `Status: ${finalStatus} — Awaiting human verification before PM-JAY portal submission` }
-    ],
-    flags: isFlagged ? flagReasons : [
-      `Pending human text & ICD-10 verification for ${patientName}`,
-      `PM-JAY Covered Amount: ₹${pmjayCoveredAmount.toLocaleString('en-IN')} (after ₹${simulatedPreviousUtilization.toLocaleString('en-IN')} prior utilization)`
-    ],
-    icd_codes: icdCodes.map(c => ({ code: c.icd_code, description: c.description, confidence: c.confidence }))
+      { stage: 'Stage 1 OCR', note: hasRealData ? `Extracted from text: "${patientName || 'unknown'}", "${hospitalName || 'unknown'}"` : '⚠ Text extraction failed — document may need backend OCR' },
+      { stage: 'Stage 2 Extraction', note: `${lineItems.length} line items extracted. Total: ₹${totalAmount.toLocaleString('en-IN')}` },
+      { stage: 'Stage 3 ICD-10', note: icdCodes.length > 0 ? `Found codes: ${icdCodes.map(c => c.code).join(', ')}` : 'No ICD codes found in document text' },
+      { stage: 'Stage 6 Verdict', note: 'PENDING_HUMAN_VERIFICATION — awaiting caseworker approval' }
+    ]
   };
 }
 
@@ -1412,108 +1415,30 @@ async function streamClaimUpload(formData) {
 function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
 
 // ─── Screen 2: HITL Review Queue ──────────────────────────────────────────────
-const mockHITLQueue = [
-  {
-    id: 'CLM-7826',
-    patient_name: 'Rahul Sharma',
-    submitted_at: new Date(Date.now() - 3600000).toISOString(),
-    confidence_score: 0.58,
-    status: 'FLAGGED',
-    flags: ['Low OCR confidence (58% < 70%)', 'Handwritten provider bill'],
-    image_url: '/assets/mock_bill_messy.png',
-    extracted_json: {
-      patient_name: 'Rahul Sharma',
-      patient_id: 'UHID-88219',
-      hospital_name: 'Adichunchanagiri Institute of Medical Sciences',
-      symptoms: ['Fever', 'Headache'],
-      diagnosis: ['Typhoid fever'],
-      line_items: [
-        { description: 'Consultation Fee', amount: 500 },
-        { description: 'Paracetamol 650mg', amount: 200 },
-        { description: 'Cetirizine 10mg', amount: 250 }
-      ]
-    },
-    icd_codes: [
-      { code: 'R50.9', description: 'Fever unspecified', confidence: 0.97 },
-      { code: 'R51', description: 'Headache', confidence: 0.97 }
-    ],
-    audit_log: [
-      { stage: 'Stage 1 OCR', note: 'OCR confidence 58.0%' },
-      { stage: 'Stage 2 Structure', note: 'Extracted 3 line items' },
-      { stage: 'Stage 6 Verdict', note: 'Flagged for human review due to low OCR confidence' }
-    ]
-  },
-  {
-    id: 'CLM-9012',
-    patient_name: 'Mr. M. Imran',
-    submitted_at: new Date(Date.now() - 7200000).toISOString(),
-    confidence_score: 0.93,
-    status: 'FLAGGED',
-    flags: ['Severe Traumatic Brain Injury — Mandatory Clinician Audit', 'Intensive Care Unit (ICU) High Priority Adjudication'],
-    image_url: '/assets/mock_bill_messy.png',
-    ocr_result: {
-      raw_text: 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE\nNo. 12, E.V.R. Road, Chennai - 600014\nICU MEDICAL REPORT\nPatient Name: Mr. M. Imran | Age/Gender: 40 Y / Male\nMR No: ETCCC445566 | Date of Admission: 21-Jul-2026 | ICU No: ICU-07\nDiagnosis: Coma following Severe Traumatic Brain Injury\nCLINICAL STATUS: Glasgow Coma Scale (GCS): 6/15, Unconscious on mechanical ventilator.\nINVESTIGATIONS: CT Brain: Diffuse cerebral edema with small frontal lobe contusion.\nTREATMENT: Mechanical ventilation, Intracranial pressure monitoring, IV fluids & antibiotics.\nDoctor: Dr. P. Anand, Consultant Intensivist (Reg. No: 98765)',
-      confidence: 0.93,
-      hospital_name: 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE, CHENNAI',
-      patient_name: 'Mr. M. Imran',
-      line_items: [
-        { description: 'ICU Bed & Mechanical Ventilation (2 Days)', amount: 16000 },
-        { description: 'Intracranial Pressure Monitoring Procedure', amount: 4500 },
-        { description: 'Critical Care IV Fluids & Antibiotic Pharmacy', amount: 3200 }
-      ],
-      total_amount_inr: 23700
-    },
-    extracted_json: {
-      patient_name: 'Mr. M. Imran',
-      patient_id: 'ETCCC445566',
-      hospital_name: 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE, CHENNAI',
-      doctor_name: 'Dr. P. Anand (Consultant Intensivist)',
-      diagnosis: 'Coma following Severe Traumatic Brain Injury',
-      report_date: '21-Jul-2026',
-      line_items: [
-        { description: 'ICU Bed & Mechanical Ventilation (2 Days)', amount: 16000 },
-        { description: 'Intracranial Pressure Monitoring Procedure', amount: 4500 },
-        { description: 'Critical Care IV Fluids & Antibiotic Pharmacy', amount: 3200 }
-      ],
-      total: 23700
-    },
-    icd_codes: [
-      { code: 'S06.9X9A', description: 'Unspecified intracranial injury with loss of consciousness', confidence: 0.94 },
-      { code: 'G93.1', description: 'Anoxic brain damage, not elsewhere classified', confidence: 0.91 }
-    ],
-    coding_result: {
-      coded_diagnoses: [
-        { icd_code: 'S06.9X9A', description: 'Unspecified intracranial injury with loss of consciousness', confidence: 0.94 },
-        { icd_code: 'G93.1', description: 'Anoxic brain damage, not elsewhere classified', confidence: 0.91 }
-      ]
-    },
-    audit_log: [
-      { stage: 'Stage 1 OCR', note: 'Extracted exact text: Mr. M. Imran, Emergency Trauma & Critical Care Centre' },
-      { stage: 'Stage 2 Structure', note: 'Extracted ICU Stay, GCS 6/15, CT Brain Contusion & 3 line items' },
-      { stage: 'Stage 3 Coding', note: 'Mapped to ICD-10 S06.9X9A (94% confidence)' },
-      { stage: 'Stage 4 Eligibility', note: 'Ayushman ID PAT-4859 Active. Family Cap Balance: ₹4,91,500' },
-      { stage: 'Stage 5 Fraud', note: 'Fraud score 0.06 (Low Risk)' },
-      { stage: 'Stage 6 Verdict', note: 'Flagged for mandatory clinician verification due to Critical ICU admission' }
-    ]
-  }
-];
+// No mock data — HITL queue shows only real submitted claims from localStorage
 
 async function loadHITLQueue() {
   $('hitl-loading').style.display = 'block';
   $('hitl-empty').style.display   = 'none';
   $('hitl-table').style.display   = 'none';
 
+  // Load ONLY real user-submitted claims from localStorage
   const allClaims = JSON.parse(localStorage.getItem('med_claims_store') || '[]');
-  const userPending = allClaims.filter(c => c.status === 'FLAGGED' || c.status === 'PENDING_HUMAN_VERIFICATION' || c.pending_human_verification);
-  const fallbackMock = typeof mockHITLQueue !== 'undefined' ? mockHITLQueue : [];
+  const userPending = allClaims.filter(c =>
+    c.status === 'FLAGGED' ||
+    c.status === 'PENDING_HUMAN_VERIFICATION' ||
+    c.pending_human_verification
+  );
 
+  // Try backend API for additional real claims
   try {
     const data = await apiFetch('/claims/review-queue');
-    const apiClaims = data.claims || [];
+    const apiClaims = (data.claims || []).map(c => ({ ...c, submitted_at: c.submitted_at || c.created_at }));
+    // Merge: real user claims first, then any backend claims not already present
     state.hitlClaims = [...userPending, ...apiClaims.filter(a => !userPending.some(u => u.id === a.id))];
   } catch (err) {
-    console.warn('Backend fetch failed for review queue, rendering synchronized fallback queue:', err);
-    state.hitlClaims = [...userPending, ...fallbackMock.filter(m => !userPending.some(u => u.id === m.id))];
+    // Backend offline — show only real locally-submitted claims
+    state.hitlClaims = userPending;
   }
 
   renderHITLTable(state.hitlClaims);
