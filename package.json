@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "build": "echo 'Static HTML/CSS/JS site — ready for deployment.'"
+  },
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
   }
 }

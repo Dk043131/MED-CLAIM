@@ -244,7 +244,7 @@ async function generatePPTX() {
     fontSize: 18, bold: true, color: WHITE, fontFace: "Inter"
   });
 
-  slide10.addText("Knowledge Institute Of Technology (KIOT)   •   Department of CSE", {
+  slide10.addText("Knowledge Institute Of Technology (KIOT)   •   Department of Information Technology (IT)", {
     x: 1.1, y: 5.6, w: 11, h: 0.6,
     fontSize: 15, color: MUTED, fontFace: "Inter"
   });
