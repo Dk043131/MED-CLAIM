@@ -596,7 +596,6 @@ function showResult(claim) {
   bodyHtml += buildDetailedExplanationHtml(claim);
 
   $('result-body').innerHTML = bodyHtml;
-
   // ICD codes
   const icdEl = $('result-icd');
   icdEl.innerHTML = '';
@@ -625,16 +624,78 @@ function showResult(claim) {
 function buildExtractedFindingsHtml(claim) {
   const ej = claim.extracted_json || {};
   const ocr = claim.ocr_result || {};
-  const labResults = ej.lab_results || [];
-  const medications = ej.prescribed_medications || [];
   const lineItems = ej.line_items || [];
-  const docType = ej.document_type || '';
   const rawText = ocr.raw_text || '';
+
+  // Detect if this is an image claim where backend OCR failed
+  const isUnextracted = (
+    !ej.patient_name && !claim.patient_name ||
+    claim.patient_name === '⚠ Not Extracted — Backend Required' ||
+    (ej._extraction_status && ej._extraction_status.includes('FAILED'))
+  );
 
   let html = `<div class="exact-text-audit-card">`;
 
-  // Header with Exact Word Integrity Badge
-  const docLabel = docType || (labResults.length > 0 ? 'Lab Report' : medications.length > 0 ? 'Doctor Prescription' : 'Hospital Bill');
+  // ── CASE 1: Image uploaded but backend offline → Manual Entry Form ───────
+  if (isUnextracted) {
+    html += `
+      <div class="exact-text-header" style="background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3);">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+          <span style="color:#92400e; font-weight:700">📋 Manual Data Entry — Read the document image above and fill in below</span>
+        </div>
+        <span style="font-size:11px; background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:4px; font-weight:700">⚡ Backend OCR Offline</span>
+      </div>
+      <div style="font-size:12px; color:#78350f; margin:8px 0 14px 0; padding:8px 12px; background:#fffbeb; border-radius:6px; border:1px solid #fde68a;">
+        The document image is shown above. Please read it and type the exact values from the report into the fields below. All fields will be saved when you click <strong>Human Approved</strong>.
+      </div>
+
+      <div id="manual-entry-form-${claim.id}" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; font-weight:600; color:#475569;">Patient Name *</label>
+          <input type="text" id="manual-patient-name-${claim.id}" placeholder="e.g. Mr. M. Imran"
+            style="padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fff; outline:none;"
+            value="${escapeHtml(claim.patient_name && !claim.patient_name.includes('⚠') ? claim.patient_name : '')}" />
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; font-weight:600; color:#475569;">Hospital / Facility Name *</label>
+          <input type="text" id="manual-hospital-name-${claim.id}" placeholder="e.g. Apollo Hospital, Chennai"
+            style="padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fff; outline:none;"
+            value="${escapeHtml(ej.hospital_name && !ej.hospital_name.includes('⚠') ? ej.hospital_name : '')}" />
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; font-weight:600; color:#475569;">Diagnosis / Clinical Condition</label>
+          <input type="text" id="manual-diagnosis-${claim.id}" placeholder="e.g. Acute Appendicitis, Typhoid Fever"
+            style="padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fff; outline:none;"
+            value="${escapeHtml(ej.diagnosis || '')}" />
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:11px; font-weight:600; color:#475569;">Total Bill Amount (₹)</label>
+          <input type="number" id="manual-total-${claim.id}" placeholder="e.g. 23700"
+            style="padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fff; outline:none;"
+            value="${ej.total && ej.total > 0 ? ej.total : ''}" />
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px; font-weight:600; color:#475569;">Bill Line Items (one per line: Description — ₹Amount)</label>
+        <textarea id="manual-lineitems-${claim.id}" rows="4" placeholder="e.g.&#10;ICU Bed Charges — 16000&#10;Medicines — 3200&#10;Consultation — 500"
+          style="width:100%; margin-top:4px; padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff; resize:vertical; font-family:monospace;"></textarea>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px; font-weight:600; color:#475569;">ICD-10 Code(s) (if visible in report)</label>
+        <input type="text" id="manual-icd-${claim.id}" placeholder="e.g. S06.9X9A, K35.80, J20.9"
+          style="width:100%; margin-top:4px; padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fff; outline:none;" />
+      </div>
+    `;
+    html += `</div>`;
+    html += buildHumanVerificationPanelHtml(claim);
+    return html;
+  }
+
+  // ── CASE 2: Real data extracted → Show as read-only verified panel ────────
+  const docType = ej.document_type || (ej.lab_results?.length > 0 ? 'Lab Report' : ej.prescribed_medications?.length > 0 ? 'Doctor Prescription' : 'Hospital Bill');
   html += `<div class="exact-text-header">
     <div style="display:flex; align-items:center; gap:8px;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -834,18 +895,83 @@ function handleHumanApprove(claimId) {
   }
 
   if (state.currentClaim) {
-    state.currentClaim.status = 'APPROVED';
-    state.currentClaim.human_verified = true;
-    state.currentClaim.pending_human_verification = false;
-    state.currentClaim.portal_submission = {
+    const c = state.currentClaim;
+
+    // ── Collect manually entered data (if manual entry form is present) ──
+    const manualPatient   = document.getElementById(`manual-patient-name-${claimId}`);
+    const manualHospital  = document.getElementById(`manual-hospital-name-${claimId}`);
+    const manualDiagnosis = document.getElementById(`manual-diagnosis-${claimId}`);
+    const manualTotal     = document.getElementById(`manual-total-${claimId}`);
+    const manualLineItems = document.getElementById(`manual-lineitems-${claimId}`);
+    const manualICD       = document.getElementById(`manual-icd-${claimId}`);
+
+    if (manualPatient) {
+      const patientVal = manualPatient.value.trim();
+      if (!patientVal) {
+        toast('Please enter the Patient Name from the document before approving.', 'warning');
+        manualPatient.style.borderColor = '#ef4444';
+        return;
+      }
+      c.patient_name = patientVal;
+      if (!c.extracted_json) c.extracted_json = {};
+      c.extracted_json.patient_name = patientVal;
+    }
+    if (manualHospital) {
+      const hospVal = manualHospital.value.trim();
+      c.hospital_name = hospVal;
+      if (!c.extracted_json) c.extracted_json = {};
+      c.extracted_json.hospital_name = hospVal;
+      if (!c.ocr_result) c.ocr_result = {};
+      c.ocr_result.hospital_name = hospVal;
+    }
+    if (manualDiagnosis) {
+      const diagVal = manualDiagnosis.value.trim();
+      if (!c.extracted_json) c.extracted_json = {};
+      c.extracted_json.diagnosis = diagVal;
+    }
+    if (manualTotal) {
+      const totalVal = parseFloat(manualTotal.value);
+      if (!isNaN(totalVal) && totalVal > 0) {
+        if (!c.extracted_json) c.extracted_json = {};
+        c.extracted_json.total = totalVal;
+        if (!c.ocr_result) c.ocr_result = {};
+        c.ocr_result.total_amount_inr = totalVal;
+      }
+    }
+    if (manualLineItems && manualLineItems.value.trim()) {
+      const lines = manualLineItems.value.trim().split('\n').filter(l => l.trim());
+      const parsedItems = lines.map(line => {
+        const parts = line.split(/[—\-–:]/);
+        const desc = (parts[0] || '').trim();
+        const amt = parseFloat((parts[1] || '0').replace(/[₹,\s]/g, ''));
+        return { description: desc, amount: isNaN(amt) ? 0 : amt };
+      }).filter(item => item.description);
+      if (!c.extracted_json) c.extracted_json = {};
+      c.extracted_json.line_items = parsedItems;
+      if (!c.ocr_result) c.ocr_result = {};
+      c.ocr_result.line_items = parsedItems;
+    }
+    if (manualICD && manualICD.value.trim()) {
+      const codes = manualICD.value.split(',').map(s => s.trim()).filter(s => s);
+      c.icd_codes = codes.map(code => ({ code, description: 'Manually entered', confidence: 1.0 }));
+    }
+
+    // Remove the "backend required" extraction status
+    if (c.extracted_json) delete c.extracted_json._extraction_status;
+
+    c.status = 'APPROVED';
+    c.human_verified = true;
+    c.pending_human_verification = false;
+    c.manually_entered = !!(manualPatient);  // flag to show it was human-entered
+    c.portal_submission = {
       submitted: true,
       portal_ref: 'PMJAY-2026-' + Math.floor(100000 + Math.random() * 900000),
       portal_status: 'PORTAL_ACCEPTED'
     };
 
-    saveAndSyncClaim(state.currentClaim);
-    showResult(state.currentClaim);
-    toast(`✓ Claim ${claimId} verified by human auditor and approved! Registered with PM-JAY Portal.`, 'success', 5000);
+    saveAndSyncClaim(c);
+    showResult(c);
+    toast(`✓ Claim ${claimId} verified & approved by human auditor! Registered with PM-JAY Portal.`, 'success', 5000);
   }
 }
 
