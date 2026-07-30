@@ -432,6 +432,20 @@ uploadZone.addEventListener('drop', e => {
   const file = e.dataTransfer?.files?.[0];
   if (file) setSelectedFile(file);
 });
+
+// ── Click upload zone → open file picker ──────────────────────────────────────
+uploadZone.addEventListener('click', (e) => {
+  // Don't double-trigger if clicking directly on the hidden input
+  if (e.target === fileInput) return;
+  fileInput.click();
+});
+uploadZone.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    fileInput.click();
+  }
+});
+
 fileInput.addEventListener('change', e => {
   if (e.target.files?.[0]) setSelectedFile(e.target.files[0]);
 });
