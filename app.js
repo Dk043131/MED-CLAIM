@@ -12,7 +12,7 @@ let API_BASE = (window.location.hostname === 'localhost' || window.location.host
   : (localStorage.getItem('medclaim_backend_url') || 'https://med-claim-backend.onrender.com');
 
 // ─── Gemini Vision API Configuration ─────────────────────────────────────────
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 function getGeminiKey() { return localStorage.getItem('medclaim_gemini_key') || ''; }
 function setGeminiKey(k) { localStorage.setItem('medclaim_gemini_key', k); }
 
@@ -466,7 +466,18 @@ Rules:
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
-    throw new Error(`Gemini API error ${res.status}: ${errText.slice(0, 200)}`);
+    let msg = `Gemini API error ${res.status}`;
+    try {
+      const errObj = JSON.parse(errText);
+      if (errObj.error?.message) {
+        if (res.status === 429) {
+          msg = 'Gemini 2.0 Flash rate limit reached (resets every 60s, please retry)';
+        } else {
+          msg = errObj.error.message;
+        }
+      }
+    } catch (_) {}
+    throw new Error(msg);
   }
 
   const data = await res.json();
