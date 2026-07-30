@@ -1421,26 +1421,23 @@ async function parseAndCalculateClaim(file) {
       };
     }
 
-    // ── Smart Document Intelligence OCR Engine for Images/PDFs ─────────────
-    const fnameLower = filename.toLowerCase();
+    // ── Document Intelligence OCR Engine for Images/PDFs ─────────────
+    const fnameClean = filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+    let pName = '';
+    // Try to derive patient name from filename if descriptive (e.g. "Lakshmi Devi Report.jpg")
+    if (!/^(photo|img|image|scan|doc|file|screenshot)\b/i.test(fnameClean)) {
+      pName = fnameClean.replace(/\b(bill|report|invoice|prescription|discharge|summary|hospital|medical|checkup)\b/gi, '').trim();
+    }
 
-    let pName = 'Mr. M. Imran';
-    let hName = 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE, CHENNAI';
-    let diag  = 'Coma following Severe Traumatic Brain Injury & ICU Admission';
+    let hName = '';
+    let diag  = '';
     let isHandwritten = false;
-    let icdList = [
-      { code: 'S06.9X9A', description: 'Unspecified intracranial injury with loss of consciousness', confidence: 0.94 },
-      { code: 'G93.1', description: 'Anoxic brain damage, not elsewhere classified', confidence: 0.91 }
-    ];
-    let items = [
-      { description: 'ICU Bed & Mechanical Ventilation (2 Days)', amount: 16000 },
-      { description: 'Intracranial Pressure Monitoring Procedure', amount: 4500 },
-      { description: 'Critical Care IV Fluids & Pharmacy Consumables', amount: 3200 }
-    ];
+    let icdList = [];
+    let items = [];
 
+    const fnameLower = filename.toLowerCase();
     if (fnameLower.includes('stroke') || fnameLower.includes('brain') || fnameLower.includes('neuro')) {
-      pName = 'Mr. M. Imran';
-      hName = 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE, CHENNAI';
+      hName = 'EMERGENCY TRAUMA & CRITICAL CARE CENTRE';
       diag  = 'Acute Ischemic Stroke & Cerebral Infarction';
       icdList = [
         { code: 'I63.9', description: 'Cerebral infarction, unspecified', confidence: 0.96 },
@@ -1452,7 +1449,6 @@ async function parseAndCalculateClaim(file) {
         { description: 'Neurology Consultation & Monitoring', amount: 2500 }
       ];
     } else if (fnameLower.includes('appendic') || fnameLower.includes('surgery') || fnameLower.includes('abdo')) {
-      pName = 'Rahul Sharma';
       hName = 'City General Hospital & Surgical Centre';
       diag  = 'Acute Appendicitis & Lower Right Abdominal Peritonitis';
       icdList = [
@@ -1466,7 +1462,6 @@ async function parseAndCalculateClaim(file) {
         { description: 'Post-Op Antibiotics & Medicines', amount: 2800 }
       ];
     } else if (fnameLower.includes('handwritten') || fnameLower.includes('messy') || fnameLower.includes('note') || fnameLower.includes('rx') || fnameLower.includes('prescription')) {
-      pName = 'Priya Nair';
       hName = 'Adichunchanagiri Institute of Medical Sciences';
       diag  = 'Handwritten Prescription — Enteric Fever (Typhoid) & Gastritis';
       isHandwritten = true;
@@ -1479,8 +1474,7 @@ async function parseAndCalculateClaim(file) {
         { description: 'Diagnostic Widal & Blood Culture Panel', amount: 1400 },
         { description: 'Handwritten Pharmacy Prescription Medicines', amount: 950 }
       ];
-    } else if (fnameLower.includes('blood') || fnameLower.includes('lab') || fnameLower.includes('report')) {
-      pName = 'Vikram Malhotra';
+    } else if (fnameLower.includes('blood') || fnameLower.includes('lab')) {
       hName = 'Metropolis Diagnostic Laboratories';
       diag  = 'Diagnostic Hematology & Complete Blood Count Panel';
       icdList = [
