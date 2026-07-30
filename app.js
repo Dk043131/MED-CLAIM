@@ -308,6 +308,16 @@ function syntaxHighlightJSON(obj) {
   );
 }
 
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function animateNumber(el, target, duration = 800, suffix = '') {
   const start = parseFloat(el.textContent) || 0;
   const startTime = performance.now();
@@ -1544,58 +1554,59 @@ function renderHITLTable(claims) {
         </div>
       </td>`;
 
-    // Detail row
+    // Detail row — wrapped in try-catch so one bad claim won't blank the whole table
     const detailTr = document.createElement('tr');
     detailTr.className = 'claim-detail-row';
     detailTr.id = `detail-${claim.id}`;
-    detailTr.innerHTML = `<td colspan="7">
-      <div class="claim-detail-inner">
-        <div class="detail-panel">
-          <div class="detail-panel-title">Original Document</div>
-          <img class="bill-image" src="${claim.image_url || '/assets/mock_bill_messy.png'}" alt="Original bill for ${claim.patient_name}" />
-          <div class="flags-section">
-            <div class="detail-panel-title" style="margin-top:12px">Flag Reasons</div>
-            ${(claim.flags || []).map(f =>
-              `<div class="flag-reason-item"><span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>${f}</div>`
-            ).join('')}
+    try {
+      const flagsHtml = (claim.flags || ['No flag details']).map(f =>
+        `<div class="flag-reason-item"><span class="icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span>${f}</div>`
+      ).join('');
+      const icdChipsHtml = (claim.icd_codes || []).map(icd =>
+        `<div class="icd-chip"><span class="icd-code">${icd.code || ''}</span><span class="icd-desc">${icd.description || ''}</span><span class="icd-conf">${formatConf(icd.confidence)}</span></div>`
+      ).join('');
+      const auditHtml = (claim.audit_log || []).map(entry =>
+        `<div class="audit-entry"><span class="audit-stage">${entry.stage || ''}</span><span class="audit-note">${entry.note || ''}</span></div>`
+      ).join('');
+      const extractedFindingsHtml = buildExtractedFindingsHtml(claim);
+      const explanationHtml = buildDetailedExplanationHtml(claim);
+      const jsonHtml = syntaxHighlightJSON(claim.extracted_json || {});
+
+      detailTr.innerHTML = `<td colspan="7">
+        <div class="claim-detail-inner">
+          <div class="detail-panel">
+            <div class="detail-panel-title">Original Document</div>
+            <img class="bill-image" src="${claim.image_url || '/assets/mock_bill_messy.png'}" alt="Original bill for ${escapeHtml(claim.patient_name)}" />
+            <div class="flags-section">
+              <div class="detail-panel-title" style="margin-top:12px">Flag Reasons</div>
+              ${flagsHtml}
+            </div>
+          </div>
+          <div class="detail-panel">
+            ${extractedFindingsHtml}
+            ${explanationHtml}
+            <div class="detail-panel-title" style="margin-top:12px">Extracted JSON</div>
+            <div class="json-viewer">${jsonHtml}</div>
+            <div class="detail-panel-title" style="margin-top:12px">ICD-10 Candidates</div>
+            <div class="icd-chips" style="margin-top:4px">${icdChipsHtml}</div>
+            <div class="detail-panel-title" style="margin-top:12px">Audit Trail</div>
+            <div class="audit-mini">${auditHtml}</div>
+            <div class="detail-actions" style="margin-top:16px; display:flex; gap:8px; align-items:center;">
+              <button class="btn btn-success" id="approve-detail-btn-${claim.id}" aria-label="Approve claim ${claim.id} from detail view">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Approve Claim
+              </button>
+              <button class="btn btn-secondary" style="color:#f43f5e;border-color:rgba(244,63,94,0.35);background:rgba(244,63,94,0.1)" id="reject-detail-btn-${claim.id}" aria-label="Reject claim ${claim.id} from detail view">
+                ✕ Disapprove / Reject
+              </button>
+              <span style="font-size:12px; color:var(--text-muted)">Action logged with timestamp</span>
+            </div>
           </div>
         </div>
-        <div class="detail-panel">
-          ${buildExtractedFindingsHtml(claim)}
-          ${buildDetailedExplanationHtml(claim)}
-          <div class="detail-panel-title" style="margin-top:12px">Extracted JSON</div>
-          <div class="json-viewer">${syntaxHighlightJSON(claim.extracted_json || {})}</div>
-          <div class="detail-panel-title" style="margin-top:12px">ICD-10 Candidates</div>
-          <div class="icd-chips" style="margin-top:4px">
-            ${(claim.icd_codes || []).map(icd =>
-              `<div class="icd-chip">
-                <span class="icd-code">${icd.code}</span>
-                <span class="icd-desc">${icd.description}</span>
-                <span class="icd-conf">${formatConf(icd.confidence)}</span>
-              </div>`
-            ).join('')}
-          </div>
-          <div class="detail-panel-title" style="margin-top:12px">Audit Trail</div>
-          <div class="audit-mini">
-            ${(claim.audit_log || []).map(entry =>
-              `<div class="audit-entry">
-                <span class="audit-stage">${entry.stage}</span>
-                <span class="audit-note">${entry.note}</span>
-              </div>`
-            ).join('')}
-          </div>
-          <div class="detail-actions" style="margin-top:16px; display:flex; gap:8px; align-items:center;">
-            <button class="btn btn-success" id="approve-detail-btn-${claim.id}" aria-label="Approve claim ${claim.id} from detail view">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Approve Claim
-            </button>
-            <button class="btn btn-secondary" style="color:#f43f5e;border-color:rgba(244,63,94,0.35);background:rgba(244,63,94,0.1)" id="reject-detail-btn-${claim.id}" aria-label="Reject claim ${claim.id} from detail view">
-              ✕ Disapprove / Reject
-            </button>
-            <span style="font-size:12px; color:var(--text-muted)">Action logged with timestamp</span>
-          </div>
-        </div>
-      </div>
-    </td>`;
+      </td>`;
+    } catch (buildErr) {
+      console.error('Error building detail row for claim', claim.id, buildErr);
+      detailTr.innerHTML = `<td colspan="7" style="padding:12px; color:#ef4444; font-size:12px;">⚠ Error rendering detail for claim ${claim.id}: ${buildErr.message}</td>`;
+    }
 
     tbody.appendChild(tr);
     tbody.appendChild(detailTr);
