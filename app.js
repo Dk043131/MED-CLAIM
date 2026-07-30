@@ -425,7 +425,9 @@ async function callGeminiVision(file) {
   const base64 = await fileToBase64(file);
   const mimeType = file.type || 'image/jpeg';
 
-  const prompt = `You are an expert medical billing AI. Carefully read this hospital bill / medical report image and extract ALL information.
+  const prompt = `You are an expert medical billing AI specialized in both Printed OCR and HTR (Handwritten Text Recognition).
+Carefully read this hospital bill, doctor prescription, or medical report image (including any messy, cursive doctor handwriting) and extract ALL information.
+
 Return ONLY a valid JSON object with these exact fields (no markdown, no explanation):
 {
   "patient_name": "exact patient full name from document",
@@ -434,16 +436,19 @@ Return ONLY a valid JSON object with these exact fields (no markdown, no explana
   "doctor_name": "doctor name if present",
   "report_date": "date of admission or report date",
   "patient_id": "patient/UHID/MR number if present",
+  "is_handwritten": true,
   "total_amount": 0,
   "line_items": [
     {"description": "exact charge description", "amount": 0}
   ],
-  "icd_codes": ["list any ICD-10 codes visible"],
+  "icd_codes": ["list any ICD-10 codes visible or implied by diagnosis"],
   "confidence": 0.95
 }
 Rules:
+- Perform full HTR (Handwritten Text Recognition) on cursive handwriting, doctor notes, and handwritten receipts
 - Use exact words from the document, do not paraphrase
 - total_amount and amounts must be numbers (not strings)
+- Set is_handwritten to true if the document contains handwritten text or doctor notes
 - If a field is not visible, use empty string "" or 0
 - Extract ALL itemized charges you can see`;
 
@@ -1346,7 +1351,8 @@ async function parseAndCalculateClaim(file) {
           hospital_name: hName,
           diagnosis: diag,
           line_items: items,
-          total: tot
+          total: tot,
+          is_handwritten: geminiData.is_handwritten || false
         },
         coding_result: {
           coded_diagnoses: icdList.map(c => ({ icd_code: c.code, description: c.description, confidence: c.confidence }))
@@ -1375,7 +1381,7 @@ async function parseAndCalculateClaim(file) {
           portal_status: 'PENDING_HUMAN_VERIFICATION'
         },
         flags: [
-          `AI Extracted from Image (Confidence: ${Math.round(conf*100)}%)`,
+          geminiData.is_handwritten ? '✍️ HTR Active: Handwritten Doctor Notes / Bill Transcribed' : `AI OCR Extracted from Image (Confidence: ${Math.round(conf*100)}%)`,
           'Pending human verification before PM-JAY submission'
         ],
         audit_log: [
