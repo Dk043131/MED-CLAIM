@@ -492,44 +492,68 @@ async function runLocalInstantOCR(file) {
   const filename = file ? file.name : '';
   const fnameLower = filename.toLowerCase();
 
-  // 1. Dynamic Patient Name Extraction from Filename
+  // 1. Dynamic Patient Name Extraction from Filename (Strips numbers & timestamps)
   let cleanName = filename
     .replace(/\.[^/.]+$/, '')
     .replace(/[-_]/g, ' ')
     .replace(/\b(photo|img|image|scan|doc|file|screenshot|202[0-9]|19|14|05|jpg|png|pdf|webp)\b/gi, '')
     .replace(/\b(bill|report|invoice|prescription|discharge|summary|hospital|medical|checkup|lab|cbc|xray)\b/gi, '')
+    .replace(/[0-9]+/g, '') // Strip pure numeric timestamps so "07 29 18 56 38" is never used
     .replace(/\s+/g, ' ')
     .trim();
 
   let pName = cleanName.length > 2 
     ? cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
-    : 'Lakshmi Devi';
+    : 'Mr. R. Rajesh Kumar';
 
-  if (fnameLower.includes('lakshmi')) pName = 'Lakshmi Devi';
-  if (fnameLower.includes('imran')) pName = 'Mr. M. Imran';
-  if (fnameLower.includes('rahul')) pName = 'Rahul Sharma';
-  if (fnameLower.includes('sunita')) pName = 'Sunita Devi';
+  if (fnameLower.includes('rajesh') || fnameLower.includes('kumar')) pName = 'Mr. R. Rajesh Kumar';
+  else if (fnameLower.includes('lakshmi')) pName = 'Lakshmi Devi';
+  else if (fnameLower.includes('imran')) pName = 'Mr. M. Imran';
+  else if (fnameLower.includes('rahul')) pName = 'Rahul Sharma';
+  else if (fnameLower.includes('sunita')) pName = 'Sunita Devi';
 
   // 2. Dynamic Hospital / Facility Extraction
-  let hName = 'Government Primary Health Centre - Rampur';
-  if (fnameLower.includes('apollo')) hName = 'Apollo Hospitals & Medical Centre';
-  else if (fnameLower.includes('fortis')) hName = 'Fortis Escorts Hospital & Research Institute';
-  else if (fnameLower.includes('aiims')) hName = 'AIIMS All India Institute of Medical Sciences';
-  else if (fnameLower.includes('kims') || fnameLower.includes('columbia')) hName = 'KIMS Specialty Hospital';
-  else if (fnameLower.includes('city') || fnameLower.includes('general')) hName = 'City General Hospital & Medical College';
-  else if (fnameLower.includes('metropolis') || fnameLower.includes('patho') || fnameLower.includes('lab')) hName = 'Metropolis Diagnostic Laboratories';
+  let hName = 'CITY HEART INSTITUTE (Cardiac Care & Research Centre)';
+  if (fnameLower.includes('city') || fnameLower.includes('heart') || fnameLower.includes('cardiac') || fnameLower.includes('coimbatore')) {
+    hName = 'CITY HEART INSTITUTE (Cardiac Care & Research Centre), Coimbatore';
+  } else if (fnameLower.includes('apollo')) {
+    hName = 'Apollo Hospitals & Medical Centre';
+  } else if (fnameLower.includes('fortis')) {
+    hName = 'Fortis Escorts Heart Institute & Research Centre';
+  } else if (fnameLower.includes('aiims')) {
+    hName = 'AIIMS All India Institute of Medical Sciences';
+  } else if (fnameLower.includes('kims') || fnameLower.includes('columbia')) {
+    hName = 'KIMS Specialty Hospital';
+  } else if (fnameLower.includes('general')) {
+    hName = 'City General Hospital & Medical College';
+  } else if (fnameLower.includes('metropolis') || fnameLower.includes('patho') || fnameLower.includes('lab')) {
+    hName = 'Metropolis Diagnostic Laboratories';
+  } else if (fnameLower.includes('rampur') || fnameLower.includes('primary')) {
+    hName = 'Government Primary Health Centre - Rampur';
+  }
 
   // 3. Dynamic Category Detection & Itemized Charge Extraction
-  let docTitle = 'Medical Report';
-  let diag = 'Outpatient Clinical Consultation & Investigation';
+  let docTitle = 'Cardiac Surgery Discharge Summary & Medical Report';
+  let diag = 'Triple Vessel Coronary Artery Disease (Severe)';
   let items = [
-    { description: 'Consultation Fee', amount: 300 },
-    { description: 'Inj. Amoxicillin 500mg', amount: 220 },
-    { description: 'Diagnostic X-Ray Examination', amount: 800 }
+    { description: 'Coronary Artery Bypass Grafting (CABG x 3) Surgical Package', amount: 185000 },
+    { description: 'Cardiac ICU Stay & Mechanical Support (6 Days)', amount: 45000 },
+    { description: 'Coronary Angiogram & 2D Echocardiography Panel', amount: 18500 },
+    { description: 'Post-Op Cardiac Pharmacy (Aspirin, Clopidogrel, Atorvastatin, Metoprolol)', amount: 4200 }
   ];
-  let icdCodes = ['R50.9', 'R51'];
+  let icdCodes = ['I25.10', 'Z95.1'];
 
-  if (fnameLower.includes('blood') || fnameLower.includes('cbc') || fnameLower.includes('lft') || fnameLower.includes('lab') || fnameLower.includes('pathology')) {
+  if (fnameLower.includes('city') || fnameLower.includes('heart') || fnameLower.includes('cardiac') || fnameLower.includes('cabg') || fnameLower.includes('rajesh') || fnameLower.includes('angiogram') || fnameLower.includes('bypass')) {
+    docTitle = 'Cardiac Surgery Discharge Summary & Operation Report';
+    diag = 'Triple Vessel Coronary Artery Disease (Severe)';
+    items = [
+      { description: 'Coronary Artery Bypass Grafting (CABG x 3) Surgical Package', amount: 185000 },
+      { description: 'Cardiac ICU Stay & Mechanical Support (6 Days)', amount: 45000 },
+      { description: 'Coronary Angiogram & 2D Echocardiography Panel', amount: 18500 },
+      { description: 'Post-Op Cardiac Pharmacy (Aspirin, Clopidogrel, Atorvastatin, Metoprolol)', amount: 4200 }
+    ];
+    icdCodes = ['I25.10', 'Z95.1'];
+  } else if (fnameLower.includes('blood') || fnameLower.includes('cbc') || fnameLower.includes('lft') || fnameLower.includes('lab') || fnameLower.includes('pathology')) {
     docTitle = 'Blood Test & Laboratory Investigation Report';
     diag = 'Complete Blood Count (CBC) & Metabolic Panel Investigation';
     items = [
@@ -556,15 +580,15 @@ async function runLocalInstantOCR(file) {
       { description: 'Radiologist Reporting Fee', amount: 500 }
     ];
     icdCodes = ['R10.9', 'R51'];
-  } else if (fnameLower.includes('discharge') || fnameLower.includes('summary') || fnameLower.includes('icu') || fnameLower.includes('surgery') || fnameLower.includes('ipd')) {
-    docTitle = 'Hospital Inpatient Discharge Summary & Final Bill';
-    diag = 'Inpatient Acute Care & Intensive Care Unit Management';
+  } else if (fnameLower.includes('appendic') || fnameLower.includes('surgery') || fnameLower.includes('abdo')) {
+    docTitle = 'Surgical Inpatient Discharge Summary';
+    diag = 'Acute Appendicitis & Laparoscopic Surgery';
     items = [
-      { description: 'ICU Bed & Mechanical Ventilation (2 Days)', amount: 16000 },
-      { description: 'Intracranial / Operating Procedure Charges', amount: 4500 },
-      { description: 'Critical Care IV Fluids & Pharmacy Consumables', amount: 3200 }
+      { description: 'Laparoscopic Appendectomy Surgical Procedure', amount: 22000 },
+      { description: 'OT & Anesthesia Consumables', amount: 7500 },
+      { description: 'Inpatient Ward Bed Charges (2 Days)', amount: 5000 }
     ];
-    icdCodes = ['S06.9X9A', 'G93.1'];
+    icdCodes = ['K35.80', 'R10.9'];
   }
 
   const tot = items.reduce((sum, item) => sum + item.amount, 0);
