@@ -1177,7 +1177,8 @@ async function parseAndCalculateClaim(file) {
     route: finalRoute,
     confidence_score: confidenceScore,
     created_at: new Date().toISOString(),
-    image_url: file && file.type && file.type.startsWith('image/') ? URL.createObjectURL(file) : '/assets/mock_bill_clean.png',
+    submitted_at: new Date().toISOString(),
+    image_url: (file && file.type && file.type.startsWith('image/')) ? URL.createObjectURL(file) : '/assets/mock_bill_clean.png',
     ocr_result: {
       raw_text: fileText || `Hospital Discharge Summary & Medical Bill\nPatient: ${patientName}\nHospital: ${hospitalName}\nDiagnosis: ${diagnosisText}\nTotal Billed: ₹${totalAmount.toLocaleString('en-IN')}`,
       confidence: confidenceScore,
@@ -1217,7 +1218,20 @@ async function parseAndCalculateClaim(file) {
       submitted: false,
       portal_ref: null,
       portal_status: 'PENDING_HUMAN_VERIFICATION'
-    }
+    },
+    audit_log: [
+      { stage: 'Stage 1 OCR', note: `OCR confidence ${Math.round(confidenceScore * 100)}% — Patient: ${patientName}, Hospital: ${hospitalName}` },
+      { stage: 'Stage 2 Extraction', note: `Extracted ${lineItems.length} line items. Total: ₹${totalAmount.toLocaleString('en-IN')}` },
+      { stage: 'Stage 3 ICD-10 Coding', note: icdCodes.length > 0 ? `Mapped: ${icdCodes.map(c => c.icd_code).join(', ')}` : 'No ICD codes mapped' },
+      { stage: 'Stage 4 Eligibility', note: `PM-JAY Ayushman Gold — Active through 2026-12-31. Covered: ₹${pmjayCoveredAmount.toLocaleString('en-IN')}` },
+      { stage: 'Stage 5 Fraud', note: `Fraud score ${fraudScore.toFixed(2)} (${fraudRiskLevel.toUpperCase()})` },
+      { stage: 'Stage 6 Verdict', note: `Status: ${finalStatus} — Awaiting human verification before PM-JAY portal submission` }
+    ],
+    flags: isFlagged ? flagReasons : [
+      `Pending human text & ICD-10 verification for ${patientName}`,
+      `PM-JAY Covered Amount: ₹${pmjayCoveredAmount.toLocaleString('en-IN')} (after ₹${simulatedPreviousUtilization.toLocaleString('en-IN')} prior utilization)`
+    ],
+    icd_codes: icdCodes.map(c => ({ code: c.icd_code, description: c.description, confidence: c.confidence }))
   };
 }
 
@@ -1519,8 +1533,12 @@ function renderHITLTable(claims) {
   tbody.innerHTML = '';
 
   claims.forEach((claim, idx) => {
-    const topFlag = (claim.flags || ['No flag details'])[0];
-    const conf    = claim.confidence_score || 0;
+    // Normalise field names — localStorage claims use created_at, mock uses submitted_at
+    const submittedAt = claim.submitted_at || claim.created_at || new Date().toISOString();
+    const patientNameDisplay = claim.patient_name || claim.extracted_json?.patient_name || 'Unknown Patient';
+    const topFlag = (claim.flags || ['Pending Human Verification'])[0];
+    const conf = claim.confidence_score || 0;
+    const isRealClaim = !!(claim.filename);  // real uploaded claims have filename
 
     // Main row
     const tr = document.createElement('tr');
@@ -1531,9 +1549,9 @@ function renderHITLTable(claims) {
     tr.setAttribute('tabindex', '0');
     tr.innerHTML = `
       <td><span class="expand-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></td>
-      <td><code style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--indigo-bright)">${claim.id}</code></td>
-      <td style="font-weight:500">${claim.patient_name}</td>
-      <td style="color:var(--text-secondary); font-size:13px">${formatDate(claim.submitted_at)}</td>
+      <td><code style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--indigo-bright)">${claim.id}</code>${isRealClaim ? ' <span style="font-size:10px;background:#6366f1;color:#fff;border-radius:4px;padding:1px 5px;font-weight:700;">REAL</span>' : ''}</td>
+      <td style="font-weight:500">${patientNameDisplay}</td>
+      <td style="color:var(--text-secondary); font-size:13px">${formatDate(submittedAt)}</td>
       <td>
         <div class="confidence-bar-wrap">
           <div class="confidence-bar-track">
