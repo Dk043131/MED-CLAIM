@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MED-CLAIM — Project Presentation (KIOT)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface-1: #111827;
+      --surface-2: #1f2937;
+      --surface-glass: rgba(31, 41, 55, 0.7);
+      --border: #374151;
+      --border-accent: rgba(99, 102, 241, 0.4);
+      --indigo: #6366f1;
+      --indigo-glow: rgba(99, 102, 241, 0.25);
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Header */
+    .header {
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-1);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--indigo), var(--cyan));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: #fff;
+      box-shadow: 0 4px 14px var(--indigo-glow);
+    }
+    .brand-title { font-weight: 800; font-size: 18px; letter-spacing: -0.5px; }
+    .brand-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .college-tag {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid var(--border-accent);
+      color: #a5b4fc;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    /* Deck Viewport */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1200px;
+      height: 85%;
+      max-height: 680px;
+      background: var(--surface-glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Slide Header */
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+
+    .slide-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Title Slide Specifics */
+    .title-slide-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .main-title {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--indigo) 70%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .main-sub {
+      font-size: 20px;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+    .presenters-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border-accent);
+      padding: 24px 36px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--indigo-glow);
+    }
+    .presenters-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--indigo);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .presenters-list {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .presenter-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .presenter-name::before {
+      content: '•';
+      color: var(--cyan);
+    }
+
+    /* Content Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card-box {
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    .card-box:hover {
+      border-color: var(--indigo);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--indigo);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .card-h { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .card-p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+
+    /* Bullet List */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .bullet-dot {
+      width: 8px; height: 8px;
+      background: var(--indigo);
+      border-radius: 50%;
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    /* Pipeline Diagram */
+    .pipeline-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .pipe-step {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .pipe-num { font-size: 11px; font-weight: 700; color: var(--indigo); text-transform: uppercase; margin-bottom: 4px; }
+    .pipe-name { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .pipe-arrow { color: var(--text-dim); font-size: 18px; }
+
+    /* Footer Controls */
+    .footer {
+      padding: 16px 32px;
+      background: var(--surface-1);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-nav {
+      background: var(--surface-2);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-nav:hover {
+      background: var(--indigo);
+      border-color: var(--indigo);
+    }
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">+</div>
+      <div>
+        <div class="brand-title">MED-CLAIM</div>
+        <div class="brand-subtitle">AI-Powered Adjudication Engine</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="college-tag">Knowledge Institute Of Technology</span>
+    </div>
+  </header>
+
+  <!-- Slide Deck -->
+  <main class="deck-container">
+
+    <!-- Slide 1: Title Slide -->
+    <section class="slide active" id="slide-1">
+      <div class="title-slide-content">
+        <div class="slide-badge">PROJECT PRESENTATION</div>
+        <h1 class="main-title">MED-CLAIM</h1>
+        <p class="main-sub">AI-Powered Automated Medical Claim Adjudication & Ayushman Bharat (PM-JAY) Processing Engine</p>
+
+        <div class="presenters-box">
+          <div class="presenters-title">Project Presenters</div>
+          <div class="presenters-list">
+            <span class="presenter-name">Deepakkumar A</span>
+            <span class="presenter-name">Dinakar S</span>
+            <span class="presenter-name">Nandhakishore N</span>
+            <span class="presenter-name">Devapriyan MJ</span>
+          </div>
+          <div style="margin-top: 16px; font-size: 13px; color: #a5b4fc; font-weight: 600;">
+            Department of Computer Science & Engineering • KIOT
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Problem Statement -->
+    <section class="slide" id="slide-2">
+      <div>
+        <div class="slide-badge">PROBLEM STATEMENT</div>
+        <h2 class="slide-title">Challenges in Medical Claim Processing</h2>
+      </div>
+      <div class="slide-body grid-2">
+        <div class="card-box">
+          <div class="card-icon">⏳</div>
+          <h3 class="card-h">Manual Bottlenecks & Delays</h3>
+          <p class="card-p">Insurance caseworkers spend 25–45 minutes per claim manually verifying hospital bills, line items, and diagnostic codes, leading to settlement delays of up to 30 days.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">💸</div>
+          <h3 class="card-h">High Operational Costs & Errors</h3>
+          <p class="card-p">Human coding errors in ICD-10/SNOMED CT mapping and missed policy exclusions account for over $14B annually in wasted administrative costs and overpayments.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">⚠️</div>
+          <h3 class="card-h">Fraud & Duplicate Billing Risks</h3>
+          <p class="card-p">Lack of real-time fingerprinting allows duplicate claims submitted across multiple clinics within short timeframes to bypass traditional audit filters.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">🏛️</div>
+          <h3 class="card-h">Government Scheme Friction</h3>
+          <p class="card-p">Ayushman Bharat (PM-JAY) hospital claim verification involves complex 3-gate checks, leading to rejection of valid claims due to missing documentation.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Proposed Solution -->
+    <section class="slide" id="slide-3">
+      <div>
+        <div class="slide-badge">PROPOSED SOLUTION</div>
+        <h2 class="slide-title">The MED-CLAIM Adjudication Platform</h2>
+      </div>
+      <div class="slide-body grid-3">
+        <div class="card-box">
+          <div class="card-icon">🧠</div>
+          <h3 class="card-h">Autonomous 6-Gate Pipeline</h3>
+          <p class="card-p">Fully automated end-to-end processing pipeline evaluating OCR document intelligence, clinical coding, welfare eligibility, duplicates, and fraud guardrails in under 400ms.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">👥</div>
+          <h3 class="card-h">Human-in-the-Loop (HITL) Queue</h3>
+          <p class="card-p">Intelligent triage automatically routes high-confidence claims (≥90%) to Instant Auto-Approval while routing ambiguous/handwritten bills to a caseworker review queue.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">🇮🇳</div>
+          <h3 class="card-h">PM-JAY Scheme Integration</h3>
+          <p class="card-p">Built-in Ayushman Bharat 3-gate checker, Aadhaar e-KYC card generator, and real-time family ₹5 Lakh annual cap tracking engine.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: System Architecture -->
+    <section class="slide" id="slide-4">
+      <div>
+        <div class="slide-badge">SYSTEM ARCHITECTURE</div>
+        <h2 class="slide-title">6-Stage Processing Pipeline</h2>
+      </div>
+      <div class="slide-body">
+        <ul class="bullet-list">
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 1: Document OCR & IDP:</strong> Multi-engine Intelligent Document Processing for scanned bills, lab reports, and handwritten notes.</div></li>
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 2: Structuring & Fingerprinting:</strong> Extracts patient metadata, facility names, line items, and matches provider signatures.</div></li>
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 3: ICD-10 & SNOMED CT Coding:</strong> Automated clinical code mapping with confidence scoring and term harmonization.</div></li>
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 4: Eligibility & Duplicate Check:</strong> Validates active policy coverage and checks 7-day twin-claim fingerprinting window.</div></li>
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 5: Fraud Risk Scoring:</strong> Itemized pricing anomaly detection and risk scoring guardrails.</div></li>
+          <li class="bullet-item"><div class="bullet-dot"></div><div><strong>Stage 6: Government Portal Submission:</strong> Direct integration with NHA PM-JAY portal for instant disbursement.</div></li>
+        </ul>
+        <div class="pipeline-row">
+          <div class="pipe-step"><div class="pipe-num">Step 1</div><div class="pipe-name">OCR / IDP</div></div>
+          <div class="pipe-arrow">➔</div>
+          <div class="pipe-step"><div class="pipe-num">Step 2</div><div class="pipe-name">Structure</div></div>
+          <div class="pipe-arrow">➔</div>
+          <div class="pipe-step"><div class="pipe-num">Step 3</div><div class="pipe-name">ICD Coding</div></div>
+          <div class="pipe-arrow">➔</div>
+          <div class="pipe-step"><div class="pipe-num">Step 4</div><div class="pipe-name">Eligibility</div></div>
+          <div class="pipe-arrow">➔</div>
+          <div class="pipe-step"><div class="pipe-num">Step 5</div><div class="pipe-name">Fraud Score</div></div>
+          <div class="pipe-arrow">➔</div>
+          <div class="pipe-step"><div class="pipe-num">Step 6</div><div class="pipe-name">Verdict</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Multilingual & Mobile First -->
+    <section class="slide" id="slide-5">
+      <div>
+        <div class="slide-badge">ACCESSIBILITY & I18N</div>
+        <h2 class="slide-title">Multilingual & Mobile-First Design</h2>
+      </div>
+      <div class="slide-body grid-2">
+        <div class="card-box">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-h">10 Language Support</h3>
+          <p class="card-p">Full i18n support for 8 Indian regional languages (Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi) plus English and Spanish with instant DOM localization.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">📱</div>
+          <h3 class="card-h">Mobile Responsive Layout</h3>
+          <p class="card-p">Slide-over navigation drawer, touch-friendly 44px targets, horizontal table scroll containers, and responsive card grids for flawless operation on smartphones.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Document Intelligence -->
+    <section class="slide" id="slide-6">
+      <div>
+        <div class="slide-badge">DOCUMENT INTELLIGENCE</div>
+        <h2 class="slide-title">Advanced OCR & Data Extraction</h2>
+      </div>
+      <div class="slide-body grid-3">
+        <div class="card-box">
+          <div class="card-icon">📄</div>
+          <h3 class="card-h">Clean Hospital Bills</h3>
+          <p class="card-p">Extracts itemized billing tables, admission/discharge dates, room rates, and tax calculations with >98% accuracy for instant auto-approval.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">🧪</div>
+          <h3 class="card-h">Lab & Blood Reports</h3>
+          <p class="card-p">Parses blood parameters (CBC, LFT, Widal, ESR), reference ranges, and abnormal value flags to validate clinical necessity.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">✍️</div>
+          <h3 class="card-h">Messy Handwritten Notes</h3>
+          <p class="card-p">Detects low OCR confidence (<70%) or ambiguous doctor handwriting, automatically flagging claims for caseworker HITL review.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Fraud Guardrails -->
+    <section class="slide" id="slide-7">
+      <div>
+        <div class="slide-badge">SECURITY & GUARDRAILS</div>
+        <h2 class="slide-title">Fraud Detection & Twin-Claim Prevention</h2>
+      </div>
+      <div class="slide-body grid-2">
+        <div class="card-box">
+          <div class="card-icon">🔍</div>
+          <h3 class="card-h">7-Day Twin Claim Fingerprinting</h3>
+          <p class="card-p">Fingerprints patient identity, provider ID, and diagnostic codes to instantly block duplicate claims submitted across clinics within a 7-day window.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">🛡️</div>
+          <h3 class="card-h">Price Anomaly & Risk Scoring</h3>
+          <p class="card-p">Computes risk scores based on procedure price limits, unbundling detection, and provider history. Fraud score >0.60 triggers mandatory HITL audit.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: PM-JAY Integration -->
+    <section class="slide" id="slide-8">
+      <div>
+        <div class="slide-badge">GOVERNMENT SCHEME INTEGRATION</div>
+        <h2 class="slide-title">Ayushman Bharat (PM-JAY) Portal</h2>
+      </div>
+      <div class="slide-body grid-3">
+        <div class="card-box">
+          <div class="card-icon">🏛️</div>
+          <h3 class="card-h">3-Gate Eligibility Checker</h3>
+          <p class="card-p">Verifies patient identity, hospital empanelment status, and 1,929 procedure package rates in real-time.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">🪪</div>
+          <h3 class="card-h">Aadhaar e-KYC Card Generator</h3>
+          <p class="card-p">Simulates 12-digit Aadhaar OTP verification and generates downloadable PM-JAY Gold Ayushman Cards.</p>
+        </div>
+        <div class="card-box">
+          <div class="card-icon">📊</div>
+          <h3 class="card-h">Family ₹5 Lakh Cap Tracker</h3>
+          <p class="card-p">Monitors annual coverage balance, senior citizen separate caps, patient co-pay, and remaining family funds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Metrics & Impact -->
+    <section class="slide" id="slide-9">
+      <div>
+        <div class="slide-badge">RESULTS & IMPACT</div>
+        <h2 class="slide-title">Performance Metrics & Benchmarks</h2>
+      </div>
+      <div class="slide-body grid-3">
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 900; color: var(--green); margin-bottom: 8px;">83.1%</div>
+          <h3 class="card-h">Auto-Adjudication Rate</h3>
+          <p class="card-p">Claims auto-approved without manual intervention</p>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 900; color: var(--indigo); margin-bottom: 8px;">85%</div>
+          <h3 class="card-h">Staff Time Saved</h3>
+          <p class="card-p">Reduction in caseworker processing effort</p>
+        </div>
+        <div class="card-box" style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 900; color: var(--cyan); margin-bottom: 8px;"><400ms</div>
+          <h3 class="card-h">Pipeline Latency</h3>
+          <p class="card-p">End-to-end 6-gate execution speed</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Conclusion & Q&A -->
+    <section class="slide" id="slide-10">
+      <div class="title-slide-content">
+        <div class="slide-badge">CONCLUSION</div>
+        <h2 class="main-title" style="font-size: 36px;">Thank You! Any Questions?</h2>
+        <p class="main-sub" style="font-size: 16px; margin-bottom: 24px;">
+          MED-CLAIM sets a new benchmark in automated medical claim adjudication, bridging Indian healthcare schemes with state-of-the-art document intelligence.
+        </p>
+
+        <div class="card-box" style="max-width: 600px; text-align: left;">
+          <div style="font-weight: 700; color: var(--text-main); margin-bottom: 8px;">Deployment Links:</div>
+          <div style="font-size: 13px; color: #a5b4fc; font-family: 'JetBrains Mono', monospace;">
+            Frontend: https://med-claim.vercel.app<br>
+            GitHub: https://github.com/Dk043131/MED-CLAIM
+          </div>
+          <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
+            Knowledge Institute Of Technology (KIOT) • Department of CSE
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Navigation Controls -->
+  <footer class="footer">
+    <div class="controls">
+      <button class="btn-nav" id="prev-btn">◀ Previous</button>
+      <button class="btn-nav" id="next-btn">Next ▶</button>
+    </div>
+    <div class="slide-counter">
+      Slide <span id="current-slide">1</span> of 10
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    const updateSlide = (newIndex) => {
+      if (newIndex < 1 || newIndex > totalSlides) return;
+      document.querySelector(`.slide.active`).classList.remove('active');
+      currentSlide = newIndex;
+      document.getElementById(`slide-${currentSlide}`).classList.add('active');
+      document.getElementById('current-slide').textContent = currentSlide;
+    };
+
+    document.getElementById('prev-btn').addEventListener('click', () => updateSlide(currentSlide - 1));
+    document.getElementById('next-btn').addEventListener('click', () => updateSlide(currentSlide + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') updateSlide(currentSlide + 1);
+      if (e.key === 'ArrowLeft') updateSlide(currentSlide - 1);
+    });
+  </script>
+</body>
+</html>
