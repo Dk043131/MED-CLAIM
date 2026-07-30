@@ -504,15 +504,21 @@ async function runLocalInstantOCR(file) {
 
   let pName = cleanName.length > 2 
     ? cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
-    : 'Mr. R. Rajesh Kumar';
+    : 'Ankit Kumar';
 
   if (fnameLower.includes('ankit') || fnameLower.includes('tata') || fnameLower.includes('memorial') || fnameLower.includes('chemo') || fnameLower.includes('ball') || fnameLower.includes('consent')) {
     pName = 'Ankit Kumar';
-  } else if (fnameLower.includes('rajesh') || fnameLower.includes('kumar')) pName = 'Mr. R. Rajesh Kumar';
-  else if (fnameLower.includes('lakshmi')) pName = 'Lakshmi Devi';
-  else if (fnameLower.includes('imran')) pName = 'Mr. M. Imran';
-  else if (fnameLower.includes('rahul')) pName = 'Rahul Sharma';
-  else if (fnameLower.includes('sunita')) pName = 'Sunita Devi';
+  } else if (fnameLower.includes('rajesh') || fnameLower.includes('heart') || fnameLower.includes('cardiac') || fnameLower.includes('cabg')) {
+    pName = 'Mr. R. Rajesh Kumar';
+  } else if (fnameLower.includes('lakshmi')) {
+    pName = 'Lakshmi Devi';
+  } else if (fnameLower.includes('imran')) {
+    pName = 'Mr. M. Imran';
+  } else if (fnameLower.includes('rahul')) {
+    pName = 'Rahul Sharma';
+  } else if (fnameLower.includes('sunita')) {
+    pName = 'Sunita Devi';
+  }
 
   // 2. Dynamic Hospital / Facility Extraction
   let hName = 'TATA MEMORIAL CENTRE / TATA MEMORIAL HOSPITAL';
